@@ -1,4 +1,5 @@
 import maplibregl from 'maplibre-gl'
+import { Protocol } from 'pmtiles'
 import 'maplibre-gl/dist/maplibre-gl.css'
 
 import { getBasemapStyle, type Basemap } from './basemap'
@@ -41,6 +42,10 @@ let base: Basemap = 'pale'
 applyThemeAttr(theme)
 
 const isMobile = window.matchMedia('(max-width: 640px)').matches
+
+// 背景の地理院 最適化ベクトルタイルは pmtiles:// プロトコルで配信されている
+const protocol = new Protocol()
+maplibregl.addProtocol('pmtiles', protocol.tile)
 
 const map = new maplibregl.Map({
   container: 'map',
