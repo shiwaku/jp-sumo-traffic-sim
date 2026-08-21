@@ -34,7 +34,11 @@ def fetch_osm() -> dict:
         return json.loads(CACHE.read_text(encoding="utf-8"))
     cordon = C.cordon_polygon().buffer(C.CLIP_BUFFER_M)
     w, s, e, n = gpd.GeoSeries([cordon], crs=C.CRS_PROJ).to_crs("EPSG:4326").total_bounds
-    q = f'[out:json][timeout:120];way["highway"]["oneway"~"^(yes|-1)$"]({s},{w},{n},{e});out tags geom;'
+    q = (
+        "[out:json][timeout:120];"
+        f'way["highway"]["oneway"~"^(yes|-1)$"]({s},{w},{n},{e});'
+        "out tags geom;"
+    )
     endpoints = [
         "https://overpass-api.de/api/interpreter",
         "https://overpass.kumi.systems/api/interpreter",
@@ -97,7 +101,7 @@ def main() -> None:
     osm_segs = []  # (mid, dir, name)
     for (name, oneway, _), geom in zip(osm_rows, osm_g, strict=False):
         sign = -1.0 if oneway == "-1" else 1.0
-        for mid, d, L in segments(geom):
+        for mid, d, _L in segments(geom):
             osm_segs.append((mid, d * sign, name))
     from shapely.geometry import Point
 
@@ -127,9 +131,12 @@ def main() -> None:
                     votes_opp += L
         total = votes_same + votes_opp
         verdict = (
-            "未対応(OSMに相手なし)" if total == 0
-            else "一致" if votes_same / total >= 0.8
-            else "不一致" if votes_opp / total >= 0.8
+            "未対応(OSMに相手なし)"
+            if total == 0
+            else "一致"
+            if votes_same / total >= 0.8
+            else "不一致"
+            if votes_opp / total >= 0.8
             else "混在"
         )
         results.append(
@@ -162,14 +169,17 @@ def main() -> None:
     (C.REPORTS / "15_oneway_check.json").write_text(
         json.dumps(rep, ensure_ascii=False, indent=2), encoding="utf-8"
     )
-    print(json.dumps({k: v for k, v in rep.items() if k != "details"},
-                     ensure_ascii=False, indent=2))
+    print(
+        json.dumps({k: v for k, v in rep.items() if k != "details"}, ensure_ascii=False, indent=2)
+    )
     print("\n--- 不一致・混在・未対応 ---")
     for x in rep["details"]:
         if x["verdict"] == "一致":
             continue
-        print(f"  {x['verdict']:<14s} len={x['len_m']:7.1f} matched={x['matched_m']:7.1f} "
-              f"same={x['same_m']:7.1f} opp={x['opposite_m']:7.1f} {x['route']}")
+        print(
+            f"  {x['verdict']:<14s} len={x['len_m']:7.1f} matched={x['matched_m']:7.1f} "
+            f"same={x['same_m']:7.1f} opp={x['opposite_m']:7.1f} {x['route']}"
+        )
 
 
 if __name__ == "__main__":
