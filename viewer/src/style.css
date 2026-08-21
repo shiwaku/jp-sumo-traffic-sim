@@ -660,11 +660,21 @@ body {
 .sim-controls select {
   font-size: 12.5px;
   padding: 5px 8px;
-  border: 1px solid var(--line, #d8dce0);
-  border-radius: 6px;
-  background: var(--bg, #fff);
-  color: inherit;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-sm);
+  background: var(--surface-solid);
+  color: var(--ink);
   margin-bottom: 7px;
+}
+.sim-controls select:hover {
+  background: var(--hover);
+}
+.sim-controls input[type='range'] {
+  accent-color: var(--accent);
+}
+.sim-readout,
+.sim-legend {
+  color: var(--ink-2);
 }
 .sim-row {
   display: flex;
