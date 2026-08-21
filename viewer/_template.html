@@ -11,6 +11,8 @@
     --line:#d8dce0; --panel:#f7f8fa; --paper:#fbfcfd;
     --lattice:#3d7ab8; --back:#d98c3f; --off:#9aa2ab; --out:#c2555c;
     --tunnel:#7b52c4; --cordon:#2f8f6b;
+  --stop:#d64545; --oneway:#c1571f; --speed:#7b52c4;
+  --signal:#3d8b40; --ctrl:#1f6feb; --census:#b8860b;
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%}
@@ -69,6 +71,10 @@
   <select id="streetsel"><option value="">— すべて —</option></select>
   <p class="note" id="streetinfo">通し街路を選ぶと、そのリンクだけを強調します。</p>
 
+  <h2>JARTIC / センサス</h2>
+  <div id="overlays"></div>
+  <p class="note" id="datanote"></p>
+
   <h2>幅員区分</h2>
   <div id="widths"></div>
 
@@ -91,6 +97,10 @@ const META = __META__;
 const NETWORK = __NETWORK__;
 const CORDON = __CORDON__;
 const LATTICE = __LATTICE__;
+const REG_POINT = __REG_POINT__;
+const REG_LINE = __REG_LINE__;
+const SIGNALS = __SIGNALS__;
+const CENSUS = __CENSUS__;
 
 const KIND_COLOR = {
   "格子街路":"#3d7ab8", "裏通り":"#d98c3f", "斜行・非格子":"#9aa2ab", "格子外":"#c2555c",
@@ -157,6 +167,44 @@ map.on('load', () => {
     paint:{'line-color':'#7b52c4','line-width':
       ['interpolate',['linear'],['zoom'],12,2.4,16,6,18,11],'line-opacity':.85}});
 
+  // --- 重ねるデータ ---
+  map.addSource('regline',{type:'geojson',data:REG_LINE});
+  map.addSource('regpoint',{type:'geojson',data:REG_POINT});
+  map.addSource('signals',{type:'geojson',data:SIGNALS});
+  map.addSource('census',{type:'geojson',data:CENSUS});
+
+  map.addLayer({id:'census',type:'line',source:'census',
+    layout:{visibility:'none'},
+    paint:{'line-color':'#b8860b','line-width':
+      ['interpolate',['linear'],['zoom'],12,3,16,9,18,16],'line-opacity':.4}});
+
+  map.addLayer({id:'reg-oneway',type:'line',source:'regline',
+    filter:['==',['get','code'],'11'], layout:{visibility:'none','line-cap':'round'},
+    paint:{'line-color':'#c1571f','line-width':
+      ['interpolate',['linear'],['zoom'],12,1.6,16,4,18,7],'line-opacity':.9}});
+
+  map.addLayer({id:'reg-speed',type:'line',source:'regline',
+    filter:['==',['get','code'],'112'], layout:{visibility:'none','line-cap':'round'},
+    paint:{'line-color':'#7b52c4','line-width':
+      ['interpolate',['linear'],['zoom'],12,1.4,16,3.4,18,6],'line-opacity':.8}});
+
+  map.addLayer({id:'reg-stop',type:'circle',source:'regpoint',
+    filter:['==',['get','code'],'63'], layout:{visibility:'none'},
+    paint:{'circle-color':'#d64545','circle-radius':
+      ['interpolate',['linear'],['zoom'],12,2,16,4.5,18,7],
+      'circle-opacity':.85,'circle-stroke-width':.5,'circle-stroke-color':'#fff'}});
+
+  map.addLayer({id:'reg-signal',type:'circle',source:'regpoint',
+    filter:['==',['get','code'],'98'], layout:{visibility:'none'},
+    paint:{'circle-color':'#3d8b40','circle-radius':
+      ['interpolate',['linear'],['zoom'],12,2,16,4.5,18,7],
+      'circle-opacity':.8,'circle-stroke-width':.5,'circle-stroke-color':'#fff'}});
+
+  map.addLayer({id:'signals',type:'circle',source:'signals',
+    paint:{'circle-color':'#1f6feb','circle-radius':
+      ['interpolate',['linear'],['zoom'],12,4,16,9,18,14],
+      'circle-opacity':.9,'circle-stroke-width':1.4,'circle-stroke-color':'#fff'}});
+
   map.addLayer({id:'sel',type:'line',source:'net',
     filter:['==',['get','street'],'__none__'],
     paint:{'line-color':'#1a1c1e','line-width':
@@ -170,6 +218,14 @@ map.on('load', () => {
   buildUI();
   wireInteraction();
 });
+
+function countOf(layerId){
+  const code = {'reg-oneway':'11','reg-stop':'63','reg-signal':'98','reg-speed':'112'}[layerId];
+  if (layerId==='signals') return SIGNALS.features.filter(f=>f.properties.in_cordon).length;
+  if (layerId==='census')  return CENSUS.features.filter(f=>f.properties.in_cordon).length;
+  const src = ['reg-oneway','reg-speed'].includes(layerId) ? REG_LINE : REG_POINT;
+  return src.features.filter(f=>f.properties.code===code && f.properties.in_cordon).length;
+}
 
 function buildUI(){
   const kv = document.getElementById('kv-area');
@@ -199,6 +255,36 @@ function buildUI(){
         <span style="font-family:ui-monospace">${v}</span></div>
         <div class="bar"><i style="width:${(v/wtot*100).toFixed(1)}%"></i></div>`;
     }).join('');
+
+  const overlays = [
+    ['signals','交差点制御情報(サイクル長)','#1f6feb',true],
+    ['reg-oneway','一方通行','#c1571f',false],
+    ['reg-stop','一時停止','#d64545',false],
+    ['reg-signal','信号機(規制情報)','#3d8b40',false],
+    ['reg-speed','最高速度','#7b52c4',false],
+    ['census','センサス区間','#b8860b',false],
+  ];
+  const ohost = document.getElementById('overlays');
+  ohost.innerHTML = overlays.map((t,i)=>{
+    const n = countOf(t[0]);
+    return `<label class="row"><input type="checkbox" data-o="${i}" ${t[3]?'checked':''}>
+      <span class="sw ${t[0].startsWith('reg-')||t[0]==='signals'?'dot':''}" style="background:${t[2]}"></span>${t[1]}
+      <span style="margin-left:auto;font-family:ui-monospace;font-size:11px;color:var(--ink-3)">${n}</span></label>`;
+  }).join('');
+  ohost.querySelectorAll('input').forEach(el=>{
+    el.onchange = () => {
+      const t = overlays[+el.dataset.o];
+      map.setLayoutProperty(t[0],'visibility', el.checked?'visible':'none');
+    };
+  });
+  const note = document.getElementById('datanote');
+  const np = META.regulations.not_provided || [];
+  note.innerHTML =
+    `規制情報 ${META.regulations.target_month || '—'} / 区域内 ${META.regulations.n_in_cordon} 件<br>`
+    + `制御情報 区域内 ${META.signals.n_in_cordon} 交差点 (座標結合率 ${(META.signals.join_rate*100).toFixed(0)}%)`
+    + `<br>サイクル長 ${META.signals.cycle.min}–${META.signals.cycle.max} 秒 (中央値 ${META.signals.cycle.median})`
+    + `<br>センサス 区域内 ${META.census.n_in_cordon} 区間 / 延長被覆 ${(META.census.coverage*100).toFixed(0)}%`
+    + (np.length ? `<br><b>北海道が提供していない規制:</b> ${np.join('、')}` : '');
 
   const toggles = [
     ['links','格子街路',       KIND_COLOR['格子街路'], 'kind', '格子街路'],
@@ -283,6 +369,30 @@ function wireInteraction(){
     map.setFilter('hover',['==',['get','link_id'],'__none__']);
     info.style.display='none';
   });
+  const detail = [
+    ['signals', p => `<b>${p.jartic_id}</b><br>現示 ${p.n_phases} / 流入 ${p.n_in_links} 本
+       <br>サイクル長 ${p.cycle_min_s}–${p.cycle_max_s} 秒<br>時間帯 ${p.n_hours} 区分`],
+    ['census', p => `<b>${p.route}</b><br>区間 ${p.section_id}
+       <br>車線数 ${p.n_lanes} / 車道部幅員 ${p.w_carriageway} m
+       <br>指定最高速度 ${p.speed_limit} km/h
+       <br>混雑時 ${p.v_peak_up} km/h / 非混雑時 ${p.v_off_up} km/h
+       <br>大型車混入率 ${p.heavy_pct} % / 混雑度 ${p.congestion}
+       <br>12時間交通量 ${p.v12h} 台`],
+    ['reg-oneway', p => `<b>一方通行</b><br>頂点順が通行方向<br>延長 ${p.length ?? '—'} m`],
+    ['reg-stop', p => `<b>一時停止</b>${p.crossing ? '<br>'+p.crossing : ''}`],
+    ['reg-signal', p => `<b>信号機</b>${p.crossing ? '<br>'+p.crossing : ''}`],
+    ['reg-speed', p => `<b>最高速度</b><br>${p.kind ?? ''}<br>速度 ${p.speed ?? '—'}`],
+  ];
+  for (const [id, fmt] of detail){
+    if (!map.getLayer(id)) continue;
+    map.on('click', id, e => {
+      new maplibregl.Popup({closeButton:true, maxWidth:'260px'})
+        .setLngLat(e.lngLat).setHTML(fmt(e.features[0].properties)).addTo(map);
+    });
+    map.on('mouseenter', id, () => map.getCanvas().style.cursor='pointer');
+    map.on('mouseleave', id, () => map.getCanvas().style.cursor='');
+  }
+
   map.on('click','lattice', e => {
     new maplibregl.Popup({closeButton:false})
       .setLngLat(e.lngLat).setText(e.features[0].properties.name).addTo(map);

@@ -1,0 +1,30 @@
+{
+  "target_month": "202606",
+  "files": [
+    {
+      "name": "typeC_sapporo_2026_06.zip",
+      "purpose": "交差点制御情報(札幌)",
+      "mb": 8.5,
+      "members": [
+        "typeC_sapporo_2026_06/北海道警（札幌方面）_制御_202606.csv (103.0MB)",
+        "typeC_sapporo_2026_06/北海道警（札幌方面）_定義_202606.csv (2.4MB)"
+      ]
+    },
+    {
+      "name": "typeD_hokkaido.zip",
+      "purpose": "交通規制情報(北海道)",
+      "mb": 8.0,
+      "members": [
+        "typeD_hokkaido/北海道警_202606_k_2.1.csv (84.6MB)"
+      ]
+    },
+    {
+      "name": "typeB_sapporo_2026_06.zip",
+      "purpose": "断面交通量情報(札幌)",
+      "mb": 213.7,
+      "members": [
+        "typeB_sapporo_2026_06/北海道警（札幌方面）_202606.csv (1094.1MB)"
+      ]
+    }
+  ]
+}

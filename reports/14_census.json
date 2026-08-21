@@ -1,0 +1,162 @@
+{
+  "source": "data/raw/census/traffic_census_2021_converted.parquet",
+  "crs": "EPSG:4612",
+  "n_sections_nationwide": 127363,
+  "n_sections_clip": 35,
+  "n_sections_cordon": 17,
+  "coverage": {
+    "census_len_in_cordon_m": 13493.4,
+    "ksj_len_in_cordon_m": 74979.9,
+    "ratio": 0.18,
+    "note": "センサスは国道・都道府県道・主要幹線市道のみ。細街路は含まれない"
+  },
+  "completeness": {
+    "n_lanes": {
+      "n": 17,
+      "filled": 17,
+      "rate": 1.0
+    },
+    "w_carriageway": {
+      "n": 17,
+      "filled": 17,
+      "rate": 1.0
+    },
+    "speed_limit": {
+      "n": 17,
+      "filled": 17,
+      "rate": 1.0
+    },
+    "heavy_pct": {
+      "n": 17,
+      "filled": 17,
+      "rate": 1.0
+    },
+    "v_peak_up": {
+      "n": 17,
+      "filled": 16,
+      "rate": 0.941
+    },
+    "v_off_up": {
+      "n": 17,
+      "filled": 16,
+      "rate": 0.941
+    },
+    "v12h": {
+      "n": 17,
+      "filled": 17,
+      "rate": 1.0
+    },
+    "right_turn_lane": {
+      "n": 17,
+      "filled": 17,
+      "rate": 1.0
+    }
+  },
+  "distributions": {
+    "n_lanes": {
+      "n": 17,
+      "min": 2.0,
+      "median": 4.0,
+      "max": 8.0
+    },
+    "w_carriageway": {
+      "n": 17,
+      "min": 7.5,
+      "median": 20.0,
+      "max": 32.0
+    },
+    "speed_limit": {
+      "n": 17,
+      "min": 40.0,
+      "median": 50.0,
+      "max": 50.0
+    },
+    "heavy_pct": {
+      "n": 17,
+      "min": 2.8,
+      "median": 6.2,
+      "max": 11.9
+    },
+    "v_peak_up": {
+      "n": 16,
+      "min": 6.6,
+      "median": 14.6,
+      "max": 28.8
+    },
+    "v_off_up": {
+      "n": 16,
+      "min": 6.9,
+      "median": 17.1,
+      "max": 36.1
+    },
+    "v12h": {
+      "n": 17,
+      "min": 6405.0,
+      "median": 23401.0,
+      "max": 30220.0
+    },
+    "v24h": {
+      "n": 17,
+      "min": 7878.0,
+      "median": 27986.0,
+      "max": 39298.0
+    },
+    "congestion": {
+      "n": 17,
+      "min": 0.4,
+      "median": 0.9,
+      "max": 1.9
+    }
+  },
+  "right_turn_lane_values": {
+    "1.0": 9,
+    "2.0": 6,
+    "3.0": 2
+  },
+  "routes": [
+    "一般国道１２号",
+    "一般国道２３０号",
+    "一般国道３６号",
+    "一般国道５号",
+    "下手稲札幌線",
+    "南４条線",
+    "宮の沢北１条線",
+    "札幌停車場線",
+    "真駒内篠路線"
+  ],
+  "hourly": {
+    "n_sections_joined": 17,
+    "join_rate": 1.0,
+    "peak_hour_up": {
+      "hour": 17,
+      "vehicles": 16773,
+      "profile": [
+        170,
+        159,
+        236,
+        162,
+        162,
+        305,
+        638,
+        14706,
+        15933,
+        15344,
+        14704,
+        15572,
+        14517,
+        15243,
+        16546,
+        16074,
+        15645,
+        16773,
+        15609,
+        1325,
+        634,
+        808,
+        411,
+        254
+      ]
+    },
+    "note": "コードン流入の時系列と出発時刻分布に使う(docs/design.md 3.3)"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "release_tag": "data-v1",
+  "fetched_at": "2026-08-21T05:58:38.440423+00:00",
+  "files": {
+    "traffic_census_2021_converted.parquet": {
+      "bytes": 99006002,
+      "sha256": "b9f4cff1d2e1204026cbb6c574abaf8de491bde5726425fdb687fd9a71b9df11"
+    },
+    "traffic_census_2021_jikantai.tar.gz": {
+      "bytes": 3938742,
+      "sha256": "c44a9e55d99c244d475da28684664c163daf9811e0c6030f091ccefdea626a7c"
+    },
+    "SHA256SUMS.txt": {
+      "bytes": 1010,
+      "sha256": "5d39fdaab6d4e1ae2ff1e59ba04f8e5d17fe34923b85d8ad136d69e19ef199a1"
+    }
+  },
+  "sha256_verified": {
+    "traffic_census_2021_converted.parquet": true,
+    "traffic_census_2021_jikantai.tar.gz": true
+  },
+  "jikantai_extracted": [
+    "01.json",
+    "index.json"
+  ]
+}

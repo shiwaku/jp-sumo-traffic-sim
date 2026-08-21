@@ -52,14 +52,23 @@ uv sync
 ```bash
 make phase0   # 下記を通しで実行
 
-make fetch      # 国土数値情報 N13 (メッシュ 6441/6440) を取得
-make clip       # 対象区域 + バッファでクリップし EPSG:6679 へ投影
-make probe      # 予備調査(端点一致・階層順・リンク長・属性充足)
-make grid       # グリッド主軸の推定と検算
-make names      # 通し街路の命名と OSM 照合
-make inventory  # 格子への直接割り当てで街路インベントリを作る
-make viewer     # ブラウザ確認用ビューワを書き出す
+make fetch         # 国土数値情報 N13 (メッシュ 6441/6440) を取得
+make clip          # 対象区域 + バッファでクリップし EPSG:6679 へ投影
+make probe         # 予備調査(端点一致・階層順・リンク長・属性充足)
+make grid          # グリッド主軸の推定と検算
+make names         # 通し街路の命名と OSM 照合
+make inventory     # 格子への直接割り当てで街路インベントリを作る
+make fetch-jartic  # JARTIC の札幌・北海道分を取得
+make regulations   # 交通規制情報を区域で絞り、種別ごとに集計
+make signals       # 交差点制御情報から信号計画を作る
+make fetch-census  # 道路交通センサスの変換済みデータを取得
+make census        # 区域内の区間を抽出し、時間帯別交通量を結合
+make viewer        # ブラウザ確認用ビューワを書き出す
 ```
+
+> **JARTIC は最新1か月分しか配布しない。** 過去月の配布URLは404になる。
+> `make fetch-jartic` は生zipとカタログのスナップショットを
+> `data/raw/jartic/{年月}/` に SHA256 付きで残す。再現性のために保全すること。
 
 ## ビューワ
 
@@ -73,6 +82,8 @@ make open-viewer
 表示できるもの: コードンとクリップ範囲、130m格子線、街路種別
 (格子街路 / 裏通り / 斜行・格子外)で色分けしたリンク、トンネル・高架の強調、
 通し街路の選択、リンクごとの属性(ホバー)。
+重ねられるもの: JARTIC 交差点制御情報(サイクル長・現示数)、
+交通規制情報(一方通行・一時停止・信号機・最高速度)、センサス区間(車線数・旅行速度)。
 
 個別に実行する場合:
 
@@ -93,7 +104,7 @@ uv run python scripts/00_clip_ksj.py
 
 | Phase | 内容 | 状態 |
 |---|---|---|
-| 0 | 予備調査(データ素性の確認) | KSJ分は完了 / JARTIC・センサスは未着手 |
+| 0 | 予備調査(データ素性の確認) | **完了**(KSJ / JARTIC / センサス) |
 | 1 | ネットワーク構築(位相 + conflation + 手入力) | — |
 | 2 | シミュレーション本体(IDM / MOBIL / 信号 / サブレーン) | — |
 | 3 | キャリブレーション(オフセット推定・ホールドアウト検証) | — |
@@ -109,9 +120,21 @@ uv run python scripts/00_clip_ksj.py
 [docs/data-sources.md](docs/data-sources.md) を必ず参照すること。
 
 - 国土数値情報 道路データ (N13) — 国土交通省 / CC BY 4.0
+- 交差点位置情報 — 日本交通管理技術協会(交差点番号→座標の結合)
 - JARTIC オープンデータ(交差点制御情報・交通規制情報・断面交通量情報)— 日本道路交通情報センター
 - 全国道路・街路交通情勢調査(道路交通センサス)— 国土交通省 / 公共データ利用規約 (PDL1.0)
 - OpenStreetMap — © OpenStreetMap contributors / ODbL 1.0(一方通行の答え合わせに使用)
+
+## 関連リポジトリ
+
+| リポジトリ | 役割 |
+|---|---|
+| [jartic-traffic-signal-cycle-converter](https://github.com/shiwaku/jartic-traffic-signal-cycle-converter) | 交差点制御情報 → 平均サイクル長の全国 PMTiles |
+| [jartic-traffic-regulation-converter](https://github.com/shiwaku/jartic-traffic-regulation-converter) | 交通規制情報 → 規制種別レイヤーの全国 PMTiles |
+| [mlit-road-traffic-census-converter](https://github.com/shiwaku/mlit-road-traffic-census-converter) | 道路交通センサス → GeoParquet / PMTiles |
+| [ksj-route-search-api](https://github.com/shiwaku/ksj-route-search-api) | KSJ からのネットワーク構築と PMTiles 可視化 |
+
+本プロジェクトは全国データを扱う部分をこれらに委ね、区域分の処理に集中する。
 
 ## 参照
 

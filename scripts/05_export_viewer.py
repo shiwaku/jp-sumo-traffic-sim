@@ -1,7 +1,8 @@
-"""Phase 0 の網をブラウザで確認するビューワを書き出す。
+"""Phase 0 の成果をブラウザで確認するビューワを書き出す。
 
-04 の街路インベントリ付きリンク、コードン、格子線、立体構造を GeoJSON にし、
-単一 HTML に埋め込む(file:// で開けるようにするため)。
+街路インベントリ付きリンク・コードン・格子線・立体構造に加えて、
+JARTIC 交通規制情報、JARTIC 交差点制御情報、道路交通センサスを重ねる。
+GeoJSON は単一 HTML に埋め込む(file:// で開けるようにするため)。
 
 出力: viewer/index.html, viewer/network.geojson
 """
@@ -110,6 +111,70 @@ def main() -> None:
     )
     lattice_fc = to_fc(lat, ["name"])
 
+    # --- 重ねるデータ(無ければ空で通す) ---
+    def optional(path, layer, props):
+        f = C.INTERIM / path
+        if not f.exists():
+            return {"type": "FeatureCollection", "features": []}
+        try:
+            g = gpd.read_file(f, layer=layer)
+        except Exception:
+            return {"type": "FeatureCollection", "features": []}
+        for c in props:
+            if c not in g.columns:
+                g[c] = None
+        return to_fc(g, props)
+
+    REG_PROPS = [
+        "code",
+        "kind",
+        "shape",
+        "route",
+        "crossing",
+        "speed",
+        "n_lanes",
+        "length",
+        "in_cordon",
+        "dir_kind",
+    ]
+    regulations = {
+        "point": optional("regulations.gpkg", "point", REG_PROPS),
+        "line": optional("regulations.gpkg", "line", REG_PROPS),
+    }
+    signals = optional(
+        "signals.gpkg",
+        "intersections",
+        [
+            "jartic_id",
+            "intersection",
+            "in_cordon",
+            "n_phases",
+            "n_in_links",
+            "n_out_links",
+            "cycle_min_s",
+            "cycle_max_s",
+            "n_hours",
+        ],
+    )
+    census = optional(
+        "census.gpkg",
+        "sections",
+        [
+            "section_id",
+            "route",
+            "n_lanes",
+            "w_carriageway",
+            "speed_limit",
+            "heavy_pct",
+            "v_peak_up",
+            "v_off_up",
+            "v12h",
+            "congestion",
+            "right_turn_lane",
+            "in_cordon",
+        ],
+    )
+
     out = C.ROOT / "viewer"
     out.mkdir(exist_ok=True)
     (out / "network.geojson").write_text(json.dumps(net, ensure_ascii=False), encoding="utf-8")
@@ -118,6 +183,16 @@ def main() -> None:
     cx, cy = center.iloc[0].centroid.x, center.iloc[0].centroid.y
 
     stats = json.loads((C.REPORTS / "01_probe.json").read_text(encoding="utf-8"))
+
+    def report(name):
+        f = C.REPORTS / name
+        return json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
+
+    reg_rep, sig_rep, cen_rep = (
+        report("11_regulations.json"),
+        report("12_signals.json"),
+        report("14_census.json"),
+    )
     meta = dict(
         center=[round(cx, 6), round(cy, 6)],
         bearing=round(-C.GRID_BEARING_DEG, 3),
@@ -136,6 +211,31 @@ def main() -> None:
         width_class=stats["width_class_N13_006"],
         road_state=stats["road_state_N13_004"],
         link_length=stats["link_length_m"],
+        regulations=dict(
+            n=sum(len(v["features"]) for v in regulations.values()),
+            n_in_cordon=sum(
+                1
+                for v in regulations.values()
+                for f in v["features"]
+                if f["properties"].get("in_cordon")
+            ),
+            target_month=reg_rep.get("target_month"),
+            sim_relevant=reg_rep.get("simulation_relevant", []),
+            not_provided=reg_rep.get("not_provided_by_hokkaido", []),
+        ),
+        signals=dict(
+            n=len(signals["features"]),
+            n_in_cordon=sig_rep.get("n_in_cordon"),
+            join_rate=sig_rep.get("join_rate"),
+            cycle=sig_rep.get("cordon_cycle_s", {}),
+            target_month=sig_rep.get("target_month"),
+        ),
+        census=dict(
+            n=len(census["features"]),
+            n_in_cordon=cen_rep.get("n_sections_cordon"),
+            coverage=cen_rep.get("coverage", {}).get("ratio"),
+            v_peak=cen_rep.get("distributions", {}).get("v_peak_up", {}),
+        ),
     )
 
     tpl = (C.ROOT / "viewer" / "_template.html").read_text(encoding="utf-8")
@@ -144,6 +244,10 @@ def main() -> None:
         .replace("__NETWORK__", json.dumps(net, ensure_ascii=False))
         .replace("__CORDON__", json.dumps(cordon_fc, ensure_ascii=False))
         .replace("__LATTICE__", json.dumps(lattice_fc, ensure_ascii=False))
+        .replace("__REG_POINT__", json.dumps(regulations["point"], ensure_ascii=False))
+        .replace("__REG_LINE__", json.dumps(regulations["line"], ensure_ascii=False))
+        .replace("__SIGNALS__", json.dumps(signals, ensure_ascii=False))
+        .replace("__CENSUS__", json.dumps(census, ensure_ascii=False))
     )
     (out / "index.html").write_text(html, encoding="utf-8")
     size = (out / "index.html").stat().st_size / 1e6

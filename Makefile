@@ -1,4 +1,5 @@
-.PHONY: help sync fetch clip probe grid names inventory viewer phase0 lint test clean open-viewer
+.PHONY: help sync fetch clip probe grid names inventory viewer phase0 lint test clean open-viewer \
+        fetch-jartic regulations signals fetch-census census jartic
 
 help:
 	@grep -E '^[a-z0-9-]+:.*?##' $(MAKEFILE_LIST) | sed 's/:.*##/\t/'
@@ -30,7 +31,25 @@ viewer:  ## ブラウザ確認用ビューワを書き出す
 open-viewer: viewer  ## ビューワを開く
 	open viewer/index.html
 
-phase0: fetch clip probe grid names inventory viewer  ## Phase 0 を通しで実行
+fetch-jartic:  ## JARTIC の札幌・北海道分を取得(最新1か月分のみ配布)
+	uv run python scripts/10_fetch_jartic.py
+
+regulations:  ## 交通規制情報を区域で絞り、種別ごとに集計
+	uv run python scripts/11_jartic_regulations.py
+
+signals:  ## 交差点制御情報から信号計画(サイクル長・スプリット・現示)を作る
+	uv run python scripts/12_jartic_signals.py
+
+fetch-census:  ## 道路交通センサス(令和3年度)の変換済みデータを取得
+	uv run python scripts/13_fetch_census.py
+
+census:  ## センサスから区域内の区間を抽出し、時間帯別交通量を結合
+	uv run python scripts/14_census_extract.py
+
+jartic: fetch-jartic regulations signals  ## JARTIC 一式
+
+phase0: fetch clip probe grid names inventory fetch-jartic regulations signals \
+        fetch-census census viewer  ## Phase 0 を通しで実行
 
 lint:
 	uv run ruff check src scripts

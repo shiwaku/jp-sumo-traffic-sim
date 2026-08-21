@@ -1,0 +1,207 @@
+{
+  "source": "data/raw/jartic/202606/typeD_hokkaido.zip",
+  "target_month": "202606",
+  "n_rows_hokkaido": 121897,
+  "n_in_clip": 1816,
+  "layers": {
+    "point": {
+      "n": 1065,
+      "n_in_cordon": 488
+    },
+    "line": {
+      "n": 751,
+      "n_in_cordon": 406
+    }
+  },
+  "simulation_relevant": [
+    {
+      "code": "11",
+      "label": "一方通行",
+      "n_hokkaido": 1770,
+      "n_clip": 58,
+      "n_cordon": 39,
+      "available": true,
+      "geom": {
+        "line": 58
+      }
+    },
+    {
+      "code": "63",
+      "label": "一時停止",
+      "n_hokkaido": 63020,
+      "n_clip": 354,
+      "n_cordon": 119,
+      "available": true,
+      "geom": {
+        "point": 354
+      }
+    },
+    {
+      "code": "112",
+      "label": "最高速度",
+      "n_hokkaido": 10491,
+      "n_clip": 102,
+      "n_cordon": 47,
+      "available": true,
+      "geom": {
+        "line": 102
+      }
+    },
+    {
+      "code": "114",
+      "label": "最高速度(区域)",
+      "n_hokkaido": 115,
+      "n_clip": 0,
+      "n_cordon": 0,
+      "available": true,
+      "geom": {}
+    },
+    {
+      "code": "12",
+      "label": "指定方向外進行禁止",
+      "n_hokkaido": 0,
+      "n_clip": 0,
+      "n_cordon": 0,
+      "available": false,
+      "geom": {}
+    },
+    {
+      "code": "51",
+      "label": "転回禁止",
+      "n_hokkaido": 78,
+      "n_clip": 10,
+      "n_cordon": 7,
+      "available": true,
+      "geom": {
+        "line": 10
+      }
+    },
+    {
+      "code": "92",
+      "label": "停止線",
+      "n_hokkaido": 0,
+      "n_clip": 0,
+      "n_cordon": 0,
+      "available": false,
+      "geom": {}
+    },
+    {
+      "code": "93",
+      "label": "二段停止線",
+      "n_hokkaido": 0,
+      "n_clip": 0,
+      "n_cordon": 0,
+      "available": false,
+      "geom": {}
+    },
+    {
+      "code": "20",
+      "label": "車両通行帯",
+      "n_hokkaido": 728,
+      "n_clip": 27,
+      "n_cordon": 18,
+      "available": true,
+      "geom": {
+        "line": 27
+      }
+    },
+    {
+      "code": "98",
+      "label": "信号機",
+      "n_hokkaido": 12998,
+      "n_clip": 336,
+      "n_cordon": 173,
+      "available": true,
+      "geom": {
+        "point": 336
+      }
+    },
+    {
+      "code": "5",
+      "label": "車両通行止め",
+      "n_hokkaido": 436,
+      "n_clip": 14,
+      "n_cordon": 5,
+      "available": true,
+      "geom": {
+        "line": 14
+      }
+    },
+    {
+      "code": "17",
+      "label": "追越しのためのはみ出し通行禁止",
+      "n_hokkaido": 1423,
+      "n_clip": 0,
+      "n_cordon": 0,
+      "available": true,
+      "geom": {}
+    }
+  ],
+  "not_provided_by_hokkaido": [
+    "指定方向外進行禁止",
+    "停止線",
+    "二段停止線"
+  ],
+  "top_kinds_in_cordon": [
+    {
+      "code": "85",
+      "n": 183
+    },
+    {
+      "code": "115",
+      "n": 177
+    },
+    {
+      "code": "98",
+      "n": 173
+    },
+    {
+      "code": "63",
+      "n": 119
+    },
+    {
+      "code": "112",
+      "n": 47
+    },
+    {
+      "code": "11",
+      "n": 39
+    },
+    {
+      "code": "71",
+      "n": 33
+    },
+    {
+      "code": "81",
+      "n": 22
+    },
+    {
+      "code": "20",
+      "n": 18
+    },
+    {
+      "code": "119",
+      "n": 16
+    },
+    {
+      "code": "65",
+      "n": 12
+    },
+    {
+      "code": "111",
+      "n": 10
+    },
+    {
+      "code": "51",
+      "n": 7
+    },
+    {
+      "code": "56",
+      "n": 6
+    },
+    {
+      "code": "86",
+      "n": 6
+    }
+  ]
+}
