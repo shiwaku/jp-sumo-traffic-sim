@@ -16,7 +16,7 @@ __pycache__/
 .ruff_cache/
 .DS_Store
 
-# ビューワの生成物(データは 05_export_viewer.py で再現する)
-viewer/public/data/
+# ビューワの生成物
+# viewer/public/data/ は Pages 配信のためコミットする(約10MB。make viewer / make sim で再生成)
 viewer/node_modules/
 viewer/dist/

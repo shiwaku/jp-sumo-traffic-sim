@@ -1,0 +1,39 @@
+{
+ "center": [
+  141.3501,
+  43.0591
+ ],
+ "bearing": -10.906,
+ "grid_bearing": 10.906,
+ "cordon_size": [
+  1520.0,
+  1740.0
+ ],
+ "n_links": 1034,
+ "n_nodes": 662,
+ "n_junctions": 567,
+ "n_streets": 52,
+ "n_through": 35,
+ "signals": {
+  "n_in_cordon": 20,
+  "cycle": {
+   "min": 111.2,
+   "median": 125.0,
+   "max": 145.0
+  },
+  "target_month": "202606"
+ },
+ "regulations": {
+  "n_in_cordon": 894,
+  "target_month": "202606",
+  "not_provided": [
+   "指定方向外進行禁止",
+   "停止線",
+   "二段停止線"
+  ]
+ },
+ "census": {
+  "n_in_cordon": 17,
+  "coverage": 0.18
+ }
+}
