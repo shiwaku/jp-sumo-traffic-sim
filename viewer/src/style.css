@@ -551,6 +551,15 @@ body {
   box-shadow: var(--shadow);
 }
 
+/* MapLibre 標準アイコンは暗色SVG。ダークでは反転しないと暗地に沈む。
+   invert で赤(コンパスの北針)が水色になるため hue-rotate で色相を戻す。 */
+:root[data-theme='dark'] .maplibregl-ctrl button .maplibregl-ctrl-icon {
+  filter: invert(1) hue-rotate(180deg);
+}
+:root[data-theme='dark'] .maplibregl-ctrl-group button + button {
+  border-top-color: var(--line);
+}
+
 .maplibregl-ctrl-attrib {
   font-size: 10px;
 }
