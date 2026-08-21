@@ -1,0 +1,38 @@
+[project]
+name = "sapporo-micro-traffic-sim"
+version = "0.1.0"
+description = "札幌都心部のミクロ交通シミュレーション (IDM + MOBIL + 信号制御)"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = [
+    "geopandas>=1.0",
+    "shapely>=2.0",
+    "pyproj>=3.6",
+    "pandas>=2.2",
+    "numpy>=2.0",
+    "pyarrow>=17",
+    "scipy>=1.14",
+    "requests>=2.32",
+    "networkx>=3.3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sapporo_sim"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

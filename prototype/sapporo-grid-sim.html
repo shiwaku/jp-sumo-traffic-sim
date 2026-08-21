@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>札幌グリッド 簡易交通シミュレーション</title>
+<style>
+  :root{
+    --ink:#1a1c1e; --ink-2:#5a5f66; --ink-3:#8b9199;
+    --line:#d8dce0; --panel:#f2f4f6; --paper:#fbfcfd;
+    --asphalt:#26292c; --snow:#e8edf1;
+    --go:#7fb648; --stop:#dd5a52; --wave:#5aa8dd;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Helvetica Neue",-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;
+    font-size:14px; line-height:1.6;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding:28px 20px 60px}
+  header{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:20px}
+  h1{font-size:19px;font-weight:500;margin:0 0 3px}
+  .sub{color:var(--ink-2);font-size:13px;margin:0}
+  canvas{display:block;width:100%;border-radius:6px;background:var(--asphalt)}
+  .cap{font-size:12px;color:var(--ink-3);margin:6px 0 20px;
+       font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px 22px;
+        background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin:18px 0}
+  .ctl label{display:flex;justify-content:space-between;align-items:baseline;
+             font-size:13px;color:var(--ink-2);margin-bottom:4px}
+  .ctl b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:500;
+         font-size:13px;color:var(--ink);font-variant-numeric:tabular-nums}
+  input[type=range]{width:100%;margin:0;accent-color:var(--wave)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:4px}
+  button{font:inherit;font-size:13px;padding:6px 14px;border:1px solid var(--line);
+         background:#fff;border-radius:6px;cursor:pointer;color:var(--ink)}
+  button:hover{border-color:var(--ink-3)}
+  button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  button:focus-visible{outline:2px solid var(--wave);outline-offset:2px}
+  .stats{display:flex;gap:26px;flex-wrap:wrap;padding:14px 18px;border:1px solid var(--line);
+         border-radius:8px;margin:18px 0}
+  .stat .k{font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+  .stat .v{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:22px;
+           font-weight:500;font-variant-numeric:tabular-nums;line-height:1.25}
+  .stat .u{font-size:12px;color:var(--ink-3);margin-left:3px}
+  .note{font-size:13px;color:var(--ink-2);border-left:2px solid var(--line);padding-left:14px;margin:22px 0 0}
+  .note p{margin:0 0 8px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;
+       background:var(--panel);padding:1px 5px;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>札幌グリッド 簡易交通シミュレーション</h1>
+  <p class="sub">IDM追従モデル + 定周期信号。5×3の碁盤目、東西が幹線。</p>
+</header>
+
+<canvas id="net" width="1360" height="700" aria-label="道路網の平面表示"></canvas>
+<p class="cap">平面図 &mdash; 緑=青信号 / 赤=赤信号、車両は停止すると赤くなる</p>
+
+<canvas id="xt" width="1360" height="420" aria-label="東西幹線の時間距離図"></canvas>
+<p class="cap">時間距離図 &mdash; 横=時間(直近90秒) / 縦=東西幹線の位置。帯が青信号、線が車両の軌跡</p>
+
+<div class="grid">
+  <div class="ctl">
+    <label>流入交通量 <b><span id="v-flow">600</span> 台/h</b></label>
+    <input type="range" id="flow" min="100" max="1400" step="50" value="600">
+  </div>
+  <div class="ctl">
+    <label>サイクル長 <b><span id="v-cycle">120</span> 秒</b></label>
+    <input type="range" id="cycle" min="60" max="180" step="5" value="120">
+  </div>
+  <div class="ctl">
+    <label>東西のスプリット <b><span id="v-split">55</span> %</b></label>
+    <input type="range" id="split" min="30" max="75" step="1" value="55">
+  </div>
+  <div class="ctl">
+    <label>隣接交差点のオフセット <b><span id="v-offset">0</span> 秒</b></label>
+    <input type="range" id="offset" min="-10" max="40" step="1" value="0">
+  </div>
+</div>
+
+<div class="row">
+  <button id="winter" aria-pressed="false">冬季モード</button>
+  <button id="pause" aria-pressed="false">一時停止</button>
+  <button id="reset">やり直す</button>
+  <button id="tune">オフセットを自動整定</button>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="k">平均速度</div><div class="v"><span id="s-speed">—</span><span class="u">km/h</span></div></div>
+  <div class="stat"><div class="k">停止中の車両</div><div class="v"><span id="s-stop">—</span><span class="u">%</span></div></div>
+  <div class="stat"><div class="k">走行台数</div><div class="v"><span id="s-count">—</span><span class="u">台</span></div></div>
+  <div class="stat"><div class="k">経過</div><div class="v"><span id="s-time">—</span><span class="u">秒</span></div></div>
+</div>
+
+<div class="note">
+  <p>オフセットを動かすと、時間距離図の青い帯が斜めにずれます。帯の傾きが車両の軌跡と揃ったとき、幹線を止まらずに通過できる &mdash; これが系統制御の green wave です。</p>
+  <p>交差点間隔200m・自由速度50km/h なので、理論上の最適オフセットは 200 ÷ 13.9 ≒ <code>14秒</code>。自動整定ボタンはこの値を入れるだけです。冬季モードは自由速度と加減速度を落とし、車間を広げます。</p>
+</div>
+
+</div>
+
+<script>
+const D = {
+  xs: [140, 340, 540, 740, 940],
+  ys: [180, 350, 520],
+  W: 1080, H: 700,
+  laneGap: 11
+};
+
+const P = {
+  a: 1.2, b: 1.8, s0: 2.5, T: 1.3, len: 5.0, v0: 13.9,
+  wA: 0.7, wB: 0.55, wS0: 5.0, wV0: 9.7
+};
+
+let winter = false, paused = false;
+let t = 0, vehicles = [], nextId = 1, trails = [], spawnAcc = {};
+
+const el = id => document.getElementById(id);
+const net = el('net'), xt = el('xt');
+const nc = net.getContext('2d'), xc = xt.getContext('2d');
+const SC = net.width / (D.W + 260);
+
+function par() {
+  return {
+    flow: +el('flow').value,
+    cycle: +el('cycle').value,
+    split: +el('split').value / 100,
+    offset: +el('offset').value
+  };
+}
+
+function greenEW(col, time) {
+  const p = par();
+  const ph = ((time - col * p.offset) % p.cycle + p.cycle) % p.cycle;
+  return ph < p.cycle * p.split;
+}
+
+const corridors = [];
+D.ys.forEach((y, r) => {
+  corridors.push({ axis: 'h', dir: 1, r, y, start: -60, end: D.W + 120 });
+  corridors.push({ axis: 'h', dir: -1, r, y, start: -60, end: D.W + 120 });
+});
+D.xs.forEach((x, c) => {
+  corridors.push({ axis: 'v', dir: 1, c, x, start: -60, end: D.H + 120 });
+  corridors.push({ axis: 'v', dir: -1, c, x, start: -60, end: D.H + 120 });
+});
+
+function stopLinesFor(co) {
+  if (co.axis === 'h') {
+    return D.xs.map((x, c) => ({ pos: co.dir === 1 ? x - 9 : (D.W - x) - 9, col: c }));
+  }
+  return D.ys.map((y, r) => ({ pos: co.dir === 1 ? y - 9 : (D.H - y) - 9, col: null, row: r }));
+}
+corridors.forEach(co => { co.stops = stopLinesFor(co).sort((a, b) => a.pos - b.pos); });
+
+function isOpen(co, stop, time) {
+  if (co.axis === 'h') return greenEW(stop.col, time);
+  const p = par();
+  const col = co.dir === 1 ? 0 : 0;
+  return !greenEW(col, time);
+}
+
+function nextRedAhead(co, s, time) {
+  for (const st of co.stops) {
+    if (st.pos > s - 1) {
+      let open;
+      if (co.axis === 'h') open = greenEW(st.col, time);
+      else open = !greenEW(colOfVertical(co), time);
+      if (!open) return st.pos;
+    }
+  }
+  return Infinity;
+}
+
+function colOfVertical(co) {
+  return co.dir === 1 ? co.c : (D.xs.length - 1 - co.c);
+}
+
+function idm(v, dv, s) {
+  const A = winter ? P.wA : P.a;
+  const B = winter ? P.wB : P.b;
+  const S0 = winter ? P.wS0 : P.s0;
+  const V0 = winter ? P.wV0 : P.v0;
+  const star = S0 + Math.max(0, v * P.T + (v * dv) / (2 * Math.sqrt(A * B)));
+  const free = 1 - Math.pow(v / V0, 4);
+  const inter = s < 1e5 ? Math.pow(star / Math.max(s, 0.3), 2) : 0;
+  return A * (free - inter);
+}
+
+function spawn(dt) {
+  const p = par();
+  corridors.forEach((co, i) => {
+    const rate = (p.flow / 3600) * (co.axis === 'h' ? 1 : 0.55);
+    spawnAcc[i] = (spawnAcc[i] || 0) + rate * dt;
+    if (spawnAcc[i] >= 1) {
+      spawnAcc[i] -= 1;
+      const head = vehicles.filter(v => v.co === co).sort((a, b) => a.s - b.s)[0];
+      if (!head || head.s > co.start + 18) {
+        vehicles.push({ id: nextId++, co, s: co.start, v: (winter ? P.wV0 : P.v0) * 0.8 });
+      }
+    }
+  });
+}
+
+function step(dt) {
+  spawn(dt);
+  const byCo = new Map();
+  vehicles.forEach(v => {
+    if (!byCo.has(v.co)) byCo.set(v.co, []);
+    byCo.get(v.co).push(v);
+  });
+  byCo.forEach(list => list.sort((a, b) => b.s - a.s));
+
+  byCo.forEach((list, co) => {
+    for (let i = 0; i < list.length; i++) {
+      const me = list[i], lead = list[i - 1];
+      let s = Infinity, dv = 0;
+      if (lead) { s = lead.s - me.s - P.len; dv = me.v - lead.v; }
+      const red = nextRedAhead(co, me.s, t);
+      if (red < Infinity) {
+        const sr = red - me.s;
+        if (sr < s) { s = sr; dv = me.v; }
+      }
+      const acc = idm(me.v, dv, s);
+      me.v = Math.max(0, me.v + acc * dt);
+      me.s += me.v * dt;
+    }
+  });
+
+  vehicles = vehicles.filter(v => v.s < v.co.end);
+
+  const main = corridors.find(c => c.axis === 'h' && c.dir === 1 && c.r === 1);
+  vehicles.forEach(v => { if (v.co === main) trails.push({ id: v.id, t, s: v.s }); });
+  trails = trails.filter(p => p.t > t - 90);
+  t += dt;
+}
+
+function xyOf(v) {
+  const co = v.co, g = D.laneGap;
+  if (co.axis === 'h') {
+    const x = co.dir === 1 ? v.s : D.W - v.s;
+    return [x, co.y + (co.dir === 1 ? g : -g)];
+  }
+  const y = co.dir === 1 ? v.s : D.H - v.s;
+  return [co.x + (co.dir === 1 ? -g : g), y];
+}
+
+function drawNet() {
+  const w = net.width, h = net.height;
+  nc.clearRect(0, 0, w, h);
+  nc.save();
+  nc.translate(130 * SC, 12 * SC);
+  nc.scale(SC, SC);
+
+  nc.fillStyle = winter ? '#3c4348' : '#26292c';
+  D.ys.forEach(y => nc.fillRect(-60, y - 26, D.W + 180, 52));
+  D.xs.forEach(x => nc.fillRect(x - 22, -60, 44, D.H + 180));
+
+  if (winter) {
+    nc.fillStyle = '#dfe7ec';
+    D.ys.forEach(y => { nc.fillRect(-60, y - 26, D.W + 180, 6); nc.fillRect(-60, y + 20, D.W + 180, 6); });
+    D.xs.forEach(x => { nc.fillRect(x - 22, -60, 5, D.H + 180); nc.fillRect(x + 17, -60, 5, D.H + 180); });
+  }
+
+  nc.strokeStyle = 'rgba(255,255,255,.22)';
+  nc.lineWidth = 1.2; nc.setLineDash([14, 14]);
+  D.ys.forEach(y => { nc.beginPath(); nc.moveTo(-60, y); nc.lineTo(D.W + 120, y); nc.stroke(); });
+  D.xs.forEach(x => { nc.beginPath(); nc.moveTo(x, -60); nc.lineTo(x, D.H + 120); nc.stroke(); });
+  nc.setLineDash([]);
+
+  D.xs.forEach((x, c) => D.ys.forEach(y => {
+    const ew = greenEW(c, t);
+    nc.fillStyle = ew ? '#7fb648' : '#dd5a52';
+    nc.fillRect(x - 30, y - 3.5, 7, 7);
+    nc.fillRect(x + 23, y - 3.5, 7, 7);
+    nc.fillStyle = !ew ? '#7fb648' : '#dd5a52';
+    nc.fillRect(x - 3.5, y - 34, 7, 7);
+    nc.fillRect(x - 3.5, y + 27, 7, 7);
+  }));
+
+  vehicles.forEach(v => {
+    const [x, y] = xyOf(v);
+    const moving = v.v > 1.0;
+    nc.fillStyle = moving ? '#9be0c4' : '#f0a09a';
+    if (v.co.axis === 'h') nc.fillRect(x - 5, y - 3.4, 10, 6.8);
+    else nc.fillRect(x - 3.4, y - 5, 6.8, 10);
+  });
+
+  nc.fillStyle = 'rgba(255,255,255,.5)';
+  nc.font = '18px ui-monospace, monospace';
+  nc.fillText('N', -108, 30);
+  nc.strokeStyle = 'rgba(255,255,255,.35)'; nc.lineWidth = 1.5;
+  nc.beginPath(); nc.moveTo(-100, 46); nc.lineTo(-100, 92); nc.moveTo(-106, 56); nc.lineTo(-100, 44); nc.lineTo(-94, 56); nc.stroke();
+  nc.fillText('東西幹線', -122, D.ys[1] + 6);
+  nc.restore();
+}
+
+function drawXT() {
+  const w = xt.width, h = xt.height, pad = 34;
+  xc.clearRect(0, 0, w, h);
+  xc.fillStyle = '#26292c'; xc.fillRect(0, 0, w, h);
+
+  const t0 = Math.max(0, t - 90), t1 = t0 + 90;
+  const X = time => pad + ((time - t0) / 90) * (w - pad * 2);
+  const Y = s => pad + (s / (D.W + 60)) * (h - pad * 2);
+
+  D.xs.forEach((x, c) => {
+    const y = Y(x - 9);
+    for (let k = -2; k < 4; k++) {
+      const p = par();
+      const base = Math.floor((t0 - c * p.offset) / p.cycle) * p.cycle + c * p.offset;
+      const g0 = base + k * p.cycle, g1 = g0 + p.cycle * p.split;
+      if (g1 < t0 || g0 > t1) continue;
+      xc.fillStyle = 'rgba(127,182,72,.26)';
+      xc.fillRect(X(Math.max(g0, t0)), y - 9, X(Math.min(g1, t1)) - X(Math.max(g0, t0)), 18);
+    }
+    xc.strokeStyle = 'rgba(255,255,255,.16)'; xc.lineWidth = 1;
+    xc.beginPath(); xc.moveTo(pad, y); xc.lineTo(w - pad, y); xc.stroke();
+    xc.fillStyle = 'rgba(255,255,255,.42)';
+    xc.font = '15px ui-monospace, monospace';
+    xc.fillText('交差点 ' + (c + 1), 6, y + 5);
+  });
+
+  const groups = new Map();
+  trails.forEach(p => {
+    if (!groups.has(p.id)) groups.set(p.id, []);
+    groups.get(p.id).push(p);
+  });
+  xc.strokeStyle = '#7fc0e8'; xc.lineWidth = 1.4;
+  groups.forEach(pts => {
+    xc.beginPath();
+    pts.forEach((p, i) => {
+      const x = X(p.t), y = Y(p.s);
+      i ? xc.lineTo(x, y) : xc.moveTo(x, y);
+    });
+    xc.stroke();
+  });
+}
+
+function stats() {
+  const n = vehicles.length;
+  const mean = n ? vehicles.reduce((a, v) => a + v.v, 0) / n * 3.6 : 0;
+  const stopped = n ? vehicles.filter(v => v.v < 1.0).length / n * 100 : 0;
+  el('s-speed').textContent = mean.toFixed(1);
+  el('s-stop').textContent = stopped.toFixed(0);
+  el('s-count').textContent = n;
+  el('s-time').textContent = t.toFixed(0);
+}
+
+let last = performance.now();
+function loop(now) {
+  const real = Math.min((now - last) / 1000, 0.1);
+  last = now;
+  if (!paused) { for (let k = 0; k < 3; k++) step(real / 3 * 2); }
+  drawNet(); drawXT(); stats();
+  requestAnimationFrame(loop);
+}
+
+['flow', 'cycle', 'split', 'offset'].forEach(id => {
+  const s = el(id), out = el('v-' + id);
+  const sync = () => { out.textContent = s.value; };
+  s.addEventListener('input', sync); sync();
+});
+
+el('winter').addEventListener('click', e => {
+  winter = !winter;
+  e.currentTarget.setAttribute('aria-pressed', String(winter));
+  e.currentTarget.textContent = winter ? '冬季モード（適用中）' : '冬季モード';
+});
+el('pause').addEventListener('click', e => {
+  paused = !paused;
+  e.currentTarget.setAttribute('aria-pressed', String(paused));
+  e.currentTarget.textContent = paused ? '再開' : '一時停止';
+});
+el('reset').addEventListener('click', () => {
+  vehicles = []; trails = []; t = 0; spawnAcc = {};
+});
+el('tune').addEventListener('click', () => {
+  const v0 = winter ? P.wV0 : P.v0;
+  const best = Math.round(200 / v0);
+  el('offset').value = best;
+  el('v-offset').textContent = best;
+});
+
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

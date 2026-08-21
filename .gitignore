@@ -1,0 +1,21 @@
+# データ本体はコミットしない(取得スクリプトで再現する)
+data/raw/
+data/interim/
+data/processed/
+!data/**/.gitkeep
+
+# 生成物のうち大きいもの
+*.gpkg
+*.pmtiles
+*.parquet
+
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.DS_Store
+
+# ビューワは生成物(テンプレートのみコミットする)
+viewer/index.html
+viewer/network.geojson

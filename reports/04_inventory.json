@@ -1,0 +1,1031 @@
+{
+  "assign_tol_m": 35.0,
+  "n_links": 1034,
+  "n_assigned": 920,
+  "n_unassigned": 114,
+  "unassigned_by_kind": {
+    "斜行・非格子": 66,
+    "格子外": 48
+  },
+  "unassigned_len_km": 6.62,
+  "n_streets": 52,
+  "n_through": 35,
+  "n_through_lattice": 25,
+  "n_through_backstreet": 10,
+  "max_assign_err_m": 43.7,
+  "streets": [
+    {
+      "axis": "EW",
+      "street": "南8条通〜南7条通の裏通り",
+      "kind": "裏通り",
+      "n_links": 2,
+      "len_sum_m": 148.2,
+      "coverage": 0.1,
+      "through": false,
+      "cross_mean_m": -104833.3,
+      "cross_spread_m": 5.8,
+      "assign_err_max_m": 24.6,
+      "widths": [
+        "2"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "南7条通",
+      "kind": "格子街路",
+      "n_links": 21,
+      "len_sum_m": 1599.9,
+      "coverage": 1.05,
+      "through": true,
+      "cross_mean_m": -104783.2,
+      "cross_spread_m": 40.4,
+      "assign_err_max_m": 29.0,
+      "widths": [
+        "2",
+        "3",
+        "4"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "南7条通〜南6条通の裏通り",
+      "kind": "裏通り",
+      "n_links": 10,
+      "len_sum_m": 1305.5,
+      "coverage": 0.86,
+      "through": true,
+      "cross_mean_m": -104719.5,
+      "cross_spread_m": 13.6,
+      "assign_err_max_m": 9.3,
+      "widths": [
+        "2"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "南6条通",
+      "kind": "格子街路",
+      "n_links": 20,
+      "len_sum_m": 1647.9,
+      "coverage": 1.08,
+      "through": true,
+      "cross_mean_m": -104651.7,
+      "cross_spread_m": 26.6,
+      "assign_err_max_m": 29.6,
+      "widths": [
+        "1",
+        "4"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "南6条通〜南5条通の裏通り",
+      "kind": "裏通り",
+      "n_links": 12,
+      "len_sum_m": 1302.2,
+      "coverage": 0.86,
+      "through": true,
+      "cross_mean_m": -104583.8,
+      "cross_spread_m": 28.1,
+      "assign_err_max_m": 31.5,
+      "widths": [
+        "2",
+        "3"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "南5条通",
+      "kind": "格子街路",
+      "n_links": 23,
+      "len_sum_m": 1890.4,
+      "coverage": 1.24,
+      "through": true,
+      "cross_mean_m": -104525.8,
+      "cross_spread_m": 40.1,
+      "assign_err_max_m": 28.9,
+      "widths": [
+        "2",
+        "4"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "南5条通〜南4条通の裏通り",
+      "kind": "裏通り",
+      "n_links": 13,
+      "len_sum_m": 1727.2,
+      "coverage": 1.14,
+      "through": true,
+      "cross_mean_m": -104470.2,
+      "cross_spread_m": 47.6,
+      "assign_err_max_m": 31.1,
+      "widths": [
+        "1",
+        "2"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "南4条通",
+      "kind": "格子街路",
+      "n_links": 21,
+      "len_sum_m": 2019.0,
+      "coverage": 1.33,
+      "through": true,
+      "cross_mean_m": -104388.6,
+      "cross_spread_m": 64.3,
+      "assign_err_max_m": 32.3,
+      "widths": [
+        "1",
+        "2",
+        "5"
+      ],
+      "cats": [
+        "1",
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "南4条通〜南3条通の裏通り",
+      "kind": "裏通り",
+      "n_links": 7,
+      "len_sum_m": 956.7,
+      "coverage": 0.63,
+      "through": true,
+      "cross_mean_m": -104334.9,
+      "cross_spread_m": 32.3,
+      "assign_err_max_m": 25.8,
+      "widths": [
+        "1",
+        "2",
+        "3"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "南3条通",
+      "kind": "格子街路",
+      "n_links": 17,
+      "len_sum_m": 1658.4,
+      "coverage": 1.09,
+      "through": true,
+      "cross_mean_m": -104266.2,
+      "cross_spread_m": 9.2,
+      "assign_err_max_m": 8.3,
+      "widths": [
+        "4",
+        "5"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "南3条通〜南2条通の裏通り",
+      "kind": "裏通り",
+      "n_links": 15,
+      "len_sum_m": 1480.8,
+      "coverage": 0.97,
+      "through": true,
+      "cross_mean_m": -104201.0,
+      "cross_spread_m": 27.9,
+      "assign_err_max_m": 27.2,
+      "widths": [
+        "1",
+        "2",
+        "3"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "南2条通",
+      "kind": "格子街路",
+      "n_links": 17,
+      "len_sum_m": 1658.5,
+      "coverage": 1.09,
+      "through": true,
+      "cross_mean_m": -104136.5,
+      "cross_spread_m": 10.1,
+      "assign_err_max_m": 8.0,
+      "widths": [
+        "4"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "南2条通〜南1条通の裏通り",
+      "kind": "裏通り",
+      "n_links": 10,
+      "len_sum_m": 1296.5,
+      "coverage": 0.85,
+      "through": true,
+      "cross_mean_m": -104073.5,
+      "cross_spread_m": 5.4,
+      "assign_err_max_m": 3.7,
+      "widths": [
+        "2",
+        "3"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "南1条通",
+      "kind": "格子街路",
+      "n_links": 17,
+      "len_sum_m": 1658.2,
+      "coverage": 1.09,
+      "through": true,
+      "cross_mean_m": -104006.8,
+      "cross_spread_m": 9.8,
+      "assign_err_max_m": 7.5,
+      "widths": [
+        "5"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "南1条通〜大通の裏通り",
+      "kind": "裏通り",
+      "n_links": 10,
+      "len_sum_m": 1296.1,
+      "coverage": 0.85,
+      "through": true,
+      "cross_mean_m": -103944.0,
+      "cross_spread_m": 6.9,
+      "assign_err_max_m": 25.1,
+      "widths": [
+        "2",
+        "3"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "大通",
+      "kind": "格子街路",
+      "n_links": 78,
+      "len_sum_m": 2961.5,
+      "coverage": 1.95,
+      "through": true,
+      "cross_mean_m": -103836.7,
+      "cross_spread_m": 50.1,
+      "assign_err_max_m": 29.8,
+      "widths": [
+        "1",
+        "2",
+        "5"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "大通〜北1条通の裏通り",
+      "kind": "裏通り",
+      "n_links": 5,
+      "len_sum_m": 448.8,
+      "coverage": 0.3,
+      "through": false,
+      "cross_mean_m": -103746.1,
+      "cross_spread_m": 30.0,
+      "assign_err_max_m": 19.9,
+      "widths": [
+        "2",
+        "3"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "北1条通",
+      "kind": "格子街路",
+      "n_links": 18,
+      "len_sum_m": 1657.1,
+      "coverage": 1.09,
+      "through": true,
+      "cross_mean_m": -103662.5,
+      "cross_spread_m": 10.2,
+      "assign_err_max_m": 7.7,
+      "widths": [
+        "5"
+      ],
+      "cats": [
+        "1",
+        "2"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "北1条通〜北2条通の裏通り",
+      "kind": "裏通り",
+      "n_links": 5,
+      "len_sum_m": 447.9,
+      "coverage": 0.29,
+      "through": false,
+      "cross_mean_m": -103597.1,
+      "cross_spread_m": 9.0,
+      "assign_err_max_m": 6.2,
+      "widths": [
+        "1",
+        "2"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "北2条通",
+      "kind": "格子街路",
+      "n_links": 22,
+      "len_sum_m": 1762.3,
+      "coverage": 1.16,
+      "through": true,
+      "cross_mean_m": -103532.0,
+      "cross_spread_m": 20.9,
+      "assign_err_max_m": 12.7,
+      "widths": [
+        "1",
+        "4"
+      ],
+      "cats": [
+        "1",
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "北2条通〜北3条通の裏通り",
+      "kind": "裏通り",
+      "n_links": 9,
+      "len_sum_m": 407.2,
+      "coverage": 0.27,
+      "through": false,
+      "cross_mean_m": -103473.0,
+      "cross_spread_m": 42.5,
+      "assign_err_max_m": 25.0,
+      "widths": [
+        "1",
+        "2"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "北3条通",
+      "kind": "格子街路",
+      "n_links": 28,
+      "len_sum_m": 1796.8,
+      "coverage": 1.18,
+      "through": true,
+      "cross_mean_m": -103401.8,
+      "cross_spread_m": 52.2,
+      "assign_err_max_m": 26.6,
+      "widths": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "cats": [
+        "1",
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "北3条通〜北4条通の裏通り",
+      "kind": "裏通り",
+      "n_links": 16,
+      "len_sum_m": 702.7,
+      "coverage": 0.46,
+      "through": false,
+      "cross_mean_m": -103337.8,
+      "cross_spread_m": 53.6,
+      "assign_err_max_m": 29.0,
+      "widths": [
+        "1",
+        "2"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "北4条通",
+      "kind": "格子街路",
+      "n_links": 25,
+      "len_sum_m": 1565.0,
+      "coverage": 1.03,
+      "through": true,
+      "cross_mean_m": -103271.5,
+      "cross_spread_m": 43.0,
+      "assign_err_max_m": 31.8,
+      "widths": [
+        "1",
+        "2",
+        "5"
+      ],
+      "cats": [
+        "1",
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "北4条通〜北5条通の裏通り",
+      "kind": "裏通り",
+      "n_links": 8,
+      "len_sum_m": 855.2,
+      "coverage": 0.56,
+      "through": false,
+      "cross_mean_m": -103202.7,
+      "cross_spread_m": 30.1,
+      "assign_err_max_m": 18.8,
+      "widths": [
+        "1",
+        "2"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "北5条通",
+      "kind": "格子街路",
+      "n_links": 16,
+      "len_sum_m": 1656.4,
+      "coverage": 1.09,
+      "through": true,
+      "cross_mean_m": -103130.8,
+      "cross_spread_m": 8.5,
+      "assign_err_max_m": 13.1,
+      "widths": [
+        "4",
+        "5"
+      ],
+      "cats": [
+        "1",
+        "3"
+      ]
+    },
+    {
+      "axis": "EW",
+      "street": "北5条通〜北6条通の裏通り",
+      "kind": "裏通り",
+      "n_links": 1,
+      "len_sum_m": 64.2,
+      "coverage": 0.04,
+      "through": false,
+      "cross_mean_m": -103101.9,
+      "cross_spread_m": 0.0,
+      "assign_err_max_m": 26.9,
+      "widths": [
+        "2"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西12丁目通〜西11丁目通の裏通り",
+      "kind": "裏通り",
+      "n_links": 4,
+      "len_sum_m": 131.8,
+      "coverage": 0.08,
+      "through": false,
+      "cross_mean_m": 88863.5,
+      "cross_spread_m": 9.3,
+      "assign_err_max_m": 32.1,
+      "widths": [
+        "5"
+      ],
+      "cats": [
+        "1"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西11丁目通",
+      "kind": "格子街路",
+      "n_links": 34,
+      "len_sum_m": 1950.9,
+      "coverage": 1.12,
+      "through": true,
+      "cross_mean_m": 88894.7,
+      "cross_spread_m": 63.7,
+      "assign_err_max_m": 32.2,
+      "widths": [
+        "1",
+        "5"
+      ],
+      "cats": [
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西11丁目通〜西10丁目通の裏通り",
+      "kind": "裏通り",
+      "n_links": 35,
+      "len_sum_m": 1219.3,
+      "coverage": 0.7,
+      "through": true,
+      "cross_mean_m": 88967.5,
+      "cross_spread_m": 62.1,
+      "assign_err_max_m": 32.2,
+      "widths": [
+        "1",
+        "2"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西10丁目通",
+      "kind": "格子街路",
+      "n_links": 24,
+      "len_sum_m": 1328.6,
+      "coverage": 0.76,
+      "through": true,
+      "cross_mean_m": 89032.0,
+      "cross_spread_m": 49.3,
+      "assign_err_max_m": 31.3,
+      "widths": [
+        "1",
+        "2",
+        "3"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西10丁目通〜西9丁目通の裏通り",
+      "kind": "裏通り",
+      "n_links": 7,
+      "len_sum_m": 329.0,
+      "coverage": 0.19,
+      "through": false,
+      "cross_mean_m": 89096.8,
+      "cross_spread_m": 50.5,
+      "assign_err_max_m": 28.7,
+      "widths": [
+        "1",
+        "2",
+        "3"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西9丁目通",
+      "kind": "格子街路",
+      "n_links": 37,
+      "len_sum_m": 1639.6,
+      "coverage": 0.94,
+      "through": true,
+      "cross_mean_m": 89164.7,
+      "cross_spread_m": 50.0,
+      "assign_err_max_m": 32.3,
+      "widths": [
+        "1",
+        "3",
+        "4"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西9丁目通〜西8丁目通の裏通り",
+      "kind": "裏通り",
+      "n_links": 10,
+      "len_sum_m": 521.9,
+      "coverage": 0.3,
+      "through": false,
+      "cross_mean_m": 89222.6,
+      "cross_spread_m": 50.3,
+      "assign_err_max_m": 28.0,
+      "widths": [
+        "1",
+        "2"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西8丁目通",
+      "kind": "格子街路",
+      "n_links": 32,
+      "len_sum_m": 1903.3,
+      "coverage": 1.09,
+      "through": true,
+      "cross_mean_m": 89292.9,
+      "cross_spread_m": 27.7,
+      "assign_err_max_m": 24.7,
+      "widths": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西8丁目通〜西7丁目通の裏通り",
+      "kind": "裏通り",
+      "n_links": 8,
+      "len_sum_m": 315.1,
+      "coverage": 0.18,
+      "through": false,
+      "cross_mean_m": 89358.9,
+      "cross_spread_m": 40.6,
+      "assign_err_max_m": 22.1,
+      "widths": [
+        "1",
+        "2"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西7丁目通",
+      "kind": "格子街路",
+      "n_links": 28,
+      "len_sum_m": 1936.9,
+      "coverage": 1.11,
+      "through": true,
+      "cross_mean_m": 89418.4,
+      "cross_spread_m": 11.2,
+      "assign_err_max_m": 8.5,
+      "widths": [
+        "3",
+        "4"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西7丁目通〜西6丁目通の裏通り",
+      "kind": "裏通り",
+      "n_links": 5,
+      "len_sum_m": 191.5,
+      "coverage": 0.11,
+      "through": false,
+      "cross_mean_m": 89490.2,
+      "cross_spread_m": 38.7,
+      "assign_err_max_m": 21.7,
+      "widths": [
+        "2",
+        "5"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西6丁目通",
+      "kind": "格子街路",
+      "n_links": 34,
+      "len_sum_m": 1988.5,
+      "coverage": 1.14,
+      "through": true,
+      "cross_mean_m": 89550.0,
+      "cross_spread_m": 60.1,
+      "assign_err_max_m": 30.4,
+      "widths": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西6丁目通〜西5丁目通の裏通り",
+      "kind": "裏通り",
+      "n_links": 3,
+      "len_sum_m": 100.4,
+      "coverage": 0.06,
+      "through": false,
+      "cross_mean_m": 89603.1,
+      "cross_spread_m": 52.3,
+      "assign_err_max_m": 31.5,
+      "widths": [
+        "1",
+        "2"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西5丁目通",
+      "kind": "格子街路",
+      "n_links": 30,
+      "len_sum_m": 1916.3,
+      "coverage": 1.1,
+      "through": true,
+      "cross_mean_m": 89680.1,
+      "cross_spread_m": 29.9,
+      "assign_err_max_m": 21.5,
+      "widths": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西5丁目通〜西4丁目通の裏通り",
+      "kind": "裏通り",
+      "n_links": 4,
+      "len_sum_m": 140.6,
+      "coverage": 0.08,
+      "through": false,
+      "cross_mean_m": 89735.1,
+      "cross_spread_m": 32.5,
+      "assign_err_max_m": 21.3,
+      "widths": [
+        "1",
+        "2"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西4丁目通",
+      "kind": "格子街路",
+      "n_links": 27,
+      "len_sum_m": 1719.5,
+      "coverage": 0.99,
+      "through": true,
+      "cross_mean_m": 89808.0,
+      "cross_spread_m": 10.3,
+      "assign_err_max_m": 7.4,
+      "widths": [
+        "5"
+      ],
+      "cats": [
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西4丁目通〜西3丁目通の裏通り",
+      "kind": "裏通り",
+      "n_links": 8,
+      "len_sum_m": 702.3,
+      "coverage": 0.4,
+      "through": false,
+      "cross_mean_m": 89873.7,
+      "cross_spread_m": 31.8,
+      "assign_err_max_m": 16.1,
+      "widths": [
+        "1",
+        "2"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西3丁目通",
+      "kind": "格子街路",
+      "n_links": 31,
+      "len_sum_m": 1864.4,
+      "coverage": 1.07,
+      "through": true,
+      "cross_mean_m": 89937.1,
+      "cross_spread_m": 11.1,
+      "assign_err_max_m": 9.2,
+      "widths": [
+        "3",
+        "4"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西3丁目通〜西2丁目通の裏通り",
+      "kind": "裏通り",
+      "n_links": 7,
+      "len_sum_m": 582.7,
+      "coverage": 0.33,
+      "through": false,
+      "cross_mean_m": 90000.4,
+      "cross_spread_m": 15.7,
+      "assign_err_max_m": 8.5,
+      "widths": [
+        "2",
+        "3",
+        "5"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西2丁目通",
+      "kind": "格子街路",
+      "n_links": 25,
+      "len_sum_m": 1876.8,
+      "coverage": 1.08,
+      "through": true,
+      "cross_mean_m": 90069.8,
+      "cross_spread_m": 10.3,
+      "assign_err_max_m": 7.0,
+      "widths": [
+        "5"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西2丁目通〜西1丁目通の裏通り",
+      "kind": "裏通り",
+      "n_links": 11,
+      "len_sum_m": 976.6,
+      "coverage": 0.56,
+      "through": false,
+      "cross_mean_m": 90130.5,
+      "cross_spread_m": 28.9,
+      "assign_err_max_m": 25.1,
+      "widths": [
+        "1",
+        "2"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西1丁目通",
+      "kind": "格子街路",
+      "n_links": 24,
+      "len_sum_m": 4112.2,
+      "coverage": 2.36,
+      "through": true,
+      "cross_mean_m": 90204.1,
+      "cross_spread_m": 39.0,
+      "assign_err_max_m": 31.8,
+      "widths": [
+        "2",
+        "3",
+        "4"
+      ],
+      "cats": [
+        "1",
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "西1丁目通〜東1丁目通の裏通り",
+      "kind": "裏通り",
+      "n_links": 22,
+      "len_sum_m": 2074.6,
+      "coverage": 1.19,
+      "through": true,
+      "cross_mean_m": 90242.1,
+      "cross_spread_m": 56.2,
+      "assign_err_max_m": 31.9,
+      "widths": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "cats": [
+        "1",
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "東1丁目通",
+      "kind": "格子街路",
+      "n_links": 12,
+      "len_sum_m": 1342.0,
+      "coverage": 0.77,
+      "through": true,
+      "cross_mean_m": 90308.0,
+      "cross_spread_m": 59.7,
+      "assign_err_max_m": 31.3,
+      "widths": [
+        "2",
+        "4"
+      ],
+      "cats": [
+        "3"
+      ]
+    },
+    {
+      "axis": "NS",
+      "street": "東1丁目通〜東2丁目通の裏通り",
+      "kind": "裏通り",
+      "n_links": 12,
+      "len_sum_m": 1524.8,
+      "coverage": 0.88,
+      "through": true,
+      "cross_mean_m": 90366.9,
+      "cross_spread_m": 7.9,
+      "assign_err_max_m": 32.3,
+      "widths": [
+        "4"
+      ],
+      "cats": [
+        "3"
+      ]
+    }
+  ]
+}

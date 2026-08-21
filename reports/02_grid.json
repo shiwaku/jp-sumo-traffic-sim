@@ -1,0 +1,983 @@
+{
+  "grid_bearing_deg_from_x_axis": 10.906,
+  "grid_bearing_deg_estimated": 10.779,
+  "grid_bearing_residual_deg": -0.127,
+  "note": "EPSG:6679 の X 軸(東)からの反時計回り角。この角度だけ逆回転するとグリッドが軸に整列する。",
+  "n_links": 1034,
+  "axis_counts": {
+    "EW": 522,
+    "NS": 512
+  },
+  "off_grid": {
+    "n_over_10deg": 139,
+    "n_over_20deg": 102,
+    "total_len_over_20deg_m": 6192.0
+  },
+  "streets": {
+    "EW": {
+      "span_m": 1520.0,
+      "n_streets": 28,
+      "n_through": 19,
+      "n_divided": 10,
+      "spacing_all_m": {
+        "n": 28,
+        "median": 65.1,
+        "values": [
+          50.1,
+          63.7,
+          67.8,
+          69.8,
+          57.6,
+          64.9,
+          80.3,
+          48.6,
+          64.3,
+          63.5,
+          66.2,
+          63.0,
+          66.7,
+          62.8,
+          108.2,
+          79.0,
+          26.8,
+          67.5,
+          65.4,
+          65.1,
+          58.7,
+          70.2,
+          105.9,
+          74.3,
+          26.9,
+          65.2,
+          56.1
+        ]
+      },
+      "spacing_through_m": {
+        "n": 19,
+        "median": 68.8,
+        "values": [
+          63.7,
+          67.8,
+          69.8,
+          57.6,
+          64.9,
+          80.3,
+          112.9,
+          63.5,
+          66.2,
+          63.0,
+          66.7,
+          62.8,
+          108.2,
+          173.3,
+          130.5,
+          128.9,
+          105.9,
+          166.4
+        ]
+      },
+      "table": [
+        {
+          "street_id": "EW00",
+          "n_links": 2,
+          "cross_m": -104833.3,
+          "spread_m": 5.8,
+          "len_sum": 148.2,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "2"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "EW01",
+          "n_links": 21,
+          "cross_m": -104783.2,
+          "spread_m": 40.4,
+          "len_sum": 1599.9,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "2",
+            "3",
+            "4"
+          ],
+          "through": true,
+          "divided": true
+        },
+        {
+          "street_id": "EW02",
+          "n_links": 10,
+          "cross_m": -104719.5,
+          "spread_m": 13.6,
+          "len_sum": 1305.5,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "2"
+          ],
+          "through": true,
+          "divided": false
+        },
+        {
+          "street_id": "EW03",
+          "n_links": 20,
+          "cross_m": -104651.7,
+          "spread_m": 26.6,
+          "len_sum": 1647.9,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1",
+            "4"
+          ],
+          "through": true,
+          "divided": true
+        },
+        {
+          "street_id": "EW04",
+          "n_links": 13,
+          "cross_m": -104581.9,
+          "spread_m": 32.7,
+          "len_sum": 1418.1,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "2",
+            "3"
+          ],
+          "through": true,
+          "divided": true
+        },
+        {
+          "street_id": "EW05",
+          "n_links": 22,
+          "cross_m": -104524.3,
+          "spread_m": 17.0,
+          "len_sum": 1774.6,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "2",
+            "4"
+          ],
+          "through": true,
+          "divided": true
+        },
+        {
+          "street_id": "EW06",
+          "n_links": 17,
+          "cross_m": -104459.4,
+          "spread_m": 76.8,
+          "len_sum": 2015.2,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2"
+          ],
+          "through": true,
+          "divided": true
+        },
+        {
+          "street_id": "EW07",
+          "n_links": 18,
+          "cross_m": -104379.1,
+          "spread_m": 25.1,
+          "len_sum": 1906.2,
+          "cats": [
+            "1",
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2",
+            "5"
+          ],
+          "through": true,
+          "divided": true
+        },
+        {
+          "street_id": "EW08",
+          "n_links": 6,
+          "cross_m": -104330.5,
+          "spread_m": 4.9,
+          "len_sum": 781.5,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "2",
+            "3"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "EW09",
+          "n_links": 17,
+          "cross_m": -104266.2,
+          "spread_m": 9.2,
+          "len_sum": 1658.4,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "4",
+            "5"
+          ],
+          "through": true,
+          "divided": false
+        },
+        {
+          "street_id": "EW10",
+          "n_links": 14,
+          "cross_m": -104202.7,
+          "spread_m": 6.9,
+          "len_sum": 1413.9,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2",
+            "3"
+          ],
+          "through": true,
+          "divided": false
+        },
+        {
+          "street_id": "EW11",
+          "n_links": 17,
+          "cross_m": -104136.5,
+          "spread_m": 10.1,
+          "len_sum": 1658.5,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "4"
+          ],
+          "through": true,
+          "divided": false
+        },
+        {
+          "street_id": "EW12",
+          "n_links": 10,
+          "cross_m": -104073.5,
+          "spread_m": 5.4,
+          "len_sum": 1296.5,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "2",
+            "3"
+          ],
+          "through": true,
+          "divided": false
+        },
+        {
+          "street_id": "EW13",
+          "n_links": 17,
+          "cross_m": -104006.8,
+          "spread_m": 9.8,
+          "len_sum": 1658.2,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "5"
+          ],
+          "through": true,
+          "divided": false
+        },
+        {
+          "street_id": "EW14",
+          "n_links": 10,
+          "cross_m": -103944.0,
+          "spread_m": 6.9,
+          "len_sum": 1296.1,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "2",
+            "3"
+          ],
+          "through": true,
+          "divided": false
+        },
+        {
+          "street_id": "EW15",
+          "n_links": 124,
+          "cross_m": -103835.8,
+          "spread_m": 92.5,
+          "len_sum": 5819.0,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2",
+            "3",
+            "5"
+          ],
+          "through": true,
+          "divided": true
+        },
+        {
+          "street_id": "EW16",
+          "n_links": 3,
+          "cross_m": -103756.8,
+          "spread_m": 1.2,
+          "len_sum": 190.2,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "3"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "EW17",
+          "n_links": 2,
+          "cross_m": -103730.0,
+          "spread_m": 4.9,
+          "len_sum": 258.6,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "2"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "EW18",
+          "n_links": 18,
+          "cross_m": -103662.5,
+          "spread_m": 10.2,
+          "len_sum": 1657.1,
+          "cats": [
+            "1",
+            "2"
+          ],
+          "widths": [
+            "5"
+          ],
+          "through": true,
+          "divided": false
+        },
+        {
+          "street_id": "EW19",
+          "n_links": 5,
+          "cross_m": -103597.1,
+          "spread_m": 9.0,
+          "len_sum": 447.9,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "EW20",
+          "n_links": 22,
+          "cross_m": -103532.0,
+          "spread_m": 20.9,
+          "len_sum": 1762.3,
+          "cats": [
+            "1",
+            "3"
+          ],
+          "widths": [
+            "1",
+            "4"
+          ],
+          "through": true,
+          "divided": true
+        },
+        {
+          "street_id": "EW21",
+          "n_links": 9,
+          "cross_m": -103473.3,
+          "spread_m": 42.5,
+          "len_sum": 407.2,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "EW22",
+          "n_links": 23,
+          "cross_m": -103403.1,
+          "spread_m": 29.0,
+          "len_sum": 1416.2,
+          "cats": [
+            "1",
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "through": true,
+          "divided": true
+        },
+        {
+          "street_id": "EW23",
+          "n_links": 36,
+          "cross_m": -103297.2,
+          "spread_m": 105.2,
+          "len_sum": 2137.8,
+          "cats": [
+            "1",
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2",
+            "5"
+          ],
+          "through": true,
+          "divided": true
+        },
+        {
+          "street_id": "EW24",
+          "n_links": 2,
+          "cross_m": -103222.9,
+          "spread_m": 1.8,
+          "len_sum": 86.4,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "EW25",
+          "n_links": 6,
+          "cross_m": -103196.0,
+          "spread_m": 6.4,
+          "len_sum": 768.9,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "2"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "EW26",
+          "n_links": 16,
+          "cross_m": -103130.8,
+          "spread_m": 8.5,
+          "len_sum": 1656.4,
+          "cats": [
+            "1",
+            "3"
+          ],
+          "widths": [
+            "4",
+            "5"
+          ],
+          "through": true,
+          "divided": false
+        },
+        {
+          "street_id": "EW27",
+          "n_links": 1,
+          "cross_m": -103074.7,
+          "spread_m": 0.0,
+          "len_sum": 143.3,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "2"
+          ],
+          "through": false,
+          "divided": false
+        }
+      ]
+    },
+    "NS": {
+      "span_m": 1740.0,
+      "n_streets": 24,
+      "n_through": 13,
+      "n_divided": 7,
+      "spacing_all_m": {
+        "n": 24,
+        "median": 62.7,
+        "values": [
+          107.5,
+          113.7,
+          56.6,
+          55.1,
+          27.0,
+          45.0,
+          44.2,
+          27.7,
+          54.3,
+          124.4,
+          93.0,
+          44.3,
+          48.0,
+          28.1,
+          51.8,
+          66.4,
+          62.7,
+          63.5,
+          69.2,
+          62.7,
+          87.7,
+          82.8,
+          63.4
+        ]
+      },
+      "spacing_through_m": {
+        "n": 13,
+        "median": 127.5,
+        "values": [
+          107.5,
+          170.3,
+          127.1,
+          126.2,
+          124.4,
+          137.3,
+          127.9,
+          129.1,
+          132.7,
+          150.4,
+          82.8,
+          63.4
+        ]
+      },
+      "table": [
+        {
+          "street_id": "NS00",
+          "n_links": 34,
+          "cross_m": 88887.3,
+          "spread_m": 43.5,
+          "len_sum": 1576.4,
+          "cats": [
+            "1",
+            "2"
+          ],
+          "widths": [
+            "5"
+          ],
+          "through": true,
+          "divided": true
+        },
+        {
+          "street_id": "NS01",
+          "n_links": 57,
+          "cross_m": 88994.8,
+          "spread_m": 144.5,
+          "len_sum": 2345.0,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2",
+            "3"
+          ],
+          "through": true,
+          "divided": true
+        },
+        {
+          "street_id": "NS02",
+          "n_links": 5,
+          "cross_m": 89108.5,
+          "spread_m": 19.2,
+          "len_sum": 223.1,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2",
+            "3"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "NS03",
+          "n_links": 36,
+          "cross_m": 89165.1,
+          "spread_m": 50.0,
+          "len_sum": 1614.4,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1",
+            "3",
+            "4"
+          ],
+          "through": true,
+          "divided": true
+        },
+        {
+          "street_id": "NS04",
+          "n_links": 3,
+          "cross_m": 89220.2,
+          "spread_m": 12.4,
+          "len_sum": 118.0,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "NS05",
+          "n_links": 1,
+          "cross_m": 89247.2,
+          "spread_m": 0.0,
+          "len_sum": 39.3,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "NS06",
+          "n_links": 31,
+          "cross_m": 89292.2,
+          "spread_m": 27.7,
+          "len_sum": 1868.0,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "through": true,
+          "divided": true
+        },
+        {
+          "street_id": "NS07",
+          "n_links": 1,
+          "cross_m": 89336.4,
+          "spread_m": 0.0,
+          "len_sum": 37.1,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "2"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "NS08",
+          "n_links": 5,
+          "cross_m": 89364.1,
+          "spread_m": 18.2,
+          "len_sum": 120.4,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "NS09",
+          "n_links": 28,
+          "cross_m": 89418.4,
+          "spread_m": 11.2,
+          "len_sum": 1936.9,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "3",
+            "4"
+          ],
+          "through": true,
+          "divided": false
+        },
+        {
+          "street_id": "NS10",
+          "n_links": 42,
+          "cross_m": 89542.8,
+          "spread_m": 126.6,
+          "len_sum": 2344.7,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "through": true,
+          "divided": true
+        },
+        {
+          "street_id": "NS11",
+          "n_links": 1,
+          "cross_m": 89635.8,
+          "spread_m": 0.0,
+          "len_sum": 36.9,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "2"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "NS12",
+          "n_links": 30,
+          "cross_m": 89680.1,
+          "spread_m": 29.9,
+          "len_sum": 1916.3,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "through": true,
+          "divided": true
+        },
+        {
+          "street_id": "NS13",
+          "n_links": 3,
+          "cross_m": 89728.1,
+          "spread_m": 6.6,
+          "len_sum": 98.9,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "NS14",
+          "n_links": 1,
+          "cross_m": 89756.2,
+          "spread_m": 0.0,
+          "len_sum": 41.7,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "2"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "NS15",
+          "n_links": 27,
+          "cross_m": 89808.0,
+          "spread_m": 10.3,
+          "len_sum": 1719.5,
+          "cats": [
+            "1",
+            "2",
+            "3"
+          ],
+          "widths": [
+            "5"
+          ],
+          "through": true,
+          "divided": false
+        },
+        {
+          "street_id": "NS16",
+          "n_links": 6,
+          "cross_m": 89874.4,
+          "spread_m": 31.8,
+          "len_sum": 419.6,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "NS17",
+          "n_links": 31,
+          "cross_m": 89937.1,
+          "spread_m": 10.8,
+          "len_sum": 1864.4,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "3",
+            "4"
+          ],
+          "through": true,
+          "divided": false
+        },
+        {
+          "street_id": "NS18",
+          "n_links": 6,
+          "cross_m": 90000.6,
+          "spread_m": 15.7,
+          "len_sum": 479.0,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "2",
+            "5"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "NS19",
+          "n_links": 25,
+          "cross_m": 90069.8,
+          "spread_m": 10.3,
+          "len_sum": 1876.8,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "5"
+          ],
+          "through": true,
+          "divided": false
+        },
+        {
+          "street_id": "NS20",
+          "n_links": 10,
+          "cross_m": 90132.5,
+          "spread_m": 24.1,
+          "len_sum": 949.8,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2"
+          ],
+          "through": false,
+          "divided": false
+        },
+        {
+          "street_id": "NS21",
+          "n_links": 44,
+          "cross_m": 90220.2,
+          "spread_m": 58.2,
+          "len_sum": 5964.8,
+          "cats": [
+            "1",
+            "3"
+          ],
+          "widths": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "through": true,
+          "divided": true
+        },
+        {
+          "street_id": "NS22",
+          "n_links": 11,
+          "cross_m": 90303.0,
+          "spread_m": 3.6,
+          "len_sum": 1238.6,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "2"
+          ],
+          "through": true,
+          "divided": false
+        },
+        {
+          "street_id": "NS23",
+          "n_links": 13,
+          "cross_m": 90366.4,
+          "spread_m": 9.3,
+          "len_sum": 1628.2,
+          "cats": [
+            "3"
+          ],
+          "widths": [
+            "4"
+          ],
+          "through": true,
+          "divided": false
+        }
+      ]
+    }
+  }
+}

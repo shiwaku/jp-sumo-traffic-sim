@@ -1,0 +1,43 @@
+.PHONY: help sync fetch clip probe grid names inventory viewer phase0 lint test clean open-viewer
+
+help:
+	@grep -E '^[a-z0-9-]+:.*?##' $(MAKEFILE_LIST) | sed 's/:.*##/\t/'
+
+sync:  ## 依存を同期
+	uv sync
+
+fetch:  ## 国土数値情報 N13 を取得(メッシュ 6441/6440)
+	uv run python scripts/fetch_ksj.py
+
+clip:  ## 対象区域 + バッファでクリップし EPSG:6679 へ投影
+	uv run python scripts/00_clip_ksj.py
+
+probe:  ## Phase 0 予備調査
+	uv run python scripts/01_probe_network.py
+
+grid:  ## グリッド主軸の推定と検算
+	uv run python scripts/02_grid_frame.py
+
+names:  ## 通し街路の命名と OSM 照合
+	uv run python scripts/03_name_streets.py
+
+inventory:  ## 格子への直接割り当てで街路インベントリを作る
+	uv run python scripts/04_street_inventory.py
+
+viewer:  ## ブラウザ確認用ビューワを書き出す
+	uv run python scripts/05_export_viewer.py
+
+open-viewer: viewer  ## ビューワを開く
+	open viewer/index.html
+
+phase0: fetch clip probe grid names inventory viewer  ## Phase 0 を通しで実行
+
+lint:
+	uv run ruff check src scripts
+	uv run ruff format --check src scripts
+
+test:
+	uv run pytest -q
+
+clean:  ## 中間データを削除(生データは残す)
+	rm -rf data/interim/* data/processed/*

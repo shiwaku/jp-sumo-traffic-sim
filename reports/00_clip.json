@@ -1,0 +1,39 @@
+{
+  "source_crs": {
+    "6441": "EPSG:6668",
+    "6440": "EPSG:6668"
+  },
+  "n_features_source": 345612,
+  "n_features_clipped": 2376,
+  "n_features_in_cordon": 1034,
+  "total_length_km": 176.94,
+  "cordon_grid": {
+    "west": 88855.0,
+    "east": 90375.0,
+    "south": -104835.0,
+    "north": -103095.0
+  },
+  "cordon_size_m": [
+    1520.0,
+    1740.0
+  ],
+  "cordon_area_km2": 2.645,
+  "cordon_bounds_lonlat": [
+    141.339,
+    43.05014,
+    141.36114,
+    43.06797
+  ],
+  "grid_bearing_deg": 10.906,
+  "clip_buffer_m": 500,
+  "attributes": {
+    "N13_001": "登録日",
+    "N13_002": "種別",
+    "N13_003": "道路分類",
+    "N13_004": "道路状態",
+    "N13_005": "階層順",
+    "N13_006": "幅員区分",
+    "N13_007": "有料区分",
+    "N13_008": "二次メッシュ"
+  }
+}
