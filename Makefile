@@ -28,7 +28,10 @@ inventory:  ## 格子への直接割り当てで街路インベントリを作�
 viewer:  ## ビューワ用データ(GeoJSON + meta.json)を書き出す
 	uv run python scripts/05_export_viewer.py
 
-dev-viewer: viewer  ## ビューワを開発サーバーで起動 (http://localhost:8002)
+sim:  ## 簡易ミクロシミュレーションを実行し再生データを書き出す
+	uv run python scripts/20_run_simple_sim.py
+
+dev-viewer: viewer sim  ## ビューワを開発サーバーで起動 (http://localhost:8002)
 	cd viewer && npm install --silent && npm run dev
 
 fetch-jartic:  ## JARTIC の札幌・北海道分を取得(最新1か月分のみ配布)

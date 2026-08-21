@@ -13,6 +13,7 @@ import {
   pickLayerIdsOf,
   popupHtml,
 } from './layers'
+import { SimPlayer, initSimUI } from './sim'
 import { applyThemeAttr, initialTheme, type Theme } from './theme'
 import './style.css'
 
@@ -141,6 +142,8 @@ function addDataLayers(): void {
     if (def.on) void ensureLayer(def)
     else removeLayer(def)
   }
+  // シミュレーションの点群は常に最前面
+  if (simPlayer.loaded) simPlayer.ensureLayers()
 }
 
 // ---- テーマ・背景 ----
@@ -393,6 +396,10 @@ map.on('click', (e) => {
   })
   popup = p
 })
+
+// ---- シミュレーション再生 ----
+const simPlayer = new SimPlayer(map)
+initSimUI(simPlayer)
 
 // ---- 初期化 ----
 const buildEl = document.getElementById('build-ver')

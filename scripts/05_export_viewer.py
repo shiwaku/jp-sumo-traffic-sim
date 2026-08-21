@@ -89,11 +89,24 @@ def main() -> None:
     roads["through"] = roads["street"].isin(through)
 
     print("viewer/public/data/ に書き出す:")
-    write("network", to_fc(
-        roads,
-        ["link_id", "street", "street_kind", "through", "axis", "length_m",
-         "road_category", "road_state", "width_class", "assign_err_m"],
-    ))
+    write(
+        "network",
+        to_fc(
+            roads,
+            [
+                "link_id",
+                "street",
+                "street_kind",
+                "through",
+                "axis",
+                "length_m",
+                "road_category",
+                "road_state",
+                "width_class",
+                "assign_err_m",
+            ],
+        ),
+    )
 
     cordon = gpd.read_file(C.INTERIM / "ksj_clip.gpkg", layer="cordon")
     write("cordon", to_fc(cordon, ["kind"]))
@@ -129,25 +142,66 @@ def main() -> None:
     )
     write("lattice", to_fc(lat, ["name"]))
 
-    reg_props = ["code", "kind", "shape", "route", "crossing", "speed",
-                 "n_lanes", "length", "in_cordon", "dir_kind"]
+    reg_props = [
+        "code",
+        "kind",
+        "shape",
+        "route",
+        "crossing",
+        "speed",
+        "n_lanes",
+        "length",
+        "in_cordon",
+        "dir_kind",
+    ]
     write("reg_point", optional("regulations.gpkg", "point", reg_props))
     write("reg_line", optional("regulations.gpkg", "line", reg_props))
-    write("signals", optional(
-        "signals.gpkg", "intersections",
-        ["jartic_id", "intersection", "in_cordon", "n_phases", "n_in_links",
-         "n_out_links", "cycle_min_s", "cycle_max_s", "n_hours"],
-    ))
-    write("census", optional(
-        "census.gpkg", "sections",
-        ["section_id", "route", "n_lanes", "w_carriageway", "speed_limit",
-         "heavy_pct", "v_peak_up", "v_off_up", "v12h", "congestion",
-         "right_turn_lane", "in_cordon"],
-    ))
+    write(
+        "signals",
+        optional(
+            "signals.gpkg",
+            "intersections",
+            [
+                "jartic_id",
+                "intersection",
+                "in_cordon",
+                "n_phases",
+                "n_in_links",
+                "n_out_links",
+                "cycle_min_s",
+                "cycle_max_s",
+                "n_hours",
+            ],
+        ),
+    )
+    write(
+        "census",
+        optional(
+            "census.gpkg",
+            "sections",
+            [
+                "section_id",
+                "route",
+                "n_lanes",
+                "w_carriageway",
+                "speed_limit",
+                "heavy_pct",
+                "v_peak_up",
+                "v_off_up",
+                "v12h",
+                "congestion",
+                "right_turn_lane",
+                "in_cordon",
+            ],
+        ),
+    )
 
     stats = report("01_probe.json")
     reg_rep, sig_rep, cen_rep = (
-        report("11_regulations.json"), report("12_signals.json"), report("14_census.json"))
+        report("11_regulations.json"),
+        report("12_signals.json"),
+        report("14_census.json"),
+    )
     gr = C.CORDON_GRID
     meta = dict(
         center=[141.3501, 43.0591],
@@ -180,9 +234,7 @@ def main() -> None:
             coverage=cen_rep.get("coverage", {}).get("ratio"),
         ),
     )
-    (OUT / "meta.json").write_text(
-        json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8"
-    )
+    (OUT / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
     print("  meta.json")
 
 

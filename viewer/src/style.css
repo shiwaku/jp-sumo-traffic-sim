@@ -649,3 +649,49 @@ body {
   text-decoration: none;
   font-weight: 700;
 }
+
+
+/* ---- 簡易シミュレーションの再生 UI ---- */
+.sim-controls select,
+.sim-controls input[type='range'] {
+  width: 100%;
+  font: inherit;
+}
+.sim-controls select {
+  font-size: 12.5px;
+  padding: 5px 8px;
+  border: 1px solid var(--line, #d8dce0);
+  border-radius: 6px;
+  background: var(--bg, #fff);
+  color: inherit;
+  margin-bottom: 7px;
+}
+.sim-row {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.sim-row .mini-btn { flex: 1; }
+.sim-row select { width: auto; margin: 0; }
+.sim-readout {
+  margin: 6px 0 2px;
+  font-size: 11.5px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+}
+.sim-legend {
+  margin: 4px 0 0;
+  font-size: 11px;
+  opacity: 0.8;
+  line-height: 1.7;
+}
+.sim-legend .lg-sw {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  vertical-align: -1px;
+  margin: 0 2px 0 4px;
+}

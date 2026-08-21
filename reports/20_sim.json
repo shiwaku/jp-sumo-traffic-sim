@@ -1,0 +1,44 @@
+{
+  "normal": {
+    "scenario": "normal",
+    "sim_seconds": 600.0,
+    "warmup_s": 300.0,
+    "wall_clock_s": 0.6,
+    "n_nodes": 156,
+    "n_links": 574,
+    "n_entries": 50,
+    "n_jartic_cycles": 18,
+    "spawned": 2000,
+    "exited": 702,
+    "blocked_spawn": 254,
+    "vehicles": {
+      "min": 818,
+      "mean": 1076.9,
+      "max": 1300
+    },
+    "mean_speed_kmh": 16.2,
+    "max_links_backed_up": 1,
+    "file_mb": 4.4
+  },
+  "winter": {
+    "scenario": "winter",
+    "sim_seconds": 600.0,
+    "warmup_s": 300.0,
+    "wall_clock_s": 0.6,
+    "n_nodes": 156,
+    "n_links": 574,
+    "n_entries": 50,
+    "n_jartic_cycles": 18,
+    "spawned": 1556,
+    "exited": 377,
+    "blocked_spawn": 731,
+    "vehicles": {
+      "min": 757,
+      "mean": 967.9,
+      "max": 1179
+    },
+    "mean_speed_kmh": 10.1,
+    "max_links_backed_up": 13,
+    "file_mb": 3.9
+  }
+}

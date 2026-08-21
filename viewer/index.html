@@ -25,6 +25,37 @@
     <div id="panel-body" class="panel-body">
       <div class="field">
         <div class="field-head">
+          <span class="field-label">シミュレーション（簡易・IDM）</span>
+        </div>
+        <div class="sim-controls">
+          <select id="sim-scenario" aria-label="シナリオ">
+            <option value="">— 停止 —</option>
+            <option value="normal">平常時</option>
+            <option value="winter">冬季（信号は夏設定のまま）</option>
+          </select>
+          <div class="sim-row">
+            <button id="sim-play" class="mini-btn" type="button" disabled>▶ 再生</button>
+            <select id="sim-speed" aria-label="再生速度">
+              <option value="1">1×</option>
+              <option value="4" selected>4×</option>
+              <option value="10">10×</option>
+            </select>
+          </div>
+          <input id="sim-slider" type="range" min="0" max="0" value="0" disabled
+                 aria-label="再生位置" />
+          <p id="sim-readout" class="sim-readout">シナリオを選ぶと読み込みます</p>
+          <p class="sim-legend">
+            車両: <span class="lg-sw lg-circle" style="background:#d13434"></span>渋滞
+            <span class="lg-sw lg-circle" style="background:#e0c23a"></span>減速
+            <span class="lg-sw lg-circle" style="background:#2e9e8f"></span>自由流
+            ／ 交差点: <span class="lg-sw lg-circle" style="background:#3d8b40"></span>東西青
+            <span class="lg-sw lg-circle" style="background:#d64545"></span>南北青
+          </p>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-head">
           <span class="field-label">レイヤー</span>
           <div class="field-actions">
             <button id="all-on" class="mini-btn" type="button">全ON</button>

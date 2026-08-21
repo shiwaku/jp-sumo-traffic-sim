@@ -1,4 +1,5 @@
 """グリッド座標系とコードン定義の不変条件。"""
+
 import sys
 from pathlib import Path
 
