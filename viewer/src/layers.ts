@@ -66,7 +66,7 @@ export const LAYERS: LayerDef[] = [
     on: false,
     defaultOpacity: 0.9,
     desc:
-      'JARTIC 交通規制情報の線規制。橙=一方通行(向きはポリラインの頂点順のみ) / ' +
+      'JARTIC 交通規制情報の線規制。橙=一方通行(通行方向は頂点順の逆。OSM照合で確定) / ' +
       '紫=最高速度 / 茶=その他の線規制。',
   },
   {
@@ -436,7 +436,7 @@ export function popupHtml(def: LayerDef, p: Record<string, unknown>, lng: number
         row('速度', S(p, 'speed')) +
         row('通行帯数', S(p, 'n_lanes')) +
         row('延長', S(p, 'length') ? `${S(p, 'length')} m` : '') +
-        (S(p, 'code') === '11' ? row('向き', 'ポリラインの頂点順（要OSM検証）') : '')
+        (S(p, 'code') === '11' ? row('向き', '頂点順の逆（OSM照合で確定・15_oneway_check）') : '')
       break
     }
     case 'lattice': {

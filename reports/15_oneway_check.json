@@ -1,0 +1,595 @@
+{
+  "n_oneway": 58,
+  "n_in_cordon": 39,
+  "buffer_m": 15.0,
+  "counts": {
+    "一致": 0,
+    "不一致": 50,
+    "混在": 1,
+    "未対応(OSMに相手なし)": 7
+  },
+  "agree_rate": 0.0,
+  "note": "頂点順=通行方向と解釈して OSM と比較。「不一致」は解釈が逆であることを示す",
+  "details": [
+    {
+      "uid": "01202606000214500000000000194891",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 4960.6,
+      "matched_m": 2784.9,
+      "same_m": 0.0,
+      "opposite_m": 2784.9,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000213900000000000194693",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 4743.4,
+      "matched_m": 2159.1,
+      "same_m": 0.0,
+      "opposite_m": 2159.1,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000205100000000000192105",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 3680.2,
+      "matched_m": 2181.0,
+      "same_m": 0.0,
+      "opposite_m": 2181.0,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000201700000000000190523",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 1670.4,
+      "matched_m": 1419.7,
+      "same_m": 0.0,
+      "opposite_m": 1419.7,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000210600000000000194289",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 1579.6,
+      "matched_m": 1579.6,
+      "same_m": 0.0,
+      "opposite_m": 1579.6,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000210700000000000194290",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 1579.1,
+      "matched_m": 1579.1,
+      "same_m": 0.0,
+      "opposite_m": 1579.1,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000202300000000000190770",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 1502.1,
+      "matched_m": 1368.4,
+      "same_m": 0.0,
+      "opposite_m": 1368.4,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000201400000000000190402",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 1500.3,
+      "matched_m": 1500.3,
+      "same_m": 0.0,
+      "opposite_m": 1500.3,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000202900000000000191075",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 1499.9,
+      "matched_m": 1391.7,
+      "same_m": 0.0,
+      "opposite_m": 1391.7,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000200200000000000188837",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 1374.1,
+      "matched_m": 1274.7,
+      "same_m": 0.0,
+      "opposite_m": 1274.7,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000202200000000000190674",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 1361.0,
+      "matched_m": 1361.0,
+      "same_m": 0.0,
+      "opposite_m": 1361.0,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000200000000000000187672",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 1350.7,
+      "matched_m": 1258.7,
+      "same_m": 0.0,
+      "opposite_m": 1258.7,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000210400000000000194287",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 1322.2,
+      "matched_m": 1322.2,
+      "same_m": 0.0,
+      "opposite_m": 1322.2,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000210500000000000194288",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 1317.9,
+      "matched_m": 76.4,
+      "same_m": 0.0,
+      "opposite_m": 76.4,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000209800000000000194134",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 881.4,
+      "matched_m": 881.4,
+      "same_m": 0.0,
+      "opposite_m": 881.4,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000209700000000000194131",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 879.7,
+      "matched_m": 879.7,
+      "same_m": 0.0,
+      "opposite_m": 879.7,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000214000000000000194757",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 838.5,
+      "matched_m": 714.4,
+      "same_m": 0.0,
+      "opposite_m": 714.4,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000203200000000000191336",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 633.7,
+      "matched_m": 633.7,
+      "same_m": 0.0,
+      "opposite_m": 633.7,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000204600000000000192019",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 622.8,
+      "matched_m": 468.9,
+      "same_m": 0.0,
+      "opposite_m": 468.9,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000204700000000000192038",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 622.5,
+      "matched_m": 379.0,
+      "same_m": 0.0,
+      "opposite_m": 379.0,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000202700000000000190926",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 497.8,
+      "matched_m": 497.8,
+      "same_m": 0.0,
+      "opposite_m": 497.8,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000204300000000000191772",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 494.1,
+      "matched_m": 494.1,
+      "same_m": 0.0,
+      "opposite_m": 494.1,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000201200000000000190359",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 478.3,
+      "matched_m": 478.3,
+      "same_m": 0.0,
+      "opposite_m": 478.3,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000203100000000000191116",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 477.1,
+      "matched_m": 477.1,
+      "same_m": 0.0,
+      "opposite_m": 477.1,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000211600000000000194380",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 440.1,
+      "matched_m": 184.7,
+      "same_m": 0.0,
+      "opposite_m": 184.7,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000202600000000000190910",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 374.1,
+      "matched_m": 374.1,
+      "same_m": 0.0,
+      "opposite_m": 374.1,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000211200000000000194340",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 370.8,
+      "matched_m": 370.8,
+      "same_m": 0.0,
+      "opposite_m": 370.8,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000211100000000000194339",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 368.1,
+      "matched_m": 368.1,
+      "same_m": 0.0,
+      "opposite_m": 368.1,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000203300000000000191340",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 359.7,
+      "matched_m": 359.7,
+      "same_m": 0.0,
+      "opposite_m": 359.7,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000212700000000000194564",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 351.6,
+      "matched_m": 189.9,
+      "same_m": 0.0,
+      "opposite_m": 189.9,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000210000000000000194180",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 289.5,
+      "matched_m": 262.0,
+      "same_m": 0.0,
+      "opposite_m": 262.0,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000205700000000000192391",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 253.3,
+      "matched_m": 253.3,
+      "same_m": 0.0,
+      "opposite_m": 253.3,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000201900000000000190561",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 250.6,
+      "matched_m": 250.6,
+      "same_m": 0.0,
+      "opposite_m": 250.6,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000202000000000000190572",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 249.1,
+      "matched_m": 249.1,
+      "same_m": 0.0,
+      "opposite_m": 249.1,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000202100000000000190578",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 248.4,
+      "matched_m": 248.4,
+      "same_m": 0.0,
+      "opposite_m": 248.4,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000210900000000000194321",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 244.9,
+      "matched_m": 119.5,
+      "same_m": 0.0,
+      "opposite_m": 119.5,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000203600000000000191655",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 239.9,
+      "matched_m": 239.9,
+      "same_m": 0.0,
+      "opposite_m": 239.9,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000210800000000000194320",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 239.8,
+      "matched_m": 239.8,
+      "same_m": 0.0,
+      "opposite_m": 239.8,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000209900000000000194170",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 239.6,
+      "matched_m": 239.6,
+      "same_m": 0.0,
+      "opposite_m": 239.6,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000203400000000000191348",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 238.2,
+      "matched_m": 238.2,
+      "same_m": 0.0,
+      "opposite_m": 238.2,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000203700000000000191696",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 237.9,
+      "matched_m": 136.7,
+      "same_m": 0.0,
+      "opposite_m": 136.7,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000203900000000000191723",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 236.6,
+      "matched_m": 236.6,
+      "same_m": 0.0,
+      "opposite_m": 236.6,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000211000000000000194322",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 208.9,
+      "matched_m": 197.8,
+      "same_m": 0.0,
+      "opposite_m": 197.8,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000201300000000000190361",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 175.9,
+      "matched_m": 175.9,
+      "same_m": 0.0,
+      "opposite_m": 175.9,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000202500000000000190907",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 110.3,
+      "matched_m": 110.3,
+      "same_m": 0.0,
+      "opposite_m": 110.3,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000211300000000000194364",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 109.9,
+      "matched_m": 109.9,
+      "same_m": 0.0,
+      "opposite_m": 109.9,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000201800000000000190525",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 100.5,
+      "matched_m": 100.5,
+      "same_m": 0.0,
+      "opposite_m": 100.5,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000201500000000000190405",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 99.9,
+      "matched_m": 99.9,
+      "same_m": 0.0,
+      "opposite_m": 99.9,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000244600000000000203857",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 84.2,
+      "matched_m": 84.2,
+      "same_m": 0.0,
+      "opposite_m": 84.2,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000215000000000000195084",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 72.2,
+      "matched_m": 72.2,
+      "same_m": 0.0,
+      "opposite_m": 72.2,
+      "verdict": "不一致"
+    },
+    {
+      "uid": "01202606000205600000000000192278",
+      "route": "",
+      "in_cordon": false,
+      "len_m": 3717.4,
+      "matched_m": 0.0,
+      "same_m": 0.0,
+      "opposite_m": 0.0,
+      "verdict": "未対応(OSMに相手なし)"
+    },
+    {
+      "uid": "01202606000201600000000000190522",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 1703.6,
+      "matched_m": 0.0,
+      "same_m": 0.0,
+      "opposite_m": 0.0,
+      "verdict": "未対応(OSMに相手なし)"
+    },
+    {
+      "uid": "01202606000210200000000000194284",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 1088.6,
+      "matched_m": 0.0,
+      "same_m": 0.0,
+      "opposite_m": 0.0,
+      "verdict": "未対応(OSMに相手なし)"
+    },
+    {
+      "uid": "01202606000210300000000000194285",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 1087.3,
+      "matched_m": 0.0,
+      "same_m": 0.0,
+      "opposite_m": 0.0,
+      "verdict": "未対応(OSMに相手なし)"
+    },
+    {
+      "uid": "01202606000204000000000000191747",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 499.3,
+      "matched_m": 0.0,
+      "same_m": 0.0,
+      "opposite_m": 0.0,
+      "verdict": "未対応(OSMに相手なし)"
+    },
+    {
+      "uid": "01202606000204200000000000191770",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 367.0,
+      "matched_m": 0.0,
+      "same_m": 0.0,
+      "opposite_m": 0.0,
+      "verdict": "未対応(OSMに相手なし)"
+    },
+    {
+      "uid": "01202606000203800000000000191704",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 366.7,
+      "matched_m": 250.5,
+      "same_m": 131.3,
+      "opposite_m": 119.2,
+      "verdict": "混在"
+    },
+    {
+      "uid": "01202606000204100000000000191769",
+      "route": "",
+      "in_cordon": true,
+      "len_m": 239.9,
+      "matched_m": 0.0,
+      "same_m": 0.0,
+      "opposite_m": 0.0,
+      "verdict": "未対応(OSMに相手なし)"
+    }
+  ]
+}
