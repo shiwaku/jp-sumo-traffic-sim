@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>札幌都心 ミクロ交通シミュレーション データビューワ</title>
+  <meta name="description" content="札幌都心ミクロ交通シミュレーションのネットワーク・信号・規制・センサスを確認するビューワ" />
+  <meta name="theme-color" content="#2f8f6b" />
+</head>
+<body>
+  <div id="map"></div>
+
+  <section id="panel" class="panel" aria-label="コントロールパネル">
+    <header class="panel-head">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">🚗</span>
+        <h1>札幌都心 交通シミュレーション<br /><span class="brand-sub" id="brand-sub">Phase 0 データ</span></h1>
+      </div>
+      <div class="head-actions">
+        <button id="theme-btn" class="icon-btn" type="button" title="テーマ切替" aria-label="テーマ切替"></button>
+        <button id="collapse-btn" class="icon-btn" type="button" title="パネル開閉" aria-label="パネル開閉"></button>
+      </div>
+    </header>
+
+    <div id="panel-body" class="panel-body">
+      <div class="field">
+        <div class="field-head">
+          <span class="field-label">レイヤー</span>
+          <div class="field-actions">
+            <button id="all-on" class="mini-btn" type="button">全ON</button>
+            <button id="all-off" class="mini-btn" type="button">全OFF</button>
+          </div>
+        </div>
+        <div id="layers" class="toggles"></div>
+      </div>
+
+      <div class="field">
+        <span class="field-label">区域の実測</span>
+        <dl id="stats" class="dataset"></dl>
+      </div>
+    </div>
+
+    <footer class="panel-foot">
+      道路: <a href="https://nlftp.mlit.go.jp/ksj/" target="_blank" rel="noopener">国土数値情報（国土交通省）</a>を加工<br />
+      信号・規制: <a href="https://www.jartic.or.jp/service/opendata/" target="_blank" rel="noopener">JARTIC オープンデータ</a><br />
+      交差点位置: <a href="https://www.tmt.or.jp/research/index10.html" target="_blank" rel="noopener">日本交通管理技術協会</a><br />
+      交通量: <a href="https://www.mlit.go.jp/road/census/r3/" target="_blank" rel="noopener">全国道路・街路交通情勢調査（国土交通省）</a>を加工<br />
+      背景: 国土地理院 最適化ベクトルタイル / 全国最新写真<br />
+      <a href="https://github.com/shiwaku/sapporo-micro-traffic-sim" target="_blank" rel="noopener">GitHub</a>
+      <span id="build-ver" class="build-ver"></span>
+    </footer>
+  </section>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

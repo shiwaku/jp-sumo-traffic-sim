@@ -25,11 +25,11 @@ names:  ## 通し街路の命名と OSM 照合
 inventory:  ## 格子への直接割り当てで街路インベントリを作る
 	uv run python scripts/04_street_inventory.py
 
-viewer:  ## ブラウザ確認用ビューワを書き出す
+viewer:  ## ビューワ用データ(GeoJSON + meta.json)を書き出す
 	uv run python scripts/05_export_viewer.py
 
-open-viewer: viewer  ## ビューワを開く
-	open viewer/index.html
+dev-viewer: viewer  ## ビューワを開発サーバーで起動 (http://localhost:8002)
+	cd viewer && npm install --silent && npm run dev
 
 fetch-jartic:  ## JARTIC の札幌・北海道分を取得(最新1か月分のみ配布)
 	uv run python scripts/10_fetch_jartic.py

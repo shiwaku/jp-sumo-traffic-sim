@@ -30,7 +30,7 @@ src/sapporo_sim/     ライブラリ本体
   calib/             キャリブレーション(オフセット推定など)
 scripts/             番号順に実行するパイプライン
 prototype/           単体で動く簡易版(IDM + 定周期信号 + オフセット + 冬季モード)
-viewer/              実網の確認ビューワ(生成物。_template.html がテンプレート)
+viewer/              確認ビューワ(Vite + TS + MapLibre。データは public/data/ に生成)
 docs/                設計資料・データ出典・調査結果
 reports/             パイプラインが出す診断レポート(JSON、コミット対象)
 data/                取得・中間・成果データ(コミット対象外)
@@ -73,17 +73,20 @@ make viewer        # ブラウザ確認用ビューワを書き出す
 ## ビューワ
 
 ```bash
-make open-viewer
+make dev-viewer   # データ書き出し + 開発サーバー (http://localhost:8002)
 ```
 
-`viewer/index.html` は単一ファイル(約440KB)。GeoJSON を埋め込んでいるので
-`file://` で直接開ける。地図タイルは国土地理院、描画は MapLibre GL JS。
+Vite + TypeScript + MapLibre GL JS。構成は
+[jartic-traffic-signal-cycle-converter/viewer](https://github.com/shiwaku/jartic-traffic-signal-cycle-converter/tree/main/viewer)
+をベースにしており、テーマ切替(ライト/ダーク)・背景切替(地理院最適化ベクトルタイル淡色 / 全国最新写真)・
+レイヤーごとの説明と不透明度・クリックで属性ポップアップ + ハイライトを持つ。
+地図はグリッド方位(-10.906°)で初期化され、碁盤目が画面の縦横に揃う。
 
-表示できるもの: コードンとクリップ範囲、130m格子線、街路種別
-(格子街路 / 裏通り / 斜行・格子外)で色分けしたリンク、トンネル・高架の強調、
-通し街路の選択、リンクごとの属性(ホバー)。
-重ねられるもの: JARTIC 交差点制御情報(サイクル長・現示数)、
-交通規制情報(一方通行・一時停止・信号機・最高速度)、センサス区間(車線数・旅行速度)。
+レイヤー: コードン / 130m格子線 / KSJ 道路ネットワーク(街路種別で色分け、トンネル・橋の強調)
+/ センサス区間 / JARTIC 規制(一方通行・最高速度・一時停止・信号機)
+/ JARTIC 交差点制御情報(サイクル長の段階色)。
+
+データは `make viewer` が `viewer/public/data/*.geojson` に書き出す(コミット対象外)。
 
 個別に実行する場合:
 

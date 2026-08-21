@@ -16,6 +16,7 @@ __pycache__/
 .ruff_cache/
 .DS_Store
 
-# ビューワは生成物(テンプレートのみコミットする)
-viewer/index.html
-viewer/network.geojson
+# ビューワの生成物(データは 05_export_viewer.py で再現する)
+viewer/public/data/
+viewer/node_modules/
+viewer/dist/
