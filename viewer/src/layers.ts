@@ -22,7 +22,7 @@ export const LAYERS: LayerDef[] = [
     key: 'cordon',
     name: 'コードン（対象区域）',
     file: 'cordon',
-    on: true,
+    on: false,
     defaultOpacity: 1,
     desc:
       '北5条通・南7条通・創成川通・石山通に囲まれた対象区域(1520×1740m)。' +
@@ -42,7 +42,7 @@ export const LAYERS: LayerDef[] = [
     key: 'network',
     name: '道路ネットワーク（KSJ）',
     file: 'network',
-    on: true,
+    on: false,
     defaultOpacity: 0.9,
     desc:
       '国土数値情報 道路データ(N13 2024年度版)を区域+バッファでクリップした1,034リンク。' +
