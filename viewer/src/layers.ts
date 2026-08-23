@@ -83,7 +83,7 @@ export const LAYERS: LayerDef[] = [
     key: 'signals',
     name: '交差点制御情報（サイクル長）',
     file: 'signals',
-    on: true,
+    on: false,
     defaultOpacity: 1,
     desc:
       'JARTIC 交差点制御情報(情報源コード3001=札幌方面、231交差点)。' +
