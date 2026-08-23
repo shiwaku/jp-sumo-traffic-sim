@@ -2,7 +2,8 @@
 
 コードンはグリッド整列の回転矩形(config.cordon_polygon)。
 出力:
-  data/interim/ksj_clip.gpkg  layer=roads / cordon  (EPSG:6679)
+  data/interim/ksj_clip.gpkg  layer=roads / paths / cordon  (EPSG:6679)
+  (paths = 庭園路・徒歩道・石段。車道ネットワークからは除外し参照用に保持)
   reports/00_clip.json
 """
 
@@ -15,6 +16,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from sapporo_sim import config as C
+from sapporo_sim import ksj_codes
 
 ATTR_NAMES = {
     "N13_001": "登録日",
@@ -52,13 +54,31 @@ def main() -> None:
     n_all = len(roads)
     sel = roads[roads.intersects(clip_ll)].to_crs(C.CRS_PROJ).copy()
     sel["length_m"] = sel.length
-    sel = sel.sort_values("length_m", ascending=False).reset_index(drop=True)
-    sel["link_id"] = [f"K{i:05d}" for i in range(len(sel))]
     sel["in_cordon"] = sel.intersects(cordon)
+
+    # 種別(N13_002)で車道と歩行者系(庭園路・徒歩道・石段)を分ける。
+    # 下流(probe/grid/names/inventory/viewer)が使うのは車道の roads レイヤのみ
+    types = sel["N13_002"].astype(str)
+    by_type = {
+        code: dict(
+            label=ksj_codes.ROAD_TYPE.get(code, "?"),
+            n=int((types == code).sum()),
+            n_in_cordon=int(((types == code) & sel["in_cordon"]).sum()),
+            length_km=round(float(sel.loc[types == code, "length_m"].sum()) / 1000, 2),
+        )
+        for code in sorted(set(types))
+    }
+    is_path = types.isin(ksj_codes.NON_VEHICULAR_TYPES)
+    paths = sel[is_path].sort_values("length_m", ascending=False).reset_index(drop=True)
+    paths["link_id"] = [f"P{i:05d}" for i in range(len(paths))]
+    sel = sel[~is_path].sort_values("length_m", ascending=False).reset_index(drop=True)
+    sel["link_id"] = [f"K{i:05d}" for i in range(len(sel))]
 
     C.INTERIM.mkdir(parents=True, exist_ok=True)
     out = C.INTERIM / "ksj_clip.gpkg"
     sel.to_file(out, layer="roads", driver="GPKG")
+    if len(paths):
+        paths.to_file(out, layer="paths", driver="GPKG")
     gpd.GeoDataFrame(
         {"kind": ["cordon", "clip"]}, geometry=[cordon, clip_poly], crs=C.CRS_PROJ
     ).to_file(out, layer="cordon", driver="GPKG")
@@ -70,6 +90,9 @@ def main() -> None:
         n_features_clipped=int(len(sel)),
         n_features_in_cordon=int(sel["in_cordon"].sum()),
         total_length_km=round(float(sel.length.sum()) / 1000, 2),
+        by_road_type=by_type,
+        n_paths_excluded=int(len(paths)),
+        n_paths_excluded_in_cordon=int(paths["in_cordon"].sum()),
         cordon_grid={k: round(v, 1) for k, v in C.CORDON_GRID.items()},
         cordon_size_m=[
             round(C.CORDON_GRID["east"] - C.CORDON_GRID["west"], 1),
