@@ -37,8 +37,11 @@ conflate:  ## Phase 1: 規制・信号・センサスを実ネットワークへ
 edges:  ## Phase 1: 単方向エッジ化と車線・速度の割り当て
 	uv run python scripts/32_directed_lanes.py
 
-sim:  ## 簡易ミクロシミュレーションを実行し再生データを書き出す
+sim:  ## 簡易ミクロシミュレーション(理想化グリッド)を実行し再生データを書き出す
 	uv run python scripts/20_run_simple_sim.py
+
+net-sim:  ## Phase 1: 実ネットワーク上のシミュレーションを実行し再生データを書き出す
+	uv run python scripts/33_run_network_sim.py
 
 dev-viewer: viewer sim  ## ビューワを開発サーバーで起動 (http://localhost:8002)
 	cd viewer && npm install --silent && npm run dev
