@@ -8,17 +8,17 @@
     "n_entries": 63,
     "n_stop_sign_edges": 101,
     "wall_clock_s": 0.9,
-    "spawned": 1775,
-    "exited": 1380,
-    "blocked_spawn": 182,
+    "spawned": 1744,
+    "exited": 1379,
+    "blocked_spawn": 171,
     "vehicles": {
-      "min": 330,
-      "mean": 375.2,
-      "max": 410
+      "min": 314,
+      "mean": 352.3,
+      "max": 383
     },
-    "mean_speed_kmh": 15.9,
-    "max_links_backed_up": 7,
-    "file_mb": 1.59
+    "mean_speed_kmh": 16.8,
+    "max_links_backed_up": 6,
+    "file_mb": 1.5
   },
   "winter": {
     "scenario": "winter",

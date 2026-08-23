@@ -41,8 +41,12 @@ TURN_P = (0.70, 0.15, 0.15)  # 直進 / 左折 / 右折
 SPAWN_SPEED = 8.0  # 流入時の初速 [m/s]
 
 # IDM パラメータ (docs/design.md 2.2)
+# 平常時は飽和交通流率 1800〜2000 台/時/車線(日本の基準値の帯)を再現する値
+# (tests/test_saturation_flow.py で固定)。当初の a=1.2, T=1.3, s0=2.5 は
+# 約1580台/時にしかならず、dt を 0.2s に細分しても 1% も変わらないことを
+# 確認済み。効くのは T と s0(architecture.md §7 のとおり飽和交通流率を決める)
 PARAMS = {
-    "normal": dict(a=1.2, b=1.8, s0=2.5, T=1.3, v0_factor=1.0),
+    "normal": dict(a=1.5, b=1.8, s0=2.0, T=1.1, v0_factor=1.0),
     "winter": dict(a=0.7, b=0.55, s0=5.0, T=1.6, v0_factor=0.7),
 }
 SPEED_LIMIT = {"arterial": 50 / 3.6, "minor": 40 / 3.6}  # [m/s]
@@ -106,6 +110,10 @@ class Vehicle:
     s0: float
     T: float
     turn: int  # 0=直進 1=左折 2=右折
+    # サブレーン占有(Phase 2、sim/mobil.py)。0 = 進行方向に向かって左端
+    sublane: int = 0
+    width: int = 2  # 占有サブレーン数(二輪1 / 乗用車2 / 大型3)
+    t_shift: float = 0.0  # 次の車線変更まで待つ残り時間 [s]
 
 
 @dataclass

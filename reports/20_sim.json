@@ -12,17 +12,17 @@
     "n_oneway_lines_matched": 10,
     "n_oneway_links_blocked": 63,
     "n_links_masked_no_ksj": 54,
-    "spawned": 1576,
-    "exited": 687,
-    "blocked_spawn": 224,
+    "spawned": 1635,
+    "exited": 756,
+    "blocked_spawn": 226,
     "vehicles": {
-      "min": 553,
-      "mean": 747.2,
-      "max": 887
+      "min": 604,
+      "mean": 749.8,
+      "max": 878
     },
-    "mean_speed_kmh": 14.8,
+    "mean_speed_kmh": 16.0,
     "max_links_backed_up": 2,
-    "file_mb": 3.03
+    "file_mb": 3.05
   },
   "winter": {
     "scenario": "winter",
