@@ -58,9 +58,30 @@ def oneway_lines() -> list:
     return [list(geom.coords)[::-1] for geom in g.geometry]
 
 
-def run(scenario: str, classes: dict, plans: dict, oneways: list) -> tuple[dict, dict]:
+def ksj_lines() -> list:
+    """コードン内の KSJ 車道の線形(EPSG:6679)。格子リンクの実在チェックに使う。"""
+    f = C.INTERIM / "ksj_clip.gpkg"
+    if not f.exists():
+        return []
+    import geopandas as gpd
+
+    g = gpd.read_file(f, layer="roads")
+    g = g[g["in_cordon"]]
+    out = []
+    for geom in g.geometry:
+        parts = geom.geoms if geom.geom_type == "MultiLineString" else [geom]
+        out += [list(p.coords) for p in parts]
+    return out
+
+
+def run(scenario: str, classes: dict, plans: dict, oneways: list, ksj: list) -> tuple[dict, dict]:
     sim = GridSim(
-        scenario=scenario, seed=42, signal_plans=plans, street_class=classes, oneways=oneways
+        scenario=scenario,
+        seed=42,
+        signal_plans=plans,
+        street_class=classes,
+        oneways=oneways,
+        ksj_lines=ksj,
     )
 
     # 原点(コードン中心)の投影座標と経緯度
@@ -107,6 +128,7 @@ def run(scenario: str, classes: dict, plans: dict, oneways: list) -> tuple[dict,
         n_oneway_lines=len(oneways),
         n_oneway_lines_matched=sim.n_oneway_lines_matched,
         n_oneway_links_blocked=sim.n_oneway_blocked,
+        n_links_masked_no_ksj=sim.n_links_masked,
         spawned=sim.n_spawned,
         exited=sim.n_exited,
         blocked_spawn=sim.n_blocked_spawn,
@@ -133,10 +155,11 @@ def main() -> None:
     classes = street_classes()
     plans = signal_plans()
     oneways = oneway_lines()
+    ksj = ksj_lines()
     OUT.mkdir(parents=True, exist_ok=True)
     report = {}
     for scenario in ("normal", "winter"):
-        data, stats = run(scenario, classes, plans, oneways)
+        data, stats = run(scenario, classes, plans, oneways, ksj)
         f = OUT / f"sim_{scenario}.json"
         f.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
         stats["file_mb"] = round(f.stat().st_size / 1e6, 2)
