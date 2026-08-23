@@ -76,6 +76,45 @@ def test_boundary_turn_exits():
     assert sim._next_link(ln, veh) is ln.to.out["S"]
 
 
+def test_right_turn_yields_to_oncoming():
+    """右折車は対向の直進車にギャップ受容で道を譲る(issue #5)。"""
+    from sapporo_sim.sim.simple import STOPLINE_M
+
+    sim = GridSim()
+    n = sim.grid[(5, 5)]
+    ln = sim.grid[(4, 5)].out["E"]  # (4,5)→(5,5) 東行き
+    onc = sim._oncoming_link(ln)
+    assert onc is sim.grid[(6, 5)].out["W"]
+    assert onc.to is n
+
+    # 信号を常時東西青にして信号待ちの影響を消す
+    n.offset, n.cycle, n.g_ew = 0.0, 1e6, 1e6 - 10.0
+
+    stop = ln.length - STOPLINE_M
+    rt = sim._make_vehicle(ln)
+    rt.pos, rt.speed, rt.turn = stop - 1.0, 0.0, 2  # 停止線1m手前の右折車
+    ln.vehicles.append(rt)
+
+    # 対向直進車: 停止線まで30m・10m/s(到達3秒 < 受容ギャップ5.5秒) → 待つ
+    on = sim._make_vehicle(onc)
+    on.pos, on.speed, on.turn, on.v0 = (onc.length - STOPLINE_M) - 30.0, 10.0, 0, 10.0
+    onc.vehicles.append(on)
+    assert not sim._oncoming_clear(ln)
+    for _ in range(4):  # 2秒
+        sim.step()
+    assert rt.pos <= stop + 1e-6, "対向車が接近中なのに停止線を越えた"
+
+    # 対向右折車は交錯しないので塞がない
+    on.turn = 2
+    assert sim._oncoming_clear(ln)
+
+    # 対向が捌けたら発進して停止線を越える
+    onc.vehicles.clear()
+    for _ in range(20):  # 10秒
+        sim.step()
+    assert (not ln.vehicles) or ln.vehicles[0] is not rt or rt.pos > stop
+
+
 def test_winter_slower():
     """冬季は平常時より遅い(v0 低減と車間拡大の帰結)。"""
     vn = run("normal").stats()["mean_speed_ms"]

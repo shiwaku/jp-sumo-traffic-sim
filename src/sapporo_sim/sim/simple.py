@@ -16,6 +16,9 @@ Phase 0 の実測から理想化したグリッド網を組み、IDM + 2現示�
   JARTIC の20交差点はサイクル長のみ実測値で上書き
 - 一方通行を無視する(区域内39本の実測はあるが未適用)
 - 転回は固定比率(直進0.70 / 左折0.15 / 右折0.15)
+- 右折は対向の直進・左折車に対しギャップ受容(5.5秒)で待つ。
+  右折専用車線が無いため右折待ちは後続の直進も止める(実態どおり)。
+  左折の歩行者横断待ちは未実装
 - 満杯リンクへは停止線で待つ。停止線通過後は下流最後尾に追従して交差点内で
   待つが、交差点内の待ち車両が交差方向の流れを塞ぐ相互作用はまだ無い
 - 赤信号 = 停止線位置の「長さ0の停止車両」(論文と同じ扱い)
@@ -54,6 +57,10 @@ TURN_MAP = {
     "N": ("N", "W", "E"),
     "S": ("S", "E", "W"),
 }
+OPPOSITE = {"E": "W", "W": "E", "N": "S", "S": "N"}
+
+# 右折の対向ギャップ受容: 対向直進・左折車の停止線到達がこの秒数以内なら待つ
+RT_CRITICAL_GAP_S = 5.5
 
 
 @dataclass
@@ -273,6 +280,35 @@ class GridSim:
         heading = TURN_MAP[ln.heading][veh.turn]
         return ln.to.out.get(heading)
 
+    def _oncoming_link(self, ln: Link) -> Link | None:
+        """ln と同じノードに逆方向から入る対向リンク。境界では None。"""
+        beyond = ln.to.out.get(ln.heading)  # 対向車が来る側の隣ノードへのリンク
+        if beyond is None:
+            return None
+        return beyond.to.out.get(OPPOSITE[ln.heading])
+
+    def _oncoming_clear(self, ln: Link) -> bool:
+        """右折の対向ギャップ受容。
+
+        対向の直進・左折車(右折同士は交錯しない)について、
+        - 停止線を越えて交差点内にいる車がいれば待つ
+        - 停止線到達まで RT_CRITICAL_GAP_S 秒未満の車がいれば待つ
+        停止中の対向車(渋滞末尾など)は到達時間が発散するので塞がない。
+        """
+        onc = self._oncoming_link(ln)
+        if onc is None:
+            return True
+        stop_o = onc.length - STOPLINE_M
+        for v in onc.vehicles:
+            if v.turn == 2:
+                continue
+            d = stop_o - v.pos
+            if d < 0:  # 交差点内
+                return False
+            if d / max(v.speed, 0.1) < RT_CRITICAL_GAP_S:
+                return False
+        return True
+
     def step(self) -> None:
         t = self.t
         # 1. 加速度と位置の更新
@@ -290,8 +326,9 @@ class GridSim:
                     committed = veh.pos > stop
                     if not committed:
                         blocked = nxt is not None and nxt.tail_space() < CAR_LEN + veh.s0
-                        if not ln.green(t) or blocked:
-                            # 赤信号(または満杯) = 停止線位置の長さ0の停止車両
+                        yield_rt = veh.turn == 2 and not self._oncoming_clear(ln)
+                        if not ln.green(t) or blocked or yield_rt:
+                            # 赤信号・満杯・右折の対向待ち = 停止線位置の長さ0の停止車両
                             gap, dv = stop - veh.pos, veh.speed
                         elif nxt is not None and nxt.vehicles:
                             tailv = nxt.vehicles[-1]
