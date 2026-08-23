@@ -34,6 +34,9 @@ topology:  ## Phase 1: KSJ から実ネットワークの位相を構築する
 conflate:  ## Phase 1: 規制・信号・センサスを実ネットワークへ結合する
 	uv run python scripts/31_conflate.py
 
+edges:  ## Phase 1: 単方向エッジ化と車線・速度の割り当て
+	uv run python scripts/32_directed_lanes.py
+
 sim:  ## 簡易ミクロシミュレーションを実行し再生データを書き出す
 	uv run python scripts/20_run_simple_sim.py
 
