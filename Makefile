@@ -31,6 +31,9 @@ viewer:  ## ビューワ用データ(GeoJSON + meta.json)を書き出す
 topology:  ## Phase 1: KSJ から実ネットワークの位相を構築する
 	uv run python scripts/30_build_topology.py
 
+conflate:  ## Phase 1: 規制・信号・センサスを実ネットワークへ結合する
+	uv run python scripts/31_conflate.py
+
 sim:  ## 簡易ミクロシミュレーションを実行し再生データを書き出す
 	uv run python scripts/20_run_simple_sim.py
 

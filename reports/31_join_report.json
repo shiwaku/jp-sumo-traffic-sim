@@ -1,0 +1,57 @@
+{
+  "stages": [
+    {
+      "stage": "polygon_zone30",
+      "n_source": 0,
+      "n_matched": 0
+    },
+    {
+      "stage": "point_signal",
+      "n_source": 173,
+      "n_matched": 173,
+      "match_rate": 1.0,
+      "snap_tol_m": 30.0,
+      "n_signal_nodes": 172
+    },
+    {
+      "stage": "point_stop",
+      "n_source": 119,
+      "n_matched": 119,
+      "match_rate": 1.0,
+      "snap_tol_m": 30.0
+    },
+    {
+      "stage": "point_signal_plan",
+      "n_source": 20,
+      "n_matched": 20,
+      "match_rate": 1.0,
+      "snap_tol_m": 40.0
+    },
+    {
+      "stage": "line_oneway",
+      "n_source": 39,
+      "n_matched": 39,
+      "match_rate": 1.0,
+      "n_links_oneway": 286,
+      "buffer_m": 15.0,
+      "dot_th": 0.85,
+      "vertex_order": "通行方向の逆(reports/15_oneway_check.json で OSM 照合済み)"
+    },
+    {
+      "stage": "line_speed",
+      "n_source": 47,
+      "n_matched": 47,
+      "match_rate": 1.0,
+      "n_links_with_speed": 466
+    },
+    {
+      "stage": "line_census",
+      "n_source": 17,
+      "n_matched": 17,
+      "match_rate": 1.0,
+      "n_links_with_census": 134,
+      "buffer_m": 25.0,
+      "second_pass": "幅員区分3以上のみ buffer 45m"
+    }
+  ]
+}
