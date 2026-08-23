@@ -172,3 +172,39 @@ def test_snapshot_signal_three_states():
     for t, expect in ((10.0, "1"), (58.0, "2"), (70.0, "0"), (118.0, "2")):
         sim.t = t
         assert sim.snapshot()["sig"][0] == expect, f"t={t}"
+
+
+def test_unbacked_links_are_masked():
+    """KSJ 車道が沿っていない格子リンクは両方向とも除去される(issue #17)。"""
+    base = GridSim()
+    # 全街路を覆う裏付け線を作り、南1条通(j=6)の区間 i=3,4 だけ空けておく
+    j, gap = 6, (3, 5)
+    lines = []
+    for jj, v in enumerate(base.vs):
+        if jj == j:
+            lines.append(
+                [base.grid_to_proj(base.us[0] - 50, v), base.grid_to_proj(base.us[gap[0]], v)]
+            )
+            lines.append(
+                [base.grid_to_proj(base.us[gap[1]], v), base.grid_to_proj(base.us[-1] + 50, v)]
+            )
+        else:
+            lines.append(
+                [base.grid_to_proj(base.us[0] - 50, v), base.grid_to_proj(base.us[-1] + 50, v)]
+            )
+    for u in base.us:
+        lines.append(
+            [base.grid_to_proj(u, base.vs[0] - 50), base.grid_to_proj(u, base.vs[-1] + 50)]
+        )
+
+    sim = GridSim(ksj_lines=lines)
+    assert sim.n_links_masked == 4  # 空けた2区間 × 両方向
+    assert len(sim.links) == len(base.links) - 4
+    for i in range(gap[0], gap[1] - 1):
+        assert "E" not in sim.grid[(i, j)].out
+        assert "W" not in sim.grid[(i + 1, j)].out
+    # 裏付けの無い格子リンクへは転回サンプリングも向かわない。
+    # 欠落区間の中央ノード(4, j)では東西両方向とも消えている
+    ln = sim.grid[(4, j - 1)].out["N"]
+    picks = {sim._sample_turn(ln) for _ in range(300)}
+    assert picks == {0}  # 直進のみ

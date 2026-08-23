@@ -66,6 +66,14 @@ RT_CRITICAL_GAP_S = 5.5
 # 一方通行線とグリッドリンクの照合: 横断方向の許容差 [m](格子間隔65mの半分未満)
 ONEWAY_TOL_M = 25.0
 
+# 格子リンクの実在チェック: KSJ 車道セグメントがこの割合以上を覆えば実在とみなす。
+# 近傍(±25m)に車道があるか、両側 0〜50m に対の車道がある(大通・創成川通の
+# ような分離両側通行)こと。50m 上限は隣接街路(間隔66m)と片側だけの
+# 仲通り(約33m)を裏付けから排除するための値
+BACKING_TOL_M = 25.0
+BACKING_PAIR_MAX_M = 50.0
+BACKING_COVER_MIN = 0.5
+
 
 @dataclass
 class Node:
@@ -143,6 +151,7 @@ class GridSim:
         signal_plans: dict | None = None,
         street_class: dict | None = None,
         oneways: list | None = None,
+        ksj_lines: list | None = None,
     ):
         self.scenario = scenario
         self.p = PARAMS[scenario]
@@ -217,6 +226,11 @@ class GridSim:
         for (i, j), n in self.grid.items():
             n.boundary = i in (0, imax) or j in (0, jmax)
 
+        # --- 実在チェック: KSJ 車道が沿っていない格子リンクを除去 ---
+        # 理想化グリッドは隣接ノードを機械的に結ぶため、大通公園の区間の
+        # ように実在しない道路が生じる(issue #17)
+        self._mask_unbacked_links(ksj_lines or [])
+
         # --- 一方通行: 通行方向と逆向きのリンクを封鎖 ---
         # oneways は通行方向順の頂点列(投影座標)のリスト。JARTIC の頂点順は
         # 通行方向の逆と確定している(reports/15_oneway_check.json)ので、
@@ -237,6 +251,66 @@ class GridSim:
             ln.lid: (500 if ln.klass == "arterial" else 150) / 3600.0 * demand_scale
             for ln in self.entries
         }
+
+    @staticmethod
+    def _covered(ivals: list, a: float, b: float) -> float:
+        """区間 [a, b] のうち ivals(区間リスト)が覆う延長。"""
+        clipped = sorted((max(lo, a), min(hi, b)) for lo, hi in ivals if max(lo, a) < min(hi, b))
+        cov, end = 0.0, a
+        for s0, e0 in clipped:
+            s0 = max(s0, end)
+            if e0 > s0:
+                cov += e0 - s0
+                end = e0
+        return cov
+
+    def _mask_unbacked_links(self, ksj_lines: list) -> None:
+        """KSJ 車道が沿っていない格子リンクを両方向とも取り除く。
+
+        実在の条件(いずれか):
+        - 横断ずれ ±BACKING_TOL_M 以内の同軸セグメントが延長の
+          BACKING_COVER_MIN 以上を覆う
+        - 両側それぞれ 0〜BACKING_PAIR_MAX_M に同軸セグメントがあり、
+          双方が延長の BACKING_COVER_MIN 以上を覆う(分離両側通行。
+          大通・創成川通は車道が格子線から 30〜45m 離れている)
+        """
+        self.n_links_masked = 0
+        if not ksj_lines:
+            return
+        segs: dict[str, list] = {"EW": [], "NS": []}
+        for line in ksj_lines:
+            pts = [self._rot(x, y, -1.0) for x, y in line]
+            for (u1, v1), (u2, v2) in zip(pts, pts[1:], strict=False):
+                if abs(u2 - u1) >= abs(v2 - v1):
+                    segs["EW"].append(((v1 + v2) / 2, *sorted((u1, u2))))
+                else:
+                    segs["NS"].append(((u1 + u2) / 2, *sorted((v1, v2))))
+        removed = []
+        for ln in self.links:
+            if ln.axis == "EW":
+                cross, (a, b) = ln.frm.v, sorted((ln.frm.u, ln.to.u))
+            else:
+                cross, (a, b) = ln.frm.u, sorted((ln.frm.v, ln.to.v))
+            near, pos, neg = [], [], []
+            for c, lo, hi in segs[ln.axis]:
+                off = c - cross
+                if abs(off) <= BACKING_TOL_M:
+                    near.append((lo, hi))
+                if 0 < off <= BACKING_PAIR_MAX_M:
+                    pos.append((lo, hi))
+                elif -BACKING_PAIR_MAX_M <= off < 0:
+                    neg.append((lo, hi))
+            need = BACKING_COVER_MIN * ln.length
+            backed = self._covered(near, a, b) >= need or (
+                self._covered(pos, a, b) >= need and self._covered(neg, a, b) >= need
+            )
+            if not backed:
+                removed.append(ln)
+        for ln in removed:
+            del ln.frm.out[ln.heading]
+        rm = {ln.lid for ln in removed}
+        self.links = [ln for ln in self.links if ln.lid not in rm]
+        self.n_links_masked = len(removed)
 
     def _apply_oneways(self, oneways: list) -> None:
         """一方通行線に沿うリンクのうち、通行方向と逆向きのものを取り除く。
