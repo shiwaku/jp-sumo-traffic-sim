@@ -1,0 +1,82 @@
+"""Edge への車線数・サブレーン数の割り当て(Phase 1-③、architecture.md §4.3)。
+
+決定順:
+  1. センサス箇所別基本表の車線数(幹線のみ、最優先)
+  2. 航空写真からの手入力(細街路) … データ未着(issue #1)。source=assumed で数える
+  3. KSJ 幅員区分からの推定(最後の手段)
+
+サブレーンは道路幅員を「最小車両1台分の幅」(1.75m)で分割する。
+冬季の実質車線減少は n_sublanes の時間変化として Phase 2 で扱う。
+"""
+
+from __future__ import annotations
+
+from sapporo_sim.ksj_codes import WIDTH_REPRESENTATIVE_M
+
+SUBLANE_W_M = 1.75  # 二輪1台分
+LANE_W_M = 3.0  # 車線1本の標準幅(推定用)
+DEFAULT_CARRIAGEWAY_M = 4.0  # 幅員不明時の保守値(幅員区分2の代表値)
+CARRIAGEWAY_SHARE = 0.7  # KSJ 幅員区分は道路幅なので歩道分を差し引く(推定用)
+MAX_LANES_TWOWAY = 3  # 片方向あたりの上限(推定・品質ガード)
+MAX_LANES_ONEWAY = 4
+CENSUS_LANE_GUARD = 5  # センサス由来の片方向車線数がこれ以上なら側道誤結合とみなす
+
+
+def assign_lanes(edge, census: dict | None) -> None:
+    """edge.attrs に n_lanes / n_sublanes / carriageway_m / lane_source を書き込む。
+
+    census: 当該エッジの census_id に対応する行(無ければ None)。
+      n_lanes は両方向合計(断面)、w_carriageway も断面幅。
+    片側あたりに直すため、双方向道路(linked_edge あり)は 1/2 にする。
+    一方通行は全幅が単方向に使える。
+    """
+    both_dir = edge.linked_edge is not None
+    share = 0.5 if both_dir else 1.0
+    cap = MAX_LANES_TWOWAY if both_dir else MAX_LANES_ONEWAY
+
+    n = w = None
+    source = ""
+    if census is not None and census.get("n_lanes"):
+        n = max(1, round(float(census["n_lanes"]) * share))
+        w = float(census.get("w_carriageway") or 0.0) * share
+        if w <= 0:
+            w = n * LANE_W_M
+        source = "census"
+        if n >= CENSUS_LANE_GUARD:
+            # 断面車線数を一方通行の側道等が引き当てた誤結合。幅員推定へ落とす
+            n = None
+            source = ""
+    if n is None:
+        rep = WIDTH_REPRESENTATIVE_M.get(str(edge.attrs.get("width", "")), None)
+        w = (rep if rep is not None else DEFAULT_CARRIAGEWAY_M) * share * CARRIAGEWAY_SHARE
+        # 手入力(manual_ortho)が届くまでは幅員推定 = assumed 扱い(issue #1)。
+        # キャップは推定にのみ適用する(センサス実測の片側4車線は潰さない)
+        n = max(1, min(cap, int(w // LANE_W_M)))
+        source = "width_assumed"
+
+    edge.attrs["n_lanes"] = int(n)
+    edge.attrs["n_sublanes"] = max(1, int(w // SUBLANE_W_M))
+    edge.attrs["carriageway_m"] = round(w, 2)
+    edge.attrs["lane_source"] = source
+    # 右折専用車線(センサスは区間代表値。交差点別は手入力待ち = assumed)
+    if census is not None and census.get("right_turn_lane") is not None:
+        edge.attrs["right_turn_lane"] = int(float(census["right_turn_lane"]) > 0)
+        edge.attrs["rt_lane_source"] = "census_section"
+    else:
+        edge.attrs["right_turn_lane"] = 0
+        edge.attrs["rt_lane_source"] = "assumed"
+
+
+def assign_speed(edge, census: dict | None, default_kmh: dict | None = None) -> None:
+    """最高速度の決定順: JARTIC 線規制 → センサス規制速度 → 分類による既定値。"""
+    defaults = default_kmh or {"1": 50, "2": 50, "3": 40}
+    cur = int(edge.attrs.get("speed_kmh") or 0)
+    if cur > 0:
+        edge.attrs["speed_source"] = "jartic"
+        return
+    if census is not None and census.get("speed_limit"):
+        edge.attrs["speed_kmh"] = int(float(census["speed_limit"]))
+        edge.attrs["speed_source"] = "census"
+        return
+    edge.attrs["speed_kmh"] = defaults.get(str(edge.attrs.get("category", "")), 40)
+    edge.attrs["speed_source"] = "assumed"
