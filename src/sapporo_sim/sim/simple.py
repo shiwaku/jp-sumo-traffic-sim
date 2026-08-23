@@ -335,6 +335,20 @@ class GridSim:
                 return i
         return opts[-1]
 
+    def _poisson(self, lam: float) -> int:
+        """ステップあたりの到着台数(Knuth 法。小さい λ 向け)。
+
+        従来のベルヌーイ近似は1ステップ1台が上限で、demand_scale を
+        上げると流入が頭打ちになっていた(issue #6)。
+        """
+        limit = math.exp(-lam)
+        k, p = 0, 1.0
+        while True:
+            p *= self.rng.random()
+            if p <= limit:
+                return k
+            k += 1
+
     def _make_vehicle(self, ln: Link) -> Vehicle:
         turn = self._sample_turn(ln)
         return Vehicle(
@@ -451,8 +465,7 @@ class GridSim:
 
         # 3. コードン流入(ポアソン到着)
         for ln in self.entries:
-            lam = self.entry_rate[ln.lid] * DT
-            if self.rng.random() < lam:
+            for _ in range(self._poisson(self.entry_rate[ln.lid] * DT)):
                 if ln.tail_space() > CAR_LEN + 3.0:
                     ln.vehicles.append(self._make_vehicle(ln))
                     self.n_spawned += 1
@@ -469,7 +482,14 @@ class GridSim:
             for veh in ln.vehicles:
                 x, y = self.veh_xy(ln, min(veh.pos, ln.length))
                 pts.append((x, y, veh.speed))
-        sig = "".join("1" if n.ew_green(self.t) else "0" for n in self.nodes)
+
+        # 信号状態: 1=東西青 / 0=南北青 / 2=全赤(現示切替中)
+        def state(n: Node) -> str:
+            if n.ew_green(self.t):
+                return "1"
+            return "0" if n.ns_green(self.t) else "2"
+
+        sig = "".join(state(n) for n in self.nodes)
         return {"t": round(self.t, 1), "pts": pts, "sig": sig}
 
     def stats(self) -> dict:

@@ -11,7 +11,7 @@ interface SimFrame {
   t: number
   /** [dx, dy, v] × 台数。単位 0.1m / 0.1m/s、原点は origin */
   p: number[]
-  /** ノードごとの信号状態。'1'=東西が青 */
+  /** ノードごとの信号状態。'1'=東西青 / '0'=南北青 / '2'=全赤 */
   sig: string
 }
 
@@ -64,7 +64,7 @@ export class SimPlayer {
         id: LYR_SIG, type: 'circle', source: SRC_SIG,
         paint: {
           'circle-radius': ['interpolate', ['linear'], ['zoom'], 12, 2, 16, 4.5],
-          'circle-color': ['case', ['==', ['get', 's'], 1], '#3d8b40', '#d64545'],
+          'circle-color': ['match', ['get', 's'], 1, '#3d8b40', 0, '#d64545', '#8a8f98'],
           'circle-opacity': 0.9,
           'circle-stroke-width': 0.6,
           'circle-stroke-color': '#fff',
@@ -194,7 +194,7 @@ export class SimPlayer {
     const sig: GeoJSON.Feature[] = this.data.nodes.map((xy, k) => ({
       type: 'Feature',
       geometry: { type: 'Point', coordinates: this.toLngLat(xy[0], xy[1]) },
-      properties: { s: f.sig.charCodeAt(k) === 49 ? 1 : 0 },
+      properties: { s: f.sig.charCodeAt(k) - 48 },
     }))
     vehSrc.setData({ type: 'FeatureCollection', features: veh })
     sigSrc.setData({ type: 'FeatureCollection', features: sig })
