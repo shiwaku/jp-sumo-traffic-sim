@@ -28,6 +28,9 @@ inventory:  ## 格子への直接割り当てで街路インベントリを作�
 viewer:  ## ビューワ用データ(GeoJSON + meta.json)を書き出す
 	uv run python scripts/05_export_viewer.py
 
+topology:  ## Phase 1: KSJ から実ネットワークの位相を構築する
+	uv run python scripts/30_build_topology.py
+
 sim:  ## 簡易ミクロシミュレーションを実行し再生データを書き出す
 	uv run python scripts/20_run_simple_sim.py
 
