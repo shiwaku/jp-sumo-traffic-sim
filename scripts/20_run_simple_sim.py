@@ -42,8 +42,26 @@ def signal_plans() -> dict:
     return json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
 
 
-def run(scenario: str, classes: dict, plans: dict) -> tuple[dict, dict]:
-    sim = GridSim(scenario=scenario, seed=42, signal_plans=plans, street_class=classes)
+def oneway_lines() -> list:
+    """一方通行(コード11)の線形。通行方向順の頂点列(EPSG:6679)で返す。
+
+    JARTIC の頂点順は通行方向の逆と確定している
+    (reports/15_oneway_check.json)ので、ここで反転する。
+    """
+    f = C.INTERIM / "regulations.gpkg"
+    if not f.exists():
+        return []
+    import geopandas as gpd
+
+    g = gpd.read_file(f, layer="line")
+    g = g[(g["code"].astype(str) == "11") & g["in_cordon"]]
+    return [list(geom.coords)[::-1] for geom in g.geometry]
+
+
+def run(scenario: str, classes: dict, plans: dict, oneways: list) -> tuple[dict, dict]:
+    sim = GridSim(
+        scenario=scenario, seed=42, signal_plans=plans, street_class=classes, oneways=oneways
+    )
 
     # 原点(コードン中心)の投影座標と経緯度
     g = C.CORDON_GRID
@@ -86,6 +104,9 @@ def run(scenario: str, classes: dict, plans: dict) -> tuple[dict, dict]:
         n_links=len(sim.links),
         n_entries=len(sim.entries),
         n_jartic_cycles=sim.n_jartic_matched,
+        n_oneway_lines=len(oneways),
+        n_oneway_lines_matched=sim.n_oneway_lines_matched,
+        n_oneway_links_blocked=sim.n_oneway_blocked,
         spawned=sim.n_spawned,
         exited=sim.n_exited,
         blocked_spawn=sim.n_blocked_spawn,
@@ -111,10 +132,11 @@ def run(scenario: str, classes: dict, plans: dict) -> tuple[dict, dict]:
 def main() -> None:
     classes = street_classes()
     plans = signal_plans()
+    oneways = oneway_lines()
     OUT.mkdir(parents=True, exist_ok=True)
     report = {}
     for scenario in ("normal", "winter"):
-        data, stats = run(scenario, classes, plans)
+        data, stats = run(scenario, classes, plans, oneways)
         f = OUT / f"sim_{scenario}.json"
         f.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
         stats["file_mb"] = round(f.stat().st_size / 1e6, 2)
