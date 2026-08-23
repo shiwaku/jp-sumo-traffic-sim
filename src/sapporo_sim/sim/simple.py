@@ -264,11 +264,14 @@ class GridSim:
         )
 
     def _next_link(self, ln: Link, veh: Vehicle) -> Link | None:
+        """転回先のリンク。None = コードン外へ流出。
+
+        境界ノードには外向きのリンクが無いが、実際の街路はコードンの外へも
+        続いている。無い方向への転回はそのまま区域外への流出として扱う
+        (直進への差し替えは外周の転回率を直進1.0に歪めるためしない)。
+        """
         heading = TURN_MAP[ln.heading][veh.turn]
-        nxt = ln.to.out.get(heading)
-        if nxt is None:  # 曲がる先が無い(境界の角など) → 直進
-            nxt = ln.to.out.get(ln.heading)
-        return nxt  # None = 区域外へ流出
+        return ln.to.out.get(heading)
 
     def step(self) -> None:
         t = self.t
