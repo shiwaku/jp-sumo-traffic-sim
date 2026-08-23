@@ -1,0 +1,91 @@
+{
+  "source": "data/interim/ksj_clip.gpkg (roads, in_cordon)",
+  "snap_tol_m": 0.5,
+  "short_link_m": 12.0,
+  "n_source_records": 772,
+  "before": {
+    "n_nodes": 513,
+    "n_links": 771,
+    "n_short_links": 38
+  },
+  "short_link_merge": {
+    "n_contracted": 31,
+    "n_merged": 7
+  },
+  "minor_components": {
+    "n_dropped_components": 2,
+    "dropped_sizes": [
+      2,
+      2
+    ]
+  },
+  "n_self_loops_dropped": 1,
+  "after": {
+    "n_nodes": 471,
+    "n_links": 731
+  },
+  "degree_hist": {
+    "1": 66,
+    "2": 65,
+    "3": 104,
+    "4": 227,
+    "5": 8,
+    "6": 1
+  },
+  "link_length_m": {
+    "n": 731,
+    "min": 12.26,
+    "median": 66.6,
+    "p95": 139.3,
+    "max": 887.2,
+    "total_km": 63.72
+  },
+  "grade_separated": {
+    "n_grade_separated": 4,
+    "portal_nodes": [
+      0,
+      1,
+      2,
+      3,
+      8,
+      9,
+      302,
+      433
+    ],
+    "n_interior_contacts": 0,
+    "interior_contacts": []
+  },
+  "acceptance": {
+    "n_components": 1,
+    "main_component_nodes": 471,
+    "component_sizes": [
+      471
+    ],
+    "n_boundary_nodes": 89,
+    "boundary_all_reachable": true,
+    "n_true_dead_ends": 3,
+    "true_dead_ends": [
+      {
+        "node": 323,
+        "xy": [
+          89984.4,
+          -103633.6
+        ]
+      },
+      {
+        "node": 443,
+        "xy": [
+          89024.5,
+          -104521.6
+        ]
+      },
+      {
+        "node": 505,
+        "xy": [
+          90420.4,
+          -104636.2
+        ]
+      }
+    ]
+  }
+}
