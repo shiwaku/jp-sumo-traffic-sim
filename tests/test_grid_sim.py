@@ -39,7 +39,27 @@ def test_no_overlap():
     sim = run("normal")
     for ln in sim.links:
         for a, b in zip(ln.vehicles, ln.vehicles[1:], strict=False):
-            assert a.pos - b.pos >= 4.5 - 0.2, f"車両が重なった: {a.pos} vs {b.pos}"
+            assert a.pos - b.pos >= 4.5, f"車両が重なった: {a.pos} vs {b.pos}"
+
+
+def test_no_overlap_under_saturation():
+    """飽和状態(冬季・需要3倍)でも最小車間と満杯リンク不進入を保証する。
+
+    停止線通過後の車両が満杯リンクへめり込む不具合(issue #2)と、
+    重なり補正が車間を保証しない不具合(issue #3)の回帰テスト。
+    """
+    sim = GridSim(scenario="winter", seed=7, demand_scale=3.0)
+    for _ in range(int(600.0 / sim_dt())):
+        sim.step()
+        for ln in sim.links:
+            vs = ln.vehicles
+            for a, b in zip(vs, vs[1:], strict=False):
+                assert a.pos - b.pos >= 4.5, (
+                    f"t={sim.t}: 車間割れ link={ln.lid} {a.pos:.2f} vs {b.pos:.2f}"
+                )
+            if vs:
+                assert vs[0].pos <= ln.length + 1e-6, f"t={sim.t}: リンク端を越えて滞留"
+                assert vs[-1].pos >= 0.0, f"t={sim.t}: リンク始端より手前に配置"
 
 
 def test_winter_slower():

@@ -16,7 +16,8 @@ Phase 0 の実測から理想化したグリッド網を組み、IDM + 2現示�
   JARTIC の20交差点はサイクル長のみ実測値で上書き
 - 一方通行を無視する(区域内39本の実測はあるが未適用)
 - 転回は固定比率(直進0.70 / 左折0.15 / 右折0.15)
-- 満杯リンクへは停止線で待つ(交差点内部を塞ぐ挙動はまだ無い)
+- 満杯リンクへは停止線で待つ。停止線通過後は下流最後尾に追従して交差点内で
+  待つが、交差点内の待ち車両が交差方向の流れを塞ぐ相互作用はまだ無い
 - 赤信号 = 停止線位置の「長さ0の停止車両」(論文と同じ扱い)
 """
 
@@ -282,9 +283,9 @@ class GridSim:
                     dv = veh.speed - lead.speed
                 else:
                     gap, dv = 1e9, 0.0
+                    nxt = self._next_link(ln, veh)
                     committed = veh.pos > stop
                     if not committed:
-                        nxt = self._next_link(ln, veh)
                         blocked = nxt is not None and nxt.tail_space() < CAR_LEN + veh.s0
                         if not ln.green(t) or blocked:
                             # 赤信号(または満杯) = 停止線位置の長さ0の停止車両
@@ -293,24 +294,39 @@ class GridSim:
                             tailv = nxt.vehicles[-1]
                             gap = (ln.length - veh.pos) + tailv.pos - CAR_LEN
                             dv = veh.speed - tailv.speed
+                    elif nxt is not None and nxt.vehicles:
+                        # 停止線通過後も下流最後尾へ追従する。
+                        # 下流が満杯なら手前(交差点内)で止まり、めり込まない
+                        tailv = nxt.vehicles[-1]
+                        gap = (ln.length - veh.pos) + tailv.pos - CAR_LEN
+                        dv = veh.speed - tailv.speed
                 acc = idm_acc(veh, gap, dv)
                 veh.speed = max(0.0, veh.speed + acc * DT)
                 veh.pos += veh.speed * DT
-            # 数値誤差での追い越しを禁止
+            # 数値誤差での追い越しを禁止(最小車間 CAR_LEN + 0.1m を常に保証)。
+            # 転移時に CAR_LEN + 0.2m の空きを要求するので cap は負にならない
             for k in range(1, len(vs)):
                 cap = vs[k - 1].pos - CAR_LEN - 0.1
                 if vs[k].pos > cap:
-                    vs[k].pos = max(cap, 0.0)
+                    vs[k].pos = cap
                     vs[k].speed = min(vs[k].speed, vs[k - 1].speed)
 
         # 2. リンク間の転移
         for ln in self.links:
             while ln.vehicles and ln.vehicles[0].pos >= ln.length:
-                veh = ln.vehicles.pop(0)
+                veh = ln.vehicles[0]
                 nxt = self._next_link(ln, veh)
                 if nxt is None:
+                    ln.vehicles.pop(0)
                     self.n_exited += 1
                     continue
+                if nxt.tail_space() < CAR_LEN + 0.2:
+                    # 下流に物理的な空きが無い間はリンク下流端で待つ
+                    # (追従で普通は止まる。1ステップ内の行き過ぎの保険)
+                    veh.pos = ln.length
+                    veh.speed = 0.0
+                    break
+                ln.vehicles.pop(0)
                 veh.pos -= ln.length
                 r = self.rng.random()
                 veh.turn = 0 if r < TURN_P[0] else (1 if r < TURN_P[0] + TURN_P[1] else 2)
