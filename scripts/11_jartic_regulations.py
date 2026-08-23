@@ -29,7 +29,7 @@ from shapely.geometry import LineString, Point, Polygon
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from sapporo_sim import config as C
 
-csv.field_size_limit(sys.maxsize)
+csv.field_size_limit(2**31 - 1)  # sys.maxsize は Windows の C long を超える
 
 # シミュレーションに効く規制種別(共通規制種別コード)
 SIM_RELEVANT = {
@@ -227,7 +227,7 @@ def main() -> None:
         )
 
     rep = dict(
-        source=str(zp.relative_to(C.ROOT)),
+        source=zp.relative_to(C.ROOT).as_posix(),  # OS 非依存の区切りで記録
         target_month=ym,
         n_rows_hokkaido=total,
         n_in_clip=kept,
