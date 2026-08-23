@@ -76,6 +76,32 @@ def test_boundary_turn_exits():
     assert sim._next_link(ln, veh) is ln.to.out["S"]
 
 
+def test_oneway_blocks_reverse_links():
+    """一方通行の逆走側リンクが除去され、転回・流入も選ばれない。"""
+    base = GridSim()
+    j = 6  # 南1条通
+    v = base.vs[j]
+    # 全長を東行き一方通行にする(通行方向順の頂点列・投影座標)
+    line = [base.grid_to_proj(base.us[0] - 50, v), base.grid_to_proj(base.us[-1] + 50, v)]
+    sim = GridSim(oneways=[line])
+
+    n_seg = len(base.us) - 1
+    assert sim.n_oneway_lines_matched == 1
+    assert sim.n_oneway_blocked == n_seg  # 西行きが全区間消える
+    assert len(sim.links) == len(base.links) - n_seg
+    for i in range(1, len(sim.us)):
+        assert "W" not in sim.grid[(i, j)].out
+        assert "E" in sim.grid[(i - 1, j)].out
+    # 東端の西行き流入が消えている
+    imax = len(sim.us) - 1
+    assert all(not (ln.frm is sim.grid[(imax, j)] and ln.heading == "W") for ln in sim.entries)
+    # 内部ノードの転回サンプリングが封鎖方向(北向き到達時の左折=W)を選ばない
+    ln = sim.grid[(5, j - 1)].out["N"]
+    picks = {sim._sample_turn(ln) for _ in range(300)}
+    assert 1 not in picks
+    assert picks <= {0, 2}
+
+
 def test_right_turn_yields_to_oncoming():
     """右折車は対向の直進車にギャップ受容で道を譲る(issue #5)。"""
     from sapporo_sim.sim.simple import STOPLINE_M

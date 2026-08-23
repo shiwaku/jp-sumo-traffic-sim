@@ -9,11 +9,11 @@
   1520.0,
   1740.0
  ],
- "n_links": 1034,
- "n_nodes": 662,
- "n_junctions": 567,
- "n_streets": 52,
- "n_through": 35,
+ "n_links": 772,
+ "n_nodes": 513,
+ "n_junctions": 372,
+ "n_streets": 48,
+ "n_through": 32,
  "signals": {
   "n_in_cordon": 20,
   "cycle": {
@@ -34,6 +34,6 @@
  },
  "census": {
   "n_in_cordon": 17,
-  "coverage": 0.18
+  "coverage": 0.209
  }
 }

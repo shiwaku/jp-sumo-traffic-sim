@@ -14,7 +14,8 @@ Phase 0 の実測から理想化したグリッド網を組み、IDM + 2現示�
 - 車線は方向別に1本。MOBIL・サブレーンなし
 - 信号は全交差点2現示(東西青/南北青)、スプリット0.5。
   JARTIC の20交差点はサイクル長のみ実測値で上書き
-- 一方通行を無視する(区域内39本の実測はあるが未適用)
+- 一方通行は JARTIC 実測(区域内39本)を格子リンクへ照合して適用。
+  格子に載らない裏通りの一方通行は理想化グリッドに対応リンクが無く未適用
 - 転回は固定比率(直進0.70 / 左折0.15 / 右折0.15)
 - 右折は対向の直進・左折車に対しギャップ受容(5.5秒)で待つ。
   右折専用車線が無いため右折待ちは後続の直進も止める(実態どおり)。
@@ -62,6 +63,9 @@ OPPOSITE = {"E": "W", "W": "E", "N": "S", "S": "N"}
 # 右折の対向ギャップ受容: 対向直進・左折車の停止線到達がこの秒数以内なら待つ
 RT_CRITICAL_GAP_S = 5.5
 
+# 一方通行線とグリッドリンクの照合: 横断方向の許容差 [m](格子間隔65mの半分未満)
+ONEWAY_TOL_M = 25.0
+
 
 @dataclass
 class Node:
@@ -72,6 +76,7 @@ class Node:
     offset: float = 0.0
     g_ew: float = 0.0  # 東西青の長さ [s]
     g_ns: float = 0.0
+    boundary: bool = False  # コードン境界上のノード(無い方向 = 区域外流出)
     out: dict = field(default_factory=dict)  # 方位 -> Link
 
     def ew_green(self, t: float) -> bool:
@@ -137,6 +142,7 @@ class GridSim:
         demand_scale: float = 1.0,
         signal_plans: dict | None = None,
         street_class: dict | None = None,
+        oneways: list | None = None,
     ):
         self.scenario = scenario
         self.p = PARAMS[scenario]
@@ -207,19 +213,70 @@ class GridSim:
                 add_link(self.grid[(i, j)], self.grid[(i, j + 1)], "N", klass)
                 add_link(self.grid[(i, j + 1)], self.grid[(i, j)], "S", klass)
 
-        # --- 流入点: 境界ノードから内向きのリンク ---
         imax, jmax = len(self.us) - 1, len(self.vs) - 1
+        for (i, j), n in self.grid.items():
+            n.boundary = i in (0, imax) or j in (0, jmax)
+
+        # --- 一方通行: 通行方向と逆向きのリンクを封鎖 ---
+        # oneways は通行方向順の頂点列(投影座標)のリスト。JARTIC の頂点順は
+        # 通行方向の逆と確定している(reports/15_oneway_check.json)ので、
+        # 呼び出し側(scripts/20)が反転してから渡す
+        self._apply_oneways(oneways or [])
+
+        # --- 流入点: 境界ノードから内向きのリンク(一方通行の逆走側は除く) ---
         self.entries: list[Link] = []
         for j in range(jmax + 1):
-            self.entries.append(self.grid[(0, j)].out["E"])
-            self.entries.append(self.grid[(imax, j)].out["W"])
+            for ln in (self.grid[(0, j)].out.get("E"), self.grid[(imax, j)].out.get("W")):
+                if ln is not None:
+                    self.entries.append(ln)
         for i in range(imax + 1):
-            self.entries.append(self.grid[(i, 0)].out["N"])
-            self.entries.append(self.grid[(i, jmax)].out["S"])
+            for ln in (self.grid[(i, 0)].out.get("N"), self.grid[(i, jmax)].out.get("S")):
+                if ln is not None:
+                    self.entries.append(ln)
         self.entry_rate = {
             ln.lid: (500 if ln.klass == "arterial" else 150) / 3600.0 * demand_scale
             for ln in self.entries
         }
+
+    def _apply_oneways(self, oneways: list) -> None:
+        """一方通行線に沿うリンクのうち、通行方向と逆向きのものを取り除く。
+
+        照合: 線の各セグメントを軸方位に丸め、横断方向のずれが ONEWAY_TOL_M
+        以内かつリンク延長の半分以上を覆うグリッドリンクを「同じ街路」とみなす。
+        """
+        blocked: set[int] = set()
+        self.n_oneway_lines_matched = 0
+        for line in oneways:
+            pts = [self._rot(x, y, -1.0) for x, y in line]
+            hit = False
+            for (u1, v1), (u2, v2) in zip(pts, pts[1:], strict=False):
+                du, dv = u2 - u1, v2 - v1
+                if abs(du) >= abs(dv):
+                    heading = "E" if du > 0 else "W"
+                else:
+                    heading = "N" if dv > 0 else "S"
+                for ln in self.links:
+                    if ln.lid in blocked or ln.heading != OPPOSITE[heading]:
+                        continue
+                    if ln.axis == "EW":
+                        off = abs((v1 + v2) / 2 - ln.frm.v)
+                        lo, hi = sorted((u1, u2))
+                        a, b = sorted((ln.frm.u, ln.to.u))
+                    else:
+                        off = abs((u1 + u2) / 2 - ln.frm.u)
+                        lo, hi = sorted((v1, v2))
+                        a, b = sorted((ln.frm.v, ln.to.v))
+                    overlap = min(hi, b) - max(lo, a)
+                    if off <= ONEWAY_TOL_M and overlap >= 0.5 * ln.length:
+                        blocked.add(ln.lid)
+                        hit = True
+            self.n_oneway_lines_matched += hit
+        self.n_oneway_blocked = len(blocked)
+        if blocked:
+            for ln in self.links:
+                if ln.lid in blocked:
+                    del ln.frm.out[ln.heading]
+            self.links = [ln for ln in self.links if ln.lid not in blocked]
 
     # --- 座標変換 ---
 
@@ -256,9 +313,30 @@ class GridSim:
         coeff = max(0.7, self.rng.gauss(0.95, 0.08))
         return SPEED_LIMIT[ln.klass] * coeff * self.p["v0_factor"]
 
+    def _sample_turn(self, ln: Link) -> int:
+        """ln の下流ノードでの転回を選ぶ。
+
+        内部ノードでリンクが無い方向(一方通行の逆走側)は選ばず、
+        残る転回で確率を再正規化する。境界ノードの無い方向は
+        区域外への流出なので通常確率のまま選ぶ。
+        """
+        node = ln.to
+        if node.boundary:
+            opts = [0, 1, 2]
+        else:
+            opts = [i for i in range(3) if TURN_MAP[ln.heading][i] in node.out]
+            if not opts:  # 全方向封鎖(想定外)。直進扱いで流出させる
+                return 0
+        r = self.rng.random() * sum(TURN_P[i] for i in opts)
+        acc = 0.0
+        for i in opts:
+            acc += TURN_P[i]
+            if r < acc:
+                return i
+        return opts[-1]
+
     def _make_vehicle(self, ln: Link) -> Vehicle:
-        r = self.rng.random()
-        turn = 0 if r < TURN_P[0] else (1 if r < TURN_P[0] + TURN_P[1] else 2)
+        turn = self._sample_turn(ln)
         return Vehicle(
             pos=0.0,
             speed=min(SPAWN_SPEED, SPEED_LIMIT[ln.klass]),
@@ -368,8 +446,7 @@ class GridSim:
                     break
                 ln.vehicles.pop(0)
                 veh.pos -= ln.length
-                r = self.rng.random()
-                veh.turn = 0 if r < TURN_P[0] else (1 if r < TURN_P[0] + TURN_P[1] else 2)
+                veh.turn = self._sample_turn(nxt)
                 nxt.vehicles.append(veh)
 
         # 3. コードン流入(ポアソン到着)

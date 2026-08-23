@@ -6,8 +6,8 @@
   "n_sections_cordon": 17,
   "coverage": {
     "census_len_in_cordon_m": 13493.4,
-    "ksj_len_in_cordon_m": 74979.9,
-    "ratio": 0.18,
+    "ksj_len_in_cordon_m": 64668.8,
+    "ratio": 0.209,
     "note": "センサスは国道・都道府県道・主要幹線市道のみ。細街路は含まれない"
   },
   "completeness": {

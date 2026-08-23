@@ -1,6 +1,6 @@
 {
   "release_tag": "data-v1",
-  "fetched_at": "2026-08-21T05:58:38.440423+00:00",
+  "fetched_at": "2026-08-23T09:25:06.445820+00:00",
   "files": {
     "traffic_census_2021_converted.parquet": {
       "bytes": 99006002,
