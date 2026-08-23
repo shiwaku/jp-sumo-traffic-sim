@@ -39,7 +39,7 @@ from shapely.geometry import Point
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from sapporo_sim import config as C
 
-csv.field_size_limit(sys.maxsize)
+csv.field_size_limit(2**31 - 1)  # sys.maxsize は Windows の C long を超える
 
 SOURCE_CODE = "3001"  # 北海道(札幌方面)。函館3002 / 旭川3003 / 釧路3004 / 北見3005
 POSITION_URL = "https://www.tmt.or.jp/research/index10_1_1.html"
@@ -261,7 +261,7 @@ def main() -> None:
     inner = g[g["in_cordon"]]
     cyc_vals = [r["cycle_max_s"] for r in recs if r["in_cordon"] and r["cycle_max_s"]]
     rep = dict(
-        source=str(zp.relative_to(C.ROOT)),
+        source=zp.relative_to(C.ROOT).as_posix(),  # OS 非依存の区切りで記録
         target_month=ym,
         source_code=SOURCE_CODE,
         n_control=len(ids_control),
