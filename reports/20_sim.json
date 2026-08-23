@@ -3,6 +3,30 @@
     "scenario": "normal",
     "sim_seconds": 600.0,
     "warmup_s": 300.0,
+    "wall_clock_s": 1.4,
+    "n_nodes": 156,
+    "n_links": 511,
+    "n_entries": 46,
+    "n_jartic_cycles": 18,
+    "n_oneway_lines": 39,
+    "n_oneway_lines_matched": 10,
+    "n_oneway_links_blocked": 63,
+    "spawned": 1905,
+    "exited": 755,
+    "blocked_spawn": 318,
+    "vehicles": {
+      "min": 715,
+      "mean": 951.1,
+      "max": 1151
+    },
+    "mean_speed_kmh": 14.6,
+    "max_links_backed_up": 3,
+    "file_mb": 3.86
+  },
+  "winter": {
+    "scenario": "winter",
+    "sim_seconds": 600.0,
+    "warmup_s": 300.0,
     "wall_clock_s": 1.3,
     "n_nodes": 156,
     "n_links": 511,
@@ -11,40 +35,16 @@
     "n_oneway_lines": 39,
     "n_oneway_lines_matched": 10,
     "n_oneway_links_blocked": 63,
-    "spawned": 1959,
-    "exited": 842,
-    "blocked_spawn": 267,
+    "spawned": 1531,
+    "exited": 430,
+    "blocked_spawn": 685,
     "vehicles": {
-      "min": 726,
-      "mean": 930.1,
-      "max": 1118
+      "min": 712,
+      "mean": 916.8,
+      "max": 1100
     },
-    "mean_speed_kmh": 15.0,
-    "max_links_backed_up": 2,
-    "file_mb": 3.78
-  },
-  "winter": {
-    "scenario": "winter",
-    "sim_seconds": 600.0,
-    "warmup_s": 300.0,
-    "wall_clock_s": 1.2,
-    "n_nodes": 156,
-    "n_links": 511,
-    "n_entries": 46,
-    "n_jartic_cycles": 18,
-    "n_oneway_lines": 39,
-    "n_oneway_lines_matched": 10,
-    "n_oneway_links_blocked": 63,
-    "spawned": 1486,
-    "exited": 451,
-    "blocked_spawn": 720,
-    "vehicles": {
-      "min": 687,
-      "mean": 890.0,
-      "max": 1035
-    },
-    "mean_speed_kmh": 9.2,
+    "mean_speed_kmh": 9.0,
     "max_links_backed_up": 12,
-    "file_mb": 3.58
+    "file_mb": 3.69
   }
 }

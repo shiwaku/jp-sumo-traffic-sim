@@ -152,3 +152,23 @@ def test_spillback_occurs_in_winter():
     """冬季は流入が塞がれる(スピルバックの前兆)が観測される。"""
     sim = run("winter", seconds=420.0)
     assert sim.n_blocked_spawn > 0
+
+
+def test_poisson_spawn_not_capped():
+    """流入がポアソン到着になり、1ステップ1台の上限が消える(issue #6)。"""
+    sim = GridSim()
+    lam = 0.4
+    n = 5000
+    total = sum(sim._poisson(lam) for _ in range(n))
+    assert abs(total / n - lam) < 0.05  # 平均が λ に一致
+    assert any(sim._poisson(2.5) >= 2 for _ in range(200))  # 複数台/ステップが出る
+
+
+def test_snapshot_signal_three_states():
+    """信号状態が 東西青/南北青/全赤 の3値で記録される(issue #7)。"""
+    sim = GridSim()
+    n0 = sim.nodes[0]  # offset=0, cycle=120, g_ew=g_ns=57
+    assert (n0.offset, n0.cycle) == (0.0, 120.0)
+    for t, expect in ((10.0, "1"), (58.0, "2"), (70.0, "0"), (118.0, "2")):
+        sim.t = t
+        assert sim.snapshot()["sig"][0] == expect, f"t={t}"
