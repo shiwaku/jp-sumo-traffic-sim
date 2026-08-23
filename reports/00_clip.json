@@ -4,9 +4,31 @@
     "6440": "EPSG:6668"
   },
   "n_features_source": 345612,
-  "n_features_clipped": 2376,
-  "n_features_in_cordon": 1034,
-  "total_length_km": 176.94,
+  "n_features_clipped": 1934,
+  "n_features_in_cordon": 772,
+  "total_length_km": 156.07,
+  "by_road_type": {
+    "1": {
+      "label": "通常部",
+      "n": 1934,
+      "n_in_cordon": 772,
+      "length_km": 156.07
+    },
+    "2": {
+      "label": "庭園路",
+      "n": 439,
+      "n_in_cordon": 261,
+      "length_km": 20.75
+    },
+    "3": {
+      "label": "徒歩道",
+      "n": 3,
+      "n_in_cordon": 1,
+      "length_km": 0.11
+    }
+  },
+  "n_paths_excluded": 442,
+  "n_paths_excluded_in_cordon": 262,
   "cordon_grid": {
     "west": 88855.0,
     "east": 90375.0,

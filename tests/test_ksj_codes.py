@@ -27,3 +27,16 @@ def test_road_state_grade_separated_codes():
 def test_road_category():
     assert K.ROAD_CATEGORY["1"] == "国道"
     assert K.ROAD_CATEGORY["3"] == "市区町村道等"
+
+
+def test_road_type_non_vehicular():
+    """庭園路・徒歩道・石段は車道ネットワークから除外する(issue #10)。
+
+    「5: 不明」を除外に入れると実在の車道を失いかねないので、保守的に残す。
+    """
+    assert K.ROAD_TYPE["1"] == "通常部"
+    assert set(K.NON_VEHICULAR_TYPES) == {"2", "3", "4"}
+    assert "1" not in K.NON_VEHICULAR_TYPES
+    assert "5" not in K.NON_VEHICULAR_TYPES
+    for code in K.NON_VEHICULAR_TYPES:
+        assert K.ROAD_TYPE[code] in ("庭園路", "徒歩道", "石段")
