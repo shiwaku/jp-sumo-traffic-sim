@@ -62,6 +62,20 @@ def test_no_overlap_under_saturation():
                 assert vs[-1].pos >= 0.0, f"t={sim.t}: リンク始端より手前に配置"
 
 
+def test_boundary_turn_exits():
+    """境界で転回先が無い方向は強制直進せず、区域外への流出になる(issue #4)。"""
+    sim = GridSim()
+    jmax = len(sim.vs) - 1
+    ln = sim.grid[(0, jmax)].out["E"]  # 北端(北5条通)の東行き
+    veh = sim._make_vehicle(ln)
+    veh.turn = 1  # 左折(北) → 区域外
+    assert sim._next_link(ln, veh) is None
+    veh.turn = 0  # 直進(東) → 区域内に残る
+    assert sim._next_link(ln, veh) is ln.to.out["E"]
+    veh.turn = 2  # 右折(南) → 区域内に残る
+    assert sim._next_link(ln, veh) is ln.to.out["S"]
+
+
 def test_winter_slower():
     """冬季は平常時より遅い(v0 低減と車間拡大の帰結)。"""
     vn = run("normal").stats()["mean_speed_ms"]
