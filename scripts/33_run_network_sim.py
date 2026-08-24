@@ -14,75 +14,30 @@ import sys
 import time
 from pathlib import Path
 
-import geopandas as gpd
 from pyproj import Transformer
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from sapporo_sim import config as C
+from sapporo_sim.network.io import load_network_inputs
 from sapporo_sim.sim.netsim import DT, NetSim
 
 WARMUP_S = 300.0
 RECORD_S = 300.0
 FRAME_S = 1.0
+ENTRY_HOUR = 8  # 朝ピーク(reports/14_census.json の peak_hour_up)
 OUT = C.ROOT / "viewer" / "public" / "data"
 
 
-def load_inputs():
-    nodes_g = gpd.read_file(C.PROCESSED / "network_conflated.gpkg", layer="nodes")
-    edges_g = gpd.read_file(C.PROCESSED / "edges.gpkg", layer="edges")
-    links_g = gpd.read_file(C.PROCESSED / "network_conflated.gpkg", layer="links")
-    try:
-        stops_g = gpd.read_file(C.PROCESSED / "network_conflated.gpkg", layer="stops")
-    except Exception:
-        stops_g = None
-    f = C.PROCESSED / "signal_plans.json"
-    plans = json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
-
-    nodes = [
-        dict(
-            nid=int(r["nid"]),
-            x=r.geometry.x,
-            y=r.geometry.y,
-            has_signal=bool(r["has_signal"]),
-            signal_uid=r["signal_uid"] or "",
-        )
-        for _, r in nodes_g.iterrows()
-    ]
-    edges = [
-        dict(
-            eid=int(r["eid"]),
-            frm=int(r["frm"]),
-            to=int(r["to"]),
-            geometry=list(r.geometry.coords),
-            length=float(r["length_m"]),
-            speed_kmh=int(r["speed_kmh"]),
-            category=str(r["category"]),
-            linked_edge=int(r["linked_edge"]),
-            n_sublanes=int(r["n_sublanes"]),
-            right_turn_lane=int(r["right_turn_lane"]),
-        )
-        for _, r in edges_g.iterrows()
-    ]
-
-    # 一時停止: (ノード, 流入リンク) → 該当する方向別 Edge を特定
-    stop_edges: set[int] = set()
-    if stops_g is not None:
-        link_ab = {int(i): (int(r["a"]), int(r["b"])) for i, r in links_g.iterrows()}
-        by_pair = {}
-        for e in edges:
-            by_pair.setdefault((e["frm"], e["to"]), []).append(e["eid"])
-        for _, r in stops_g.iterrows():
-            node, li = int(r["node"]), int(r["link_index"])
-            a, b = link_ab[li]
-            frm = b if node == a else a
-            for eid in by_pair.get((frm, node), []):
-                stop_edges.add(eid)
-    return nodes, edges, plans, stop_edges
-
-
-def run(scenario, nodes, edges, plans, stop_edges):
+def run(scenario, nodes, edges, plans, stop_edges, hourly):
     sim = NetSim(
-        nodes, edges, scenario=scenario, seed=42, signal_plans=plans, stop_edges=stop_edges
+        nodes,
+        edges,
+        scenario=scenario,
+        seed=42,
+        signal_plans=plans,
+        stop_edges=stop_edges,
+        entry_hourly=hourly,
+        entry_hour=ENTRY_HOUR,
     )
 
     cx = sum(n["x"] for n in nodes) / len(nodes)
@@ -117,6 +72,8 @@ def run(scenario, nodes, edges, plans, stop_edges):
         n_signalized=sim.n_signalized,
         n_edges=len(sim.edges),
         n_entries=len(sim.entries),
+        n_census_entries=sim.n_census_entries,
+        entry_hour=ENTRY_HOUR,
         n_stop_sign_edges=len(stop_edges),
         wall_clock_s=round(time.time() - t0, 1),
         spawned=sim.n_spawned,
@@ -141,11 +98,11 @@ def run(scenario, nodes, edges, plans, stop_edges):
 
 
 def main() -> None:
-    nodes, edges, plans, stop_edges = load_inputs()
+    nodes, edges, plans, stop_edges, hourly = load_network_inputs()
     OUT.mkdir(parents=True, exist_ok=True)
     report = {}
     for scenario in ("normal", "winter"):
-        data, stats = run(scenario, nodes, edges, plans, stop_edges)
+        data, stats = run(scenario, nodes, edges, plans, stop_edges, hourly)
         f = OUT / f"sim_net_{scenario}.json"
         f.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
         stats["file_mb"] = round(f.stat().st_size / 1e6, 2)

@@ -1,0 +1,348 @@
+{
+  "peak": {
+    "hour": 8,
+    "warmup_s": 600.0,
+    "record_s": 1800.0,
+    "n_entries": 63,
+    "n_census_entries": 9,
+    "spawned": 11258,
+    "exited": 10543,
+    "blocked_spawn": 1673,
+    "mean_speed_kmh": 11.664000000000001,
+    "sections": [
+      {
+        "section": "01300051020",
+        "route": "一般国道５号",
+        "obs_vol": 2786.0,
+        "sim_vol": 560.0,
+        "vol_ratio": 0.2,
+        "obs_v_kmh": 12.6,
+        "sim_v_kmh": 4.5
+      },
+      {
+        "section": "01300120010",
+        "route": "一般国道１２号",
+        "obs_vol": 2276.0,
+        "sim_vol": 198.0,
+        "vol_ratio": 0.09,
+        "obs_v_kmh": 12.9,
+        "sim_v_kmh": 16.3
+      },
+      {
+        "section": "01300120020",
+        "route": "一般国道１２号",
+        "obs_vol": 2276.0,
+        "sim_vol": 842.0,
+        "vol_ratio": 0.37,
+        "obs_v_kmh": 15.8,
+        "sim_v_kmh": 11.4
+      },
+      {
+        "section": "01300360010",
+        "route": "一般国道３６号",
+        "obs_vol": 689.0,
+        "sim_vol": 3.0,
+        "vol_ratio": 0.0,
+        "obs_v_kmh": 10.1,
+        "sim_v_kmh": 9.5
+      },
+      {
+        "section": "01300360020",
+        "route": "一般国道３６号",
+        "obs_vol": 1558.0,
+        "sim_vol": 4.0,
+        "vol_ratio": 0.0,
+        "obs_v_kmh": 13.7,
+        "sim_v_kmh": 8.9
+      },
+      {
+        "section": "01300360030",
+        "route": "一般国道３６号",
+        "obs_vol": 2513.0,
+        "sim_vol": 316.0,
+        "vol_ratio": 0.13,
+        "obs_v_kmh": 13.4,
+        "sim_v_kmh": 8.7
+      },
+      {
+        "section": "01302300010",
+        "route": "一般国道２３０号",
+        "obs_vol": 1924.0,
+        "sim_vol": 111.0,
+        "vol_ratio": 0.06,
+        "obs_v_kmh": 15.2,
+        "sim_v_kmh": 15.8
+      },
+      {
+        "section": "01302300020",
+        "route": "一般国道２３０号",
+        "obs_vol": 1809.0,
+        "sim_vol": 76.0,
+        "vol_ratio": 0.04,
+        "obs_v_kmh": 15.3,
+        "sim_v_kmh": 15.3
+      },
+      {
+        "section": "01302300030",
+        "route": "一般国道２３０号",
+        "obs_vol": 1809.0,
+        "sim_vol": 222.0,
+        "vol_ratio": 0.12,
+        "obs_v_kmh": 18.5,
+        "sim_v_kmh": 16.3
+      },
+      {
+        "section": "01400180010",
+        "route": "札幌停車場線",
+        "obs_vol": 489.0,
+        "sim_vol": 101.0,
+        "vol_ratio": 0.21,
+        "obs_v_kmh": 9.8,
+        "sim_v_kmh": 16.4
+      },
+      {
+        "section": "01401240080",
+        "route": "宮の沢北１条線",
+        "obs_vol": 1843.0,
+        "sim_vol": 826.0,
+        "vol_ratio": 0.45,
+        "obs_v_kmh": 18.0,
+        "sim_v_kmh": 13.6
+      },
+      {
+        "section": "01509000070",
+        "route": "真駒内篠路線",
+        "obs_vol": 2795.0,
+        "sim_vol": 493.0,
+        "vol_ratio": 0.18,
+        "obs_v_kmh": 13.7,
+        "sim_v_kmh": 34.7
+      },
+      {
+        "section": "01509000080",
+        "route": "真駒内篠路線",
+        "obs_vol": 2795.0,
+        "sim_vol": 240.0,
+        "vol_ratio": 0.09,
+        "obs_v_kmh": 16.2,
+        "sim_v_kmh": 11.5
+      },
+      {
+        "section": "01509000090",
+        "route": "真駒内篠路線",
+        "obs_vol": 2334.0,
+        "sim_vol": 80.0,
+        "vol_ratio": 0.03,
+        "obs_v_kmh": 28.6,
+        "sim_v_kmh": 19.7
+      },
+      {
+        "section": "01509000150",
+        "route": "真駒内篠路線",
+        "obs_vol": 2795.0,
+        "sim_vol": 1238.0,
+        "vol_ratio": 0.44,
+        "obs_v_kmh": 12.1,
+        "sim_v_kmh": 22.5
+      },
+      {
+        "section": "01604520090",
+        "route": "下手稲札幌線",
+        "obs_vol": 1984.0,
+        "sim_vol": 376.0,
+        "vol_ratio": 0.19,
+        "obs_v_kmh": 12.6,
+        "sim_v_kmh": 15.8
+      },
+      {
+        "section": "01700090010",
+        "route": "南４条線",
+        "obs_vol": 1484.0,
+        "sim_vol": 88.0,
+        "vol_ratio": 0.06,
+        "obs_v_kmh": 14.1,
+        "sim_v_kmh": 21.0
+      }
+    ],
+    "summary": {
+      "vol_ratio_weighted": 0.17,
+      "vol_ratio_median": 0.12,
+      "speed_mae_kmh": 5.6,
+      "speed_bias_kmh": 0.5,
+      "n_sections": 17
+    }
+  },
+  "offpeak": {
+    "hour": 13,
+    "warmup_s": 600.0,
+    "record_s": 1800.0,
+    "n_entries": 63,
+    "n_census_entries": 9,
+    "spawned": 11063,
+    "exited": 10335,
+    "blocked_spawn": 1080,
+    "mean_speed_kmh": 11.016,
+    "sections": [
+      {
+        "section": "01300051020",
+        "route": "一般国道５号",
+        "obs_vol": 2272.0,
+        "sim_vol": 548.0,
+        "vol_ratio": 0.24,
+        "obs_v_kmh": 16.8,
+        "sim_v_kmh": 5.7
+      },
+      {
+        "section": "01300120010",
+        "route": "一般国道１２号",
+        "obs_vol": 2243.0,
+        "sim_vol": 192.0,
+        "vol_ratio": 0.09,
+        "obs_v_kmh": 14.9,
+        "sim_v_kmh": 17.6
+      },
+      {
+        "section": "01300120020",
+        "route": "一般国道１２号",
+        "obs_vol": 2243.0,
+        "sim_vol": 867.0,
+        "vol_ratio": 0.39,
+        "obs_v_kmh": 18.0,
+        "sim_v_kmh": 11.7
+      },
+      {
+        "section": "01300360010",
+        "route": "一般国道３６号",
+        "obs_vol": 829.0,
+        "sim_vol": 2.0,
+        "vol_ratio": 0.0,
+        "obs_v_kmh": 10.2,
+        "sim_v_kmh": 5.2
+      },
+      {
+        "section": "01300360020",
+        "route": "一般国道３６号",
+        "obs_vol": 1823.0,
+        "sim_vol": 2.0,
+        "vol_ratio": 0.0,
+        "obs_v_kmh": 17.4,
+        "sim_v_kmh": 19.5
+      },
+      {
+        "section": "01300360030",
+        "route": "一般国道３６号",
+        "obs_vol": 2205.0,
+        "sim_vol": 291.0,
+        "vol_ratio": 0.13,
+        "obs_v_kmh": 19.6,
+        "sim_v_kmh": 7.9
+      },
+      {
+        "section": "01302300010",
+        "route": "一般国道２３０号",
+        "obs_vol": 1888.0,
+        "sim_vol": 133.0,
+        "vol_ratio": 0.07,
+        "obs_v_kmh": 16.9,
+        "sim_v_kmh": 16.3
+      },
+      {
+        "section": "01302300020",
+        "route": "一般国道２３０号",
+        "obs_vol": 1647.0,
+        "sim_vol": 80.0,
+        "vol_ratio": 0.05,
+        "obs_v_kmh": 17.1,
+        "sim_v_kmh": 15.3
+      },
+      {
+        "section": "01302300030",
+        "route": "一般国道２３０号",
+        "obs_vol": 1647.0,
+        "sim_vol": 231.0,
+        "vol_ratio": 0.14,
+        "obs_v_kmh": 21.0,
+        "sim_v_kmh": 17.7
+      },
+      {
+        "section": "01400180010",
+        "route": "札幌停車場線",
+        "obs_vol": 540.0,
+        "sim_vol": 81.0,
+        "vol_ratio": 0.15,
+        "obs_v_kmh": 9.5,
+        "sim_v_kmh": 14.6
+      },
+      {
+        "section": "01401240080",
+        "route": "宮の沢北１条線",
+        "obs_vol": 2135.0,
+        "sim_vol": 996.0,
+        "vol_ratio": 0.47,
+        "obs_v_kmh": 20.6,
+        "sim_v_kmh": 12.5
+      },
+      {
+        "section": "01509000070",
+        "route": "真駒内篠路線",
+        "obs_vol": 2453.0,
+        "sim_vol": 460.0,
+        "vol_ratio": 0.19,
+        "obs_v_kmh": 24.9,
+        "sim_v_kmh": 34.9
+      },
+      {
+        "section": "01509000080",
+        "route": "真駒内篠路線",
+        "obs_vol": 2453.0,
+        "sim_vol": 221.0,
+        "vol_ratio": 0.09,
+        "obs_v_kmh": 20.4,
+        "sim_v_kmh": 12.1
+      },
+      {
+        "section": "01509000090",
+        "route": "真駒内篠路線",
+        "obs_vol": 1705.0,
+        "sim_vol": 71.0,
+        "vol_ratio": 0.04,
+        "obs_v_kmh": 40.1,
+        "sim_v_kmh": 19.3
+      },
+      {
+        "section": "01509000150",
+        "route": "真駒内篠路線",
+        "obs_vol": 2453.0,
+        "sim_vol": 1148.0,
+        "vol_ratio": 0.47,
+        "obs_v_kmh": 18.0,
+        "sim_v_kmh": 23.5
+      },
+      {
+        "section": "01604520090",
+        "route": "下手稲札幌線",
+        "obs_vol": 1886.0,
+        "sim_vol": 381.0,
+        "vol_ratio": 0.2,
+        "obs_v_kmh": 15.8,
+        "sim_v_kmh": 16.6
+      },
+      {
+        "section": "01700090010",
+        "route": "南４条線",
+        "obs_vol": 1467.0,
+        "sim_vol": 86.0,
+        "vol_ratio": 0.06,
+        "obs_v_kmh": 14.4,
+        "sim_v_kmh": 20.6
+      }
+    ],
+    "summary": {
+      "vol_ratio_weighted": 0.18,
+      "vol_ratio_median": 0.13,
+      "speed_mae_kmh": 6.4,
+      "speed_bias_kmh": -2.6,
+      "n_sections": 17
+    }
+  }
+}

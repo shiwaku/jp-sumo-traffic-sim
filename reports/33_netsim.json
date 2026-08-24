@@ -6,20 +6,22 @@
     "n_signalized": 173,
     "n_edges": 1176,
     "n_entries": 63,
+    "n_census_entries": 9,
+    "entry_hour": 8,
     "n_stop_sign_edges": 101,
-    "wall_clock_s": 3.1,
-    "spawned": 1860,
-    "exited": 1458,
-    "blocked_spawn": 67,
-    "lane_changes": 5851,
+    "wall_clock_s": 6.1,
+    "spawned": 2934,
+    "exited": 2238,
+    "blocked_spawn": 304,
+    "lane_changes": 8692,
     "vehicles": {
-      "min": 354,
-      "mean": 400.1,
-      "max": 425
+      "min": 548,
+      "mean": 645.6,
+      "max": 707
     },
-    "mean_speed_kmh": 16.2,
-    "max_links_backed_up": 5,
-    "file_mb": 1.69
+    "mean_speed_kmh": 14.3,
+    "max_links_backed_up": 14,
+    "file_mb": 2.67
   },
   "winter": {
     "scenario": "winter",
@@ -28,19 +30,21 @@
     "n_signalized": 173,
     "n_edges": 1176,
     "n_entries": 63,
+    "n_census_entries": 9,
+    "entry_hour": 8,
     "n_stop_sign_edges": 101,
-    "wall_clock_s": 4.0,
-    "spawned": 1568,
-    "exited": 754,
-    "blocked_spawn": 413,
-    "lane_changes": 1839,
+    "wall_clock_s": 6.1,
+    "spawned": 1813,
+    "exited": 935,
+    "blocked_spawn": 1401,
+    "lane_changes": 1837,
     "vehicles": {
-      "min": 520,
-      "mean": 685.7,
-      "max": 814
+      "min": 609,
+      "mean": 756.6,
+      "max": 876
     },
-    "mean_speed_kmh": 4.1,
-    "max_links_backed_up": 42,
-    "file_mb": 2.78
+    "mean_speed_kmh": 4.5,
+    "max_links_backed_up": 38,
+    "file_mb": 3.09
   }
 }

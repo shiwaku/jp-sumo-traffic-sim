@@ -29,10 +29,12 @@ from __future__ import annotations
 
 import math
 import random
+from collections import deque
 from dataclasses import dataclass, field
 
 from sapporo_sim import config as C
 from sapporo_sim.network.lanes import SUBLANE_W_M
+from sapporo_sim.sim.demand import DEFAULT_RATE, hourly_rate
 from sapporo_sim.sim.mobil import (
     SHIFT_COOLDOWN_S,
     decide_shift,
@@ -61,6 +63,10 @@ STOP_ZONE_M = 3.0  # 停止線からこの距離以内で停止したら発進�
 RT_SUB = 2  # 右折専用レーンの幅 [サブレーン](乗用車1台分)
 RT_ZONE_M = 60.0  # 停止線からこの距離で右折レーンの出入りを始める
 RT_MIN_SUB = 4  # 専用レーンが成立する最小実効サブレーン数(直進1車線分を残す)
+
+# 転回の連鎖で区域内を巡回し続ける車両への上限(design.md §5.5)。
+# 超えたら最近傍の流出点へ向ける。コードンの対角は交差点 20〜25 個分
+MAX_HOPS = 30
 
 
 @dataclass
@@ -103,13 +109,21 @@ class NEdge:
     heading_out: float = 0.0  # 始端方位角 [rad]
     stop_sign: bool = False  # 一時停止(下流ノード側)
     linked: int | None = None  # 対向 Edge の eid
+    census_id: str = ""  # センサス区間(断面照合・実測需要用。無ければ空)
     n_sub: int = 2  # サブレーン数(データ由来)
     n_sub_eff: int = 2  # 実効サブレーン数(冬季は雪堤で減る)
     rt_lane: bool = False  # 右折専用車線あり(センサス区間代表値)
-    nexts: dict = field(default_factory=dict)  # turn(0/1/2) -> NEdge
+    # turn(0/1/2) -> [(重み, NEdge), ...] 重み降順。上下分離・並走車道では
+    # 同じ転回クラスに複数候補が入る(最良1本だけだと残りの Edge が飢餓する)
+    nexts: dict = field(default_factory=dict)
     oncoming: object = None  # NEdge | None
     vehicles: list = field(default_factory=list)
     _cum: list = field(default_factory=list)
+
+    def best(self, turn: int):
+        """転回クラス turn の最良候補(NEdge)。無ければ None。"""
+        cands = self.nexts.get(turn)
+        return cands[0][1] if cands else None
 
     def span_tail(self, s: int, w: int) -> Vehicle | None:
         """サブレーン区間 [s, s+w) と重なる最後尾(最小 pos)の車両。"""
@@ -188,6 +202,8 @@ class NetSim:
         signal_plans: dict | None = None,
         stop_edges: set | None = None,
         entry_nodes: set | None = None,
+        entry_hourly: dict | None = None,
+        entry_hour: int = 8,
     ):
         self.scenario = scenario
         self.p = PARAMS[scenario]
@@ -195,6 +211,7 @@ class NetSim:
         self.t = 0.0
         self.n_spawned = self.n_exited = self.n_blocked_spawn = 0
         self.n_lane_changes = 0
+        self.edge_flow: dict[int, int] = {}  # Edge 下流端の通過台数(断面交通量)
 
         th = math.radians(C.GRID_BEARING_DEG)
 
@@ -257,30 +274,37 @@ class NetSim:
                 n_sub=n_sub,
                 n_sub_eff=max(1, n_sub - loss),
                 rt_lane=bool(e.get("right_turn_lane")),
+                census_id=str(e.get("census_id") or ""),
             )
             self.edges[ne.eid] = ne
         for ne in self.edges.values():
             ne.frm.out.append(ne)
 
         # --- 転回先と対向 Edge を前計算 ---
+        # 各転回クラスに全候補を残し、理想角からのずれで重み付けする
+        # (w = 1/(1+ずれ)²)。最良1本だけにすると上下分離・並走車道の
+        # 「もう1本」がどの流入からも選ばれず、ネットワークの半分が
+        # 飢餓する(Phase 3-① で発覚。到達可能 594/1176 → 1051/1176)
         for ne in self.edges.values():
-            best: dict[int, tuple[float, NEdge]] = {}
-            for cand in ne.to.out:
-                if cand.eid == ne.linked:
+            cand: dict[int, list] = {0: [], 1: [], 2: []}
+            for c in ne.to.out:
+                if c.eid == ne.linked:
                     continue  # U ターン(対向 Edge)は除外
-                d = _angdiff(cand.heading_out, ne.heading_in)
+                d = _angdiff(c.heading_out, ne.heading_in)
                 if abs(d) <= STRAIGHT_DEG:
-                    turn = 0
+                    turn, score = 0, abs(d)
                 elif d > 0 and d < UTURN_DEG:
-                    turn = 1  # 左折(反時計回り)
+                    turn, score = 1, abs(d - 90.0)  # 左折(反時計回り)
                 elif d < 0 and d > -UTURN_DEG:
-                    turn = 2  # 右折
+                    turn, score = 2, abs(-d - 90.0)  # 右折
                 else:
                     continue
-                score = abs(d) if turn == 0 else abs(abs(d) - 90.0)
-                if turn not in best or score < best[turn][0]:
-                    best[turn] = (score, cand)
-            ne.nexts = {k: v[1] for k, v in best.items()}
+                cand[turn].append((1.0 / (1.0 + score) ** 2, c))
+            # 転回先が対向・鋭角折返ししか無いノードは行き止まり = 流出。
+            # コードン境界のほか、創成トンネル坑口のような「ネットワークの
+            # 外へ続く道」も内部の吸い込み口としてここで流出する。折返しを
+            # 許すと上下線を往復する閉回路ができ、デッドロックの温床になる
+            ne.nexts = {t: sorted(v, key=lambda x: -x[0]) for t, v in cand.items() if v}
             # 対向: 同じノードに逆向きで入る Edge(自分の対向 Edge の同一リンクは除外)
             onc, onc_score = None, 45.0
             for cand in self.edges.values():
@@ -291,13 +315,44 @@ class NetSim:
                     onc, onc_score = cand, d
             ne.oncoming = onc
 
+        # --- 流出点への最短ホップ経路(design.md §5.5 の巡回上限用) ---
+        # 出口 = nexts が空の Edge(境界の行き止まり)。逆 BFS で各 Edge の
+        # 「出口へ向かう次の Edge」を前計算する
+        self.exit_next: dict[int, int] = {}
+        dist: dict[int, int] = {}
+        preds: dict[int, list[int]] = {}
+        dq = deque()
+        for e in self.edges.values():
+            if not e.nexts:
+                dist[e.eid] = 0
+                dq.append(e.eid)
+            for cands in e.nexts.values():
+                for _, c in cands:
+                    preds.setdefault(c.eid, []).append(e.eid)
+        while dq:
+            eid = dq.popleft()
+            for p in preds.get(eid, []):
+                if p not in dist:
+                    dist[p] = dist[eid] + 1
+                    self.exit_next[p] = eid
+                    dq.append(p)
+
         # --- 流入点: 境界(次数1)ノードから出る Edge ---
+        # レートはセンサス時間帯別交通量(entry_hourly、方向平均)を優先し、
+        # 裏付けの無い流入(細街路など)は分類の既定値(sim/demand.py)
         entry_nodes = entry_nodes if entry_nodes is not None else self._degree1_nodes()
         self.entries = [e for e in self.edges.values() if e.frm.nid in entry_nodes]
-        self.entry_rate = {
-            e.eid: (500 if e.klass == "arterial" else 150) / 3600.0 * demand_scale
-            for e in self.entries
-        }
+        self.entry_rate = {}
+        self.n_census_entries = 0
+        for e in self.entries:
+            rate = None
+            if entry_hourly and e.census_id:
+                rate = hourly_rate(entry_hourly.get(e.census_id), entry_hour)
+            if rate is None:
+                rate = DEFAULT_RATE[e.klass]
+            else:
+                self.n_census_entries += 1
+            self.entry_rate[e.eid] = rate / 3600.0 * demand_scale
 
     def _degree1_nodes(self) -> set:
         """無向次数1のノード(ネットワーク末端 = コードン境界の流出入口)。"""
@@ -314,20 +369,30 @@ class NetSim:
 
     # --- 動力学(simple.py の検証済みロジック + サブレーン化) ---
 
-    def _sample_turn(self, edge: NEdge) -> int:
+    def _sample_next(self, edge: NEdge) -> tuple[int, NEdge | None]:
+        """転回クラスを固定比率で、クラス内の候補を角度適合の重みで引く。"""
         opts = [i for i in range(3) if i in edge.nexts]
         if not opts:
-            return 0  # 転回先なし = 境界で流出
+            return 0, None  # 転回先なし = 境界で流出
         r = self.rng.random() * sum(TURN_P[i] for i in opts)
-        acc = 0.0
+        acc, turn = 0.0, opts[-1]
         for i in opts:
             acc += TURN_P[i]
             if r < acc:
-                return i
-        return opts[-1]
+                turn = i
+                break
+        cands = edge.nexts[turn]
+        r2 = self.rng.random() * sum(w for w, _ in cands)
+        acc = 0.0
+        for w, c in cands:
+            acc += w
+            if r2 < acc:
+                return turn, c
+        return turn, cands[-1][1]
 
     def _make_vehicle(self, edge: NEdge) -> Vehicle:
         coeff = max(0.7, self.rng.gauss(0.95, 0.08))
+        turn, nxt = self._sample_next(edge)
         v = Vehicle(
             pos=0.0,
             speed=min(SPAWN_SPEED, edge.v_limit),
@@ -336,13 +401,40 @@ class NetSim:
             b=self.p["b"],
             s0=self.p["s0"],
             T=self.p["T"],
-            turn=self._sample_turn(edge),
+            turn=turn,
         )
         v.stop_cleared = False
+        v.next_edge = nxt
+        v.hops = 0
         return v
 
+    def _assign_next(self, veh: Vehicle, edge: NEdge) -> None:
+        """edge に入った veh の転回先を決める。巡回上限を超えたら出口へ向ける。"""
+        veh.turn, veh.next_edge = self._sample_next(edge)
+        if veh.hops < MAX_HOPS:
+            return
+        ex = self.exit_next.get(edge.eid)
+        if ex is None:
+            return
+        nxt = self.edges[ex]
+        for t, cands in edge.nexts.items():
+            if any(c is nxt for _, c in cands):
+                veh.turn, veh.next_edge = t, nxt
+                return
+
     def _next_edge(self, edge: NEdge, veh: Vehicle) -> NEdge | None:
-        return edge.nexts.get(veh.turn)
+        """veh の具体的な転回先。サンプリング済みの候補を使う。
+
+        テスト等で veh.turn を後から書き換えた場合(保存済み候補とクラスが
+        食い違う場合)は、そのクラスの最良候補に落とす。
+        """
+        cands = edge.nexts.get(veh.turn)
+        if not cands:
+            return None
+        nxt = getattr(veh, "next_edge", None)
+        if nxt is not None and any(c is nxt for _, c in cands):
+            return nxt
+        return cands[0][1]
 
     def _entry_sublane(self, nxt: NEdge, veh: Vehicle) -> int:
         """次 Edge へ移るときの整列(現在の整列を実効帯へクランプ)。"""
@@ -468,6 +560,7 @@ class NetSim:
                 if nxt is None:
                     e.vehicles.remove(veh)
                     self.n_exited += 1
+                    self.edge_flow[e.eid] = self.edge_flow.get(e.eid, 0) + 1
                     continue
                 entry_s = self._entry_sublane(nxt, veh)
                 if nxt.span_tail_space(entry_s, veh.width) < CAR_LEN + 0.2:
@@ -475,9 +568,11 @@ class NetSim:
                     veh.speed = 0.0
                     continue
                 e.vehicles.remove(veh)
+                self.edge_flow[e.eid] = self.edge_flow.get(e.eid, 0) + 1
                 veh.pos -= e.length
                 veh.sublane = entry_s
-                veh.turn = self._sample_turn(nxt)
+                veh.hops = getattr(veh, "hops", 0) + 1
+                self._assign_next(veh, nxt)
                 veh.stop_cleared = False
                 veh.t_shift = 0.0
                 nxt.vehicles.append(veh)
