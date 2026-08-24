@@ -43,6 +43,9 @@ sim:  ## 簡易ミクロシミュレーション(理想化グリッド)を実行
 net-sim:  ## Phase 1: 実ネットワーク上のシミュレーションを実行し再生データを書き出す
 	uv run python scripts/33_run_network_sim.py
 
+demand-check:  ## Phase 3: 実測需要で回しセンサス断面交通量・旅行速度と照合する
+	uv run python scripts/40_demand_check.py
+
 dev-viewer: viewer sim  ## ビューワを開発サーバーで起動 (http://localhost:8002)
 	cd viewer && npm install --silent && npm run dev
 

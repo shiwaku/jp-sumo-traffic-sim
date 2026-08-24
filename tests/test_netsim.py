@@ -62,13 +62,75 @@ def test_turn_classification_and_no_uturn():
     sim = NetSim(nodes, edges, seed=1)
     east = sim.edges[0]  # 1→0 東行き
     # 直進 = 0→2(東)、左折 = 0→4(北)、右折 = 0→3(南)
-    assert east.nexts[0].to.nid == 2
-    assert east.nexts[1].to.nid == 4
-    assert east.nexts[2].to.nid == 3
+    assert east.best(0).to.nid == 2
+    assert east.best(1).to.nid == 4
+    assert east.best(2).to.nid == 3
     # U ターン(0→1)は候補に無い
-    assert all(e.to.nid != 1 for e in east.nexts.values())
+    assert all(c.to.nid != 1 for cands in east.nexts.values() for _, c in cands)
     # 対向は 2→0 の西行き
     assert east.oncoming is not None and east.oncoming.frm.nid == 2
+
+
+def edge(eid, frm, to, geom, linked=-1):
+    return dict(
+        eid=eid,
+        frm=frm,
+        to=to,
+        geometry=geom,
+        length=100.0,
+        speed_kmh=40,
+        category="3",
+        linked_edge=linked,
+    )
+
+
+def test_parallel_straight_candidates_both_fed():
+    """並走する直進候補(上下分離など)は両方に交通が配分される。"""
+    pts = {0: (-100, 0), 1: (0, 0), 2: (100, 18), 3: (100, -18)}
+    nodes = [dict(nid=k, x=x, y=y, has_signal=False) for k, (x, y) in pts.items()]
+    edges = [
+        edge(0, 0, 1, [pts[0], pts[1]]),
+        edge(1, 1, 2, [pts[1], pts[2]]),  # 直進 +10°
+        edge(2, 1, 3, [pts[1], pts[3]]),  # 直進 -10°
+    ]
+    sim = NetSim(nodes, edges, seed=1, entry_nodes={0})
+    e0 = sim.edges[0]
+    assert len(e0.nexts[0]) == 2  # 両方が直進候補
+    picks = {sim._sample_next(e0)[1].eid for _ in range(200)}
+    assert picks == {1, 2}, f"片方に偏った: {picks}"
+
+
+def test_hairpin_is_sink():
+    """転回先が鋭角折返ししか無いノードは吸い込み口(流出)になる。
+
+    創成トンネル坑口のような「ネットワークの外へ続く道」の内部端。
+    折返しを許すと上下線を往復する閉回路がデッドロックを生む。
+    """
+    pts = {0: (-100, 0), 1: (0, 0), 2: (-95, -35)}
+    nodes = [dict(nid=k, x=x, y=y, has_signal=False) for k, (x, y) in pts.items()]
+    edges = [
+        edge(0, 0, 1, [pts[0], pts[1]], linked=1),
+        edge(1, 1, 0, [pts[1], pts[0]], linked=0),
+        edge(2, 1, 2, [pts[1], pts[2]], linked=3),  # 約160° = U 扱いの折返し
+        edge(3, 2, 1, [pts[2], pts[1]], linked=2),
+    ]
+    sim = NetSim(nodes, edges, seed=1, entry_nodes={0})
+    e0 = sim.edges[0]
+    assert not e0.nexts  # 転回先なし = 流出
+    veh = sim._make_vehicle(e0)
+    veh.pos, veh.speed = 99.0, 10.0
+    e0.vehicles.append(veh)
+    for _ in range(int(5 / DT)):
+        sim.step()
+    assert veh not in e0.vehicles and sim.n_exited == 1
+
+
+def test_exit_next_covers_network():
+    """全 Edge から最短ホップで流出点へ向かう経路が引ける(巡回上限用)。"""
+    nodes, edges = cross_network()
+    sim = NetSim(nodes, edges, seed=1)
+    for e in sim.edges.values():
+        assert (not e.nexts) or e.eid in sim.exit_next
 
 
 def test_signal_axes_and_phase_char():
