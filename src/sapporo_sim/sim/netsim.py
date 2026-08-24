@@ -1,7 +1,7 @@
-"""実ネットワーク上のミクロ交通シミュレーション(Phase 1-④)。
+"""実ネットワーク上のミクロ交通シミュレーション(Phase 1-④ / Phase 2-②)。
 
 Phase 1 で構築した方向別 Edge(位相・一方通行・車線・速度・信号・一時停止が
-結合済み)の上で、simple.py で検証した動力学をそのまま回す:
+結合済み)の上で、simple.py で検証した動力学を回す:
 
 - IDM 追従、赤信号 = 停止線位置の「長さ0の停止車両」
 - 満杯 Edge へは停止線で待ち、停止線通過後は下流最後尾に追従(めり込まない)
@@ -9,17 +9,20 @@ Phase 1 で構築した方向別 Edge(位相・一方通行・車線・速度・
 - 転回は固定比率(0.70/0.15/0.15)を存在する転回先で再正規化
 - コードン流入はポアソン到着
 
-実ネットワークで新しくなる点:
+Phase 2-② で加わったサブレーン動力学(sim/mobil.py):
 
-- 転回は Edge の方位角差で分類(直進 ±45° / 左折 / 右折。U ターンは除外)
-- 信号は has_signal ノードのみ2現示(軸はグリッド方位への回転で分類)。
-  無信号ノードは常時青、一時停止(JARTIC 実測)の流入 Edge は停止線で
-  一旦停止してから進入する
-- 車両は Edge の実ジオメトリ(折れ線)に沿って動く
+- 車両は n_sublanes(実効値)の帯の中で連続サブレーンを占有し(乗用車2)、
+  MOBIL で1サブレーンずつ横にずれる(左寄せ・右追越)。IDM の先行車は
+  「スパンが重なる直近先行車」
+- 右折専用車線: right_turn_lane の Edge は停止線手前 RT_ZONE_M で右端
+  RT_SUB サブレーンを右折車専用にする。右折待ちは自スパンだけを塞ぎ、
+  直進・左折は左側を通過できる。専用車線が無い(または幅が足りない)
+  Edge では右折待ちが後続の直進も止める(実態どおり)
+- 冬季は PARAMS の sublane_loss で実効サブレーンを減らす(雪堤は路肩側
+  なので、使える帯は中央寄り)。「2車線が実質1.5車線」の表現
 
-簡略化(グリッド版から引き継ぎ): 単車線・MOBILなし・転回率固定・
-交差点内の交錯待ち車両が交差方向を塞ぐ相互作用なし。
-車線数(n_lanes)はまだ動力学に使わない(Phase 2 のサブレーン/MOBIL で使う)。
+残る簡略化: 転回率固定・交差点内の交錯待ち車両が交差方向を塞ぐ
+相互作用なし・車種は乗用車のみ(幅2サブレーン)。
 """
 
 from __future__ import annotations
@@ -29,6 +32,13 @@ import random
 from dataclasses import dataclass, field
 
 from sapporo_sim import config as C
+from sapporo_sim.network.lanes import SUBLANE_W_M
+from sapporo_sim.sim.mobil import (
+    SHIFT_COOLDOWN_S,
+    decide_shift,
+    overlaps,
+    shift_safe,
+)
 from sapporo_sim.sim.simple import (
     ALL_RED_S,
     CAR_LEN,
@@ -47,6 +57,10 @@ STRAIGHT_DEG = 45.0  # 方位角差がこの範囲なら直進
 UTURN_DEG = 135.0  # これを超える転回は U ターンとして除外
 STOP_CLEAR_SPEED = 0.3  # 一時停止とみなす速度 [m/s]
 STOP_ZONE_M = 3.0  # 停止線からこの距離以内で停止したら発進してよい
+
+RT_SUB = 2  # 右折専用レーンの幅 [サブレーン](乗用車1台分)
+RT_ZONE_M = 60.0  # 停止線からこの距離で右折レーンの出入りを始める
+RT_MIN_SUB = 4  # 専用レーンが成立する最小実効サブレーン数(直進1車線分を残す)
 
 
 @dataclass
@@ -89,21 +103,31 @@ class NEdge:
     heading_out: float = 0.0  # 始端方位角 [rad]
     stop_sign: bool = False  # 一時停止(下流ノード側)
     linked: int | None = None  # 対向 Edge の eid
+    n_sub: int = 2  # サブレーン数(データ由来)
+    n_sub_eff: int = 2  # 実効サブレーン数(冬季は雪堤で減る)
+    rt_lane: bool = False  # 右折専用車線あり(センサス区間代表値)
     nexts: dict = field(default_factory=dict)  # turn(0/1/2) -> NEdge
     oncoming: object = None  # NEdge | None
     vehicles: list = field(default_factory=list)
     _cum: list = field(default_factory=list)
 
-    def tail_space(self) -> float:
-        if not self.vehicles:
-            return self.length
-        return self.vehicles[-1].pos - CAR_LEN
+    def span_tail(self, s: int, w: int) -> Vehicle | None:
+        """サブレーン区間 [s, s+w) と重なる最後尾(最小 pos)の車両。"""
+        rear = None
+        for v in self.vehicles:
+            if overlaps(s, w, v.sublane, v.width) and (rear is None or v.pos < rear.pos):
+                rear = v
+        return rear
+
+    def span_tail_space(self, s: int, w: int) -> float:
+        rear = self.span_tail(s, w)
+        return self.length if rear is None else rear.pos - CAR_LEN
 
     def green(self, t: float) -> bool:
         return self.to.green(self.axis, t)
 
-    def xy_at(self, pos: float) -> tuple[float, float]:
-        """折れ線に沿った位置 pos [m] の座標。"""
+    def xy_at(self, pos: float, lat: float = 0.0) -> tuple[float, float]:
+        """折れ線に沿った位置 pos [m] の座標。lat は進行方向左向きのオフセット [m]。"""
         if not self._cum:
             acc = [0.0]
             for p, q in zip(self.geometry, self.geometry[1:], strict=False):
@@ -115,8 +139,26 @@ class NEdge:
                 seg = self._cum[k] - self._cum[k - 1]
                 f = 0.0 if seg <= 0 else (pos - self._cum[k - 1]) / seg
                 (x1, y1), (x2, y2) = self.geometry[k - 1], self.geometry[k]
-                return (x1 + (x2 - x1) * f, y1 + (y2 - y1) * f)
+                x, y = x1 + (x2 - x1) * f, y1 + (y2 - y1) * f
+                if lat and seg > 0:
+                    ux, uy = (x2 - x1) / seg, (y2 - y1) / seg
+                    x, y = x - uy * lat, y + ux * lat  # 左法線 = (-uy, ux)
+                return (x, y)
         return self.geometry[-1]
+
+    def lateral_of(self, veh: Vehicle) -> float:
+        """車両中心の横位置 [m]。進行方向左向きが正。
+
+        左側通行では自方向の車道は中心線の左側にある。双方向道路の
+        geometry は道路中心線なので、左オフセットは (実効帯の右端 =
+        中心線) から車両中心までの距離。一方通行は全幅が自方向なので
+        中心線をまたいで両側に広がる。冬季は実効帯が縮み、雪堤(路肩側)
+        から離れて中央寄りを走る。
+        """
+        c = veh.sublane + veh.width / 2.0
+        if self.linked is not None:
+            return (self.n_sub_eff - c) * SUBLANE_W_M
+        return (self.n_sub_eff / 2.0 - c) * SUBLANE_W_M
 
 
 def _bearing(p, q) -> float:
@@ -134,7 +176,7 @@ def _angdiff(a: float, b: float) -> float:
 
 
 class NetSim:
-    """実ネットワーク上の IDM + 信号 + 一時停止のシミュレータ。"""
+    """実ネットワーク上の IDM + MOBIL + 信号 + 一時停止のシミュレータ。"""
 
     def __init__(
         self,
@@ -152,6 +194,7 @@ class NetSim:
         self.rng = random.Random(seed)
         self.t = 0.0
         self.n_spawned = self.n_exited = self.n_blocked_spawn = 0
+        self.n_lane_changes = 0
 
         th = math.radians(C.GRID_BEARING_DEG)
 
@@ -188,6 +231,7 @@ class NetSim:
 
         # --- Edge ---
         stop_edges = stop_edges or set()
+        loss_ratio = float(self.p.get("sublane_loss", 0.0))
         self.edges: dict[int, NEdge] = {}
         for e in edges:
             geom = list(e["geometry"])
@@ -195,6 +239,8 @@ class NetSim:
             gx1, gy1 = to_grid(*geom[-2])
             gx2, gy2 = to_grid(*geom[-1])
             axis = "EW" if abs(gx2 - gx1) >= abs(gy2 - gy1) else "NS"
+            n_sub = int(e.get("n_sublanes") or 2)
+            loss = max(1, int(n_sub * loss_ratio)) if loss_ratio > 0 else 0
             ne = NEdge(
                 eid=e["eid"],
                 frm=self.nodes[e["frm"]],
@@ -208,6 +254,9 @@ class NetSim:
                 heading_out=_bearing(geom[0], geom[1]),
                 stop_sign=e["eid"] in stop_edges,
                 linked=None if e.get("linked_edge", -1) in (-1, None) else e["linked_edge"],
+                n_sub=n_sub,
+                n_sub_eff=max(1, n_sub - loss),
+                rt_lane=bool(e.get("right_turn_lane")),
             )
             self.edges[ne.eid] = ne
         for ne in self.edges.values():
@@ -263,7 +312,7 @@ class NetSim:
                 deg[nid] = deg.get(nid, 0) + 1
         return {nid for nid, d in deg.items() if d == 1}
 
-    # --- 動力学(simple.py の検証済みロジックの移植) ---
+    # --- 動力学(simple.py の検証済みロジック + サブレーン化) ---
 
     def _sample_turn(self, edge: NEdge) -> int:
         opts = [i for i in range(3) if i in edge.nexts]
@@ -295,6 +344,10 @@ class NetSim:
     def _next_edge(self, edge: NEdge, veh: Vehicle) -> NEdge | None:
         return edge.nexts.get(veh.turn)
 
+    def _entry_sublane(self, nxt: NEdge, veh: Vehicle) -> int:
+        """次 Edge へ移るときの整列(現在の整列を実効帯へクランプ)。"""
+        return max(0, min(veh.sublane, nxt.n_sub_eff - veh.width))
+
     def _oncoming_clear(self, edge: NEdge) -> bool:
         onc = edge.oncoming
         if onc is None:
@@ -310,22 +363,73 @@ class NetSim:
                 return False
         return True
 
+    def _lane_pass(self, e: NEdge) -> None:
+        """MOBIL と右折レーンの出入りを決める(加速度計算とは分離)。
+
+        右折専用車線が有効な Edge では、停止線手前 RT_ZONE_M で
+        右折車を右端 RT_SUB サブレーンへ寄せ、非右折車を締め出す。
+        どちらも安全基準(shift_safe)を満たすまで毎ステップ再試行する。
+        """
+        n_eff = e.n_sub_eff
+        rt_active = e.rt_lane and n_eff >= RT_MIN_SUB
+        for veh in e.vehicles:
+            veh.t_shift = max(0.0, veh.t_shift - DT)
+            if veh.t_shift > 0 or veh.width >= n_eff:
+                continue
+            in_zone = rt_active and (e.length - veh.pos) <= RT_ZONE_M
+            if in_zone and veh.turn == 2:
+                # 右折: 専用レーン(右端)へ寄る。インセンティブは問わない
+                if veh.sublane + veh.width < n_eff and shift_safe(e.vehicles, veh, veh.sublane + 1):
+                    veh.sublane += 1
+                    veh.t_shift = SHIFT_COOLDOWN_S
+                    self.n_lane_changes += 1
+                continue
+            if in_zone and veh.sublane + veh.width > n_eff - RT_SUB:
+                # 非右折: 専用レーンから左へ抜ける
+                if veh.sublane > 0 and shift_safe(e.vehicles, veh, veh.sublane - 1):
+                    veh.sublane -= 1
+                    veh.t_shift = SHIFT_COOLDOWN_S
+                    self.n_lane_changes += 1
+                continue
+            # 通常の MOBIL。非右折車はゾーン内では専用レーンに入れない
+            hi = n_eff - RT_SUB if in_zone else n_eff
+            d = decide_shift(e.vehicles, veh, hi)
+            if d != 0:
+                veh.sublane += d
+                veh.t_shift = SHIFT_COOLDOWN_S
+                self.n_lane_changes += 1
+
     def step(self) -> None:
         t = self.t
         for e in self.edges.values():
+            e.vehicles.sort(key=lambda v: -v.pos)
+            self._lane_pass(e)
             vs = e.vehicles
             stop = e.length - STOPLINE_M
-            for k, veh in enumerate(vs):
-                if k > 0:
-                    lead = vs[k - 1]
+            for i, veh in enumerate(vs):
+                lead = None
+                for j in range(i - 1, -1, -1):  # 直近の先行車から(スパン重なりのみ)
+                    if overlaps(veh.sublane, veh.width, vs[j].sublane, vs[j].width):
+                        lead = vs[j]
+                        break
+                if lead is not None:
                     gap = lead.pos - CAR_LEN - veh.pos
                     dv = veh.speed - lead.speed
                 else:
+                    # 自スパンの先頭: 信号・満杯・右折待ち・一時停止の判定
                     gap, dv = 1e9, 0.0
                     nxt = self._next_edge(e, veh)
+                    tailv = None
+                    if nxt is not None:
+                        tailv = nxt.span_tail(self._entry_sublane(nxt, veh), veh.width)
                     committed = veh.pos > stop
                     if not committed:
-                        blocked = nxt is not None and nxt.tail_space() < CAR_LEN + veh.s0
+                        space = (
+                            (nxt.length if tailv is None else tailv.pos - CAR_LEN)
+                            if nxt is not None
+                            else 1e9
+                        )
+                        blocked = nxt is not None and space < CAR_LEN + veh.s0
                         yield_rt = veh.turn == 2 and not self._oncoming_clear(e)
                         # 一時停止: 停止線近傍で一旦停止するまで進入しない
                         need_stop = e.stop_sign and not veh.stop_cleared
@@ -338,43 +442,47 @@ class NetSim:
                             need_stop = False
                         if not e.green(t) or blocked or yield_rt or need_stop:
                             gap, dv = stop - veh.pos, veh.speed
-                        elif nxt is not None and nxt.vehicles:
-                            tailv = nxt.vehicles[-1]
+                        elif tailv is not None:
                             gap = (e.length - veh.pos) + tailv.pos - CAR_LEN
                             dv = veh.speed - tailv.speed
-                    elif nxt is not None and nxt.vehicles:
-                        tailv = nxt.vehicles[-1]
+                    elif tailv is not None:
                         gap = (e.length - veh.pos) + tailv.pos - CAR_LEN
                         dv = veh.speed - tailv.speed
                 acc = idm_acc(veh, gap, dv)
                 veh.speed = max(0.0, veh.speed + acc * DT)
                 veh.pos += veh.speed * DT
-            for k in range(1, len(vs)):
-                cap = vs[k - 1].pos - CAR_LEN - 0.1
-                if vs[k].pos > cap:
-                    vs[k].pos = cap
-                    vs[k].speed = min(vs[k].speed, vs[k - 1].speed)
+            # 重なり補正(同一スパンの直近先行車に対して)
+            for i in range(1, len(vs)):
+                for j in range(i - 1, -1, -1):
+                    if overlaps(vs[i].sublane, vs[i].width, vs[j].sublane, vs[j].width):
+                        cap = vs[j].pos - CAR_LEN - 0.1
+                        if vs[i].pos > cap:
+                            vs[i].pos = cap
+                            vs[i].speed = min(vs[i].speed, vs[j].speed)
+                        break
 
-        # 転移
+        # 転移(スパン別 FIFO: 前の車が塞いでいれば重なり補正で末端に届かない)
         for e in self.edges.values():
-            while e.vehicles and e.vehicles[0].pos >= e.length:
-                veh = e.vehicles[0]
+            for veh in [v for v in e.vehicles if v.pos >= e.length]:
                 nxt = self._next_edge(e, veh)
                 if nxt is None:
-                    e.vehicles.pop(0)
+                    e.vehicles.remove(veh)
                     self.n_exited += 1
                     continue
-                if nxt.tail_space() < CAR_LEN + 0.2:
+                entry_s = self._entry_sublane(nxt, veh)
+                if nxt.span_tail_space(entry_s, veh.width) < CAR_LEN + 0.2:
                     veh.pos = e.length
                     veh.speed = 0.0
-                    break
-                e.vehicles.pop(0)
+                    continue
+                e.vehicles.remove(veh)
                 veh.pos -= e.length
+                veh.sublane = entry_s
                 veh.turn = self._sample_turn(nxt)
                 veh.stop_cleared = False
+                veh.t_shift = 0.0
                 nxt.vehicles.append(veh)
 
-        # 流入(ポアソン)
+        # 流入(ポアソン)。左端から順に空いている整列へ入れる
         for e in self.entries:
             lam = self.entry_rate[e.eid] * DT
             limit = math.exp(-lam)
@@ -385,9 +493,13 @@ class NetSim:
                     break
                 k += 1
             for _ in range(k):
-                if e.tail_space() > CAR_LEN + 3.0:
-                    e.vehicles.append(self._make_vehicle(e))
-                    self.n_spawned += 1
+                for s in range(max(1, e.n_sub_eff - 1)):
+                    if e.span_tail_space(s, 2) > CAR_LEN + 3.0:
+                        veh = self._make_vehicle(e)
+                        veh.sublane = s
+                        e.vehicles.append(veh)
+                        self.n_spawned += 1
+                        break
                 else:
                     self.n_blocked_spawn += 1
 
@@ -399,7 +511,7 @@ class NetSim:
         pts = []
         for e in self.edges.values():
             for veh in e.vehicles:
-                x, y = e.xy_at(veh.pos)
+                x, y = e.xy_at(veh.pos, e.lateral_of(veh))
                 pts.append((x, y, veh.speed))
         sig = "".join(n.phase_char(self.t) for n in self.nodes.values() if n.has_signal)
         return {"t": round(self.t, 1), "pts": pts, "sig": sig}
@@ -408,9 +520,16 @@ class NetSim:
         n = sum(len(e.vehicles) for e in self.edges.values())
         sp = [v.speed for e in self.edges.values() for v in e.vehicles]
         mean = sum(sp) / len(sp) if sp else 0.0
-        spill = sum(
-            1
-            for e in self.edges.values()
-            if e.vehicles and e.vehicles[-1].pos < 10.0 and e.vehicles[-1].speed < 0.5
+        spill = 0
+        for e in self.edges.values():
+            if not e.vehicles:
+                continue
+            rear = min(e.vehicles, key=lambda v: v.pos)
+            if rear.pos < 10.0 and rear.speed < 0.5:
+                spill += 1
+        return dict(
+            n_vehicles=n,
+            mean_speed_ms=round(mean, 2),
+            n_links_backed_up=spill,
+            n_lane_changes=self.n_lane_changes,
         )
-        return dict(n_vehicles=n, mean_speed_ms=round(mean, 2), n_links_backed_up=spill)

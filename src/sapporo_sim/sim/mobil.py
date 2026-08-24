@@ -74,6 +74,20 @@ def acc_to(v: Vehicle, lead: Vehicle | None) -> float:
     return idm_acc(v, lead.pos - CAR_LEN - v.pos, v.speed - lead.speed)
 
 
+def shift_safe(vehicles: list, me: Vehicle, s1: int) -> bool:
+    """整列 s1 へ1歩ずれた直後に、自分と新後続の双方が安全基準を満たすか。"""
+    new_lead, new_foll = leader_follower(vehicles, me, s1)
+    if new_lead is not None:
+        gap = new_lead.pos - CAR_LEN - me.pos
+        if gap < MIN_GAP or idm_acc(me, gap, me.speed - new_lead.speed) < -B_SAFE:
+            return False
+    if new_foll is not None:
+        gap = me.pos - CAR_LEN - new_foll.pos
+        if gap < MIN_GAP or idm_acc(new_foll, gap, new_foll.speed - me.speed) < -B_SAFE:
+            return False
+    return True
+
+
 def decide_shift(vehicles: list, me: Vehicle, n_sublanes: int) -> int:
     """me の横移動を決める。-1 = 左へ1サブレーン / 0 = 維持 / +1 = 右。
 
@@ -93,15 +107,9 @@ def decide_shift(vehicles: list, me: Vehicle, n_sublanes: int) -> int:
             continue
 
         # --- 安全基準(1歩ずれた直後の状態で判定) ---
-        new_lead, new_foll = leader_follower(vehicles, me, s1)
-        if new_lead is not None:
-            gap = new_lead.pos - CAR_LEN - me.pos
-            if gap < MIN_GAP or idm_acc(me, gap, me.speed - new_lead.speed) < -B_SAFE:
-                continue
-        if new_foll is not None:
-            gap = me.pos - CAR_LEN - new_foll.pos
-            if gap < MIN_GAP or idm_acc(new_foll, gap, new_foll.speed - me.speed) < -B_SAFE:
-                continue
+        if not shift_safe(vehicles, me, s1):
+            continue
+        new_foll = leader_follower(vehicles, me, s1)[1]
 
         # --- インセンティブ: 隣接車線相当(自車幅ぶん)先の整列まで見た最良値 ---
         a_new = -1e9
