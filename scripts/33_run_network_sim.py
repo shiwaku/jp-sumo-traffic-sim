@@ -58,6 +58,8 @@ def load_inputs():
             speed_kmh=int(r["speed_kmh"]),
             category=str(r["category"]),
             linked_edge=int(r["linked_edge"]),
+            n_sublanes=int(r["n_sublanes"]),
+            right_turn_lane=int(r["right_turn_lane"]),
         )
         for _, r in edges_g.iterrows()
     ]
@@ -120,6 +122,7 @@ def run(scenario, nodes, edges, plans, stop_edges):
         spawned=sim.n_spawned,
         exited=sim.n_exited,
         blocked_spawn=sim.n_blocked_spawn,
+        lane_changes=sim.n_lane_changes,
         vehicles=dict(
             min=min(n_series), mean=round(sum(n_series) / len(n_series), 1), max=max(n_series)
         ),

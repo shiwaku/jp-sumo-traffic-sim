@@ -45,9 +45,11 @@ SPAWN_SPEED = 8.0  # 流入時の初速 [m/s]
 # (tests/test_saturation_flow.py で固定)。当初の a=1.2, T=1.3, s0=2.5 は
 # 約1580台/時にしかならず、dt を 0.2s に細分しても 1% も変わらないことを
 # 確認済み。効くのは T と s0(architecture.md §7 のとおり飽和交通流率を決める)
+# sublane_loss は冬季の実効サブレーン減(雪堤で「2車線が実質1.5車線」)。
+# 路肩側が使えなくなる割合で、netsim が n_sublanes に適用する(Phase 3 で調整)
 PARAMS = {
-    "normal": dict(a=1.5, b=1.8, s0=2.0, T=1.1, v0_factor=1.0),
-    "winter": dict(a=0.7, b=0.55, s0=5.0, T=1.6, v0_factor=0.7),
+    "normal": dict(a=1.5, b=1.8, s0=2.0, T=1.1, v0_factor=1.0, sublane_loss=0.0),
+    "winter": dict(a=0.7, b=0.55, s0=5.0, T=1.6, v0_factor=0.7, sublane_loss=0.25),
 }
 SPEED_LIMIT = {"arterial": 50 / 3.6, "minor": 40 / 3.6}  # [m/s]
 
