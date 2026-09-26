@@ -94,6 +94,34 @@ def clip_report_extras() -> dict:
     )
 
 
+# --- 信号(SUMO 変換のフック、docs/sumo-design.md §3)---------------------------
+# 自前実装(sim/netsim.py)と同じ条件: 2現示は東西青から始め、オフセットは
+# 東行きの green wave(グリッド u 方向に GREEN_WAVE_KMH で進む)
+GREEN_WAVE_KMH = 40.0  # 自前実装の PROGRESSION_MS と同じ
+
+
+def _uv(x: float, y: float) -> tuple[float, float]:
+    import math
+
+    th = math.radians(-GRID_BEARING_DEG)
+    ox, oy = GRID_ORIGIN
+    dx, dy = x - ox, y - oy
+    return ox + dx * math.cos(th) - dy * math.sin(th), oy + dx * math.sin(th) + dy * math.cos(th)
+
+
+def signal_axis(p1: tuple, p2: tuple) -> str:
+    """流入 Edge 終端の2点 → 'A'(東西)/ 'B'(南北)。"""
+    (u1, v1), (u2, v2) = _uv(*p1), _uv(*p2)
+    return "A" if abs(u2 - u1) >= abs(v2 - v1) else "B"
+
+
+def signal_offsets(nodes: list[dict]) -> dict[int, float]:
+    """信号ノード nid → オフセット [s](東行き green wave)。"""
+    u_min = min(_uv(n["x"], n["y"])[0] for n in nodes)
+    v = GREEN_WAVE_KMH / 3.6
+    return {n["nid"]: (_uv(n["x"], n["y"])[0] - u_min) / v for n in nodes if n.get("has_signal")}
+
+
 def to_grid(geom):
     """EPSG:6679 の図形をグリッド座標 (u, v) へ回転."""
     from shapely.affinity import rotate
