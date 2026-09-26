@@ -1,6 +1,8 @@
-"""札幌ケース: 対象区域(札幌市の行政界)、都心区域(コードン)、碁盤目のグリッド座標。
+"""札幌ケース: 対象区域、都心区域(コードン)、碁盤目のグリッド座標。
 
-- 対象区域 = 札幌市 10 区の行政界(N03)。市全域はメソで回す(docs/sumo-design.md §13)
+- 対象区域 = case.toml の [region] kind で選ぶ(docs/sumo-design.md §13.4)
+    ring  : 環状通の内側 + 環状通(既定)
+    admin : 札幌市 10 区の行政界(N03)
 - 都心区域 = コードン(北5条通・南7条通・創成川通・石山通)。全道路を入れ、ミクロで回す
 - 札幌都心は 130.0m の等間隔格子なので、グリッド座標で街路が名指しできる。
   この座標系・街路名・コードンは札幌でしか意味を持たないため、汎用の
@@ -82,7 +84,43 @@ def cordon_polygon():
 
 @lru_cache(maxsize=1)
 def region_polygon():
-    """対象区域(ケース共通のインタフェース)= 札幌市 10 区の行政界を合わせたもの(CRS_PROJ)。"""
+    """対象区域(ケース共通のインタフェース、CRS_PROJ)。[region] kind で選ぶ。"""
+    from jp_sumo_traffic_sim import config as C
+
+    kind = C.CASE["region"].get("kind", "admin")
+    if kind == "ring":
+        return ring_polygon()
+    return admin_polygon()
+
+
+def ring_polygon():
+    """環状通の内側 + 環状通。
+
+    センサスの路線名 ring_route の中心線を ring_buffer_m で太らせ、その外周で囲まれた範囲
+    (= 内側 + 環状通 + 外側へ ring_buffer_m)。環状通の両側の車道と交差点を含めるため。
+    """
+    import geopandas as gpd
+    from shapely.geometry import Polygon
+
+    from jp_sumo_traffic_sim import config as C
+
+    reg = C.CASE["region"]
+    src = C.RAW / "census" / "traffic_census_2021_converted.parquet"
+    c = gpd.read_parquet(src, columns=["路線名", "市区町村コード", "geometry"])
+    code = c["市区町村コード"].astype(int)
+    c = c[(c["路線名"] == reg["ring_route"]) & (code >= 1101) & (code <= 1110)]
+    if c.empty:
+        raise SystemExit(f"センサスに路線 {reg['ring_route']} が無い")
+    band = c.to_crs(C.CRS_PROJ).geometry.union_all().buffer(float(reg["ring_buffer_m"]))
+    parts = list(band.geoms) if band.geom_type == "MultiPolygon" else [band]
+    main = max(parts, key=lambda p: p.area)
+    if not main.interiors:
+        raise SystemExit(f"{reg['ring_route']} が閉じた環になっていない")
+    return Polygon(main.exterior)
+
+
+def admin_polygon():
+    """札幌市 10 区の行政界を合わせたもの。"""
     import geopandas as gpd
 
     from jp_sumo_traffic_sim import config as C
@@ -96,6 +134,12 @@ def region_polygon():
     return g.to_crs(C.CRS_PROJ).union_all()
 
 
+def region_kind() -> str:
+    from jp_sumo_traffic_sim import config as C
+
+    return C.CASE["region"].get("kind", "admin")
+
+
 def core_polygon():
     """都心区域(全道路を入れてミクロで回す範囲)= コードン矩形."""
     return cordon_polygon()
@@ -104,8 +148,9 @@ def core_polygon():
 def clip_report_extras() -> dict:
     """reports/00_clip.json に載せるケース固有の値."""
     g = CORDON_GRID
+    kind = region_kind()
     return dict(
-        region="札幌市(N03 行政界 10 区)",
+        region="環状通の内側 + 環状通" if kind == "ring" else "札幌市(N03 行政界 10 区)",
         region_area_km2=round(region_polygon().area / 1e6, 1),
         core="都心コードン",
         cordon_grid={k: round(v, 1) for k, v in g.items()},

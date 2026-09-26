@@ -51,6 +51,10 @@ def test_lanes_from_census_and_width():
     L.assign_lanes(e3, None)
     assert 1 <= e3.attrs["n_lanes"] <= 3
     assert e3.attrs["lane_source"] == "width_assumed"
+    # 幅員区分4(代表 16m)の双方向道路は片側 2 車線(四捨五入)
+    (e6, _) = build_edges([link(1, 2, [(0, 0), (100, 0)], width="4")])
+    L.assign_lanes(e6, None)
+    assert e6.attrs["n_lanes"] == 2
     # サブレーンは 1.75m 分割
     assert e3.attrs["n_sublanes"] == int(e3.attrs["carriageway_m"] // 1.75)
 

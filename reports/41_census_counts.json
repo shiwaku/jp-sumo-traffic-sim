@@ -1,26 +1,24 @@
 {
-  "n_sections_with_edges": 350,
-  "n_sections_with_hourly": 349,
+  "n_sections_with_edges": 128,
+  "n_sections_with_hourly": 128,
   "direction_resolved_by": {
-    "none": 9,
-    "end": 281,
-    "start": 60
+    "end": 116,
+    "start": 11,
+    "none": 1
   },
-  "n_edges_with_counts": 12342,
+  "n_edges_with_counts": 2835,
   "edges_by_direction": {
-    "avg": 370,
-    "down": 5972,
-    "up": 6000
+    "up": 1408,
+    "down": 1413,
+    "avg": 14
   },
-  "n_units": 184,
+  "n_units": 71,
   "units_by_observed_hours": {
-    "0": 2,
-    "12": 143,
-    "24": 39
+    "12": 62,
+    "24": 9
   },
   "oneway_flag_check": {
-    "agree": 142,
-    "disagree": 1
+    "agree": 52
   },
   "note": "下り = 起点側 → 終点側(隣接区間から決める)。'avg' は向きが決まらず上下平均"
 }

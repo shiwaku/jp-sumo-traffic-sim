@@ -7,49 +7,49 @@
     },
     {
       "stage": "point_signal",
-      "n_source": 3445,
-      "n_matched": 2583,
-      "match_rate": 0.75,
+      "n_source": 1174,
+      "n_matched": 1164,
+      "match_rate": 0.991,
       "snap_tol_m": 30.0,
-      "n_signal_nodes": 2582
+      "n_signal_nodes": 1163
     },
     {
       "stage": "point_stop",
-      "n_source": 12773,
-      "n_matched": 3305,
-      "match_rate": 0.259,
+      "n_source": 2180,
+      "n_matched": 2169,
+      "match_rate": 0.995,
       "snap_tol_m": 30.0
     },
     {
       "stage": "point_signal_plan",
-      "n_source": 187,
-      "n_matched": 187,
+      "n_source": 92,
+      "n_matched": 92,
       "match_rate": 1.0,
       "snap_tol_m": 40.0
     },
     {
       "stage": "line_oneway",
-      "n_source": 340,
-      "n_matched": 196,
-      "match_rate": 0.576,
-      "n_links_oneway": 1126,
+      "n_source": 104,
+      "n_matched": 103,
+      "match_rate": 0.99,
+      "n_links_oneway": 656,
       "buffer_m": 15.0,
       "dot_th": 0.85,
       "vertex_order": "通行方向の逆(reports/15_oneway_check.json で OSM 照合済み)"
     },
     {
       "stage": "line_speed",
-      "n_source": 1499,
-      "n_matched": 479,
-      "match_rate": 0.32,
-      "n_links_with_speed": 9721
+      "n_source": 329,
+      "n_matched": 329,
+      "match_rate": 1.0,
+      "n_links_with_speed": 4054
     },
     {
       "stage": "line_census",
-      "n_source": 441,
-      "n_matched": 426,
-      "match_rate": 0.966,
-      "n_links_with_census": 6586,
+      "n_source": 144,
+      "n_matched": 142,
+      "match_rate": 0.986,
+      "n_links_with_census": 1506,
       "buffer_m": 25.0,
       "second_pass": "幅員区分3以上のみ buffer 45m"
     }
