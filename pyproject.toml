@@ -1,7 +1,7 @@
 [project]
 name = "jp-sumo-traffic-sim"
 version = "0.1.0"
-description = "日本のオープンデータ(国土数値情報・JARTIC・道路交通センサス)から SUMO 交通シミュレーションを構築する。最初の適用事例は札幌"
+description = "日本のオープンデータ(国土数値情報・JARTIC・道路交通センサス)から SUMO 交通シミュレーションを構築する"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
