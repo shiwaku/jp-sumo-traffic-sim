@@ -18,6 +18,6 @@ __pycache__/
 .DS_Store
 
 # ビューワの生成物
-# viewer/public/data/ は Pages 配信のためコミットする(約10MB。make viewer / make sim で再生成)
+# viewer/public/data/ は Pages 配信のためコミットする(約10MB。make viewer / make sumo-viewer で再生成)
 viewer/node_modules/
 viewer/dist/

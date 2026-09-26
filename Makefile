@@ -37,22 +37,16 @@ conflate:  ## Phase 1: 規制・信号・センサスを実ネットワークへ
 edges:  ## Phase 1: 単方向エッジ化と車線・速度の割り当て
 	uv run python scripts/32_directed_lanes.py
 
-sim:  ## 簡易ミクロシミュレーション(理想化グリッド)を実行し再生データを書き出す
-	uv run python scripts/20_run_simple_sim.py
-
-net-sim:  ## Phase 1: 実ネットワーク上のシミュレーションを実行し再生データを書き出す
-	uv run python scripts/33_run_network_sim.py
-
-demand-check:  ## Phase 3: 実測需要で回しセンサス断面交通量・旅行速度と照合する
+demand-check:  ## SUMO を実測需要で回し、センサス断面交通量・旅行速度と照合する(要 make sumo-net)
 	uv run python scripts/40_demand_check.py
 
-sumo-net:  ## SUMO 移行 Step 1: 方向別 Edge から SUMO ネットワークを作る(data/sumo/)
+sumo-net:  ## 方向別 Edge から SUMO ネットワーク(平常時・冬季)を作る(data/sumo/)
 	uv run python scripts/50_build_sumo_net.py
 
-demand-check-sumo:  ## SUMO 移行 Step 2: 自前実装と同じ条件の需要で SUMO を回し、センサスと照合する
-	uv run python scripts/40_demand_check.py --engine sumo
+sumo-viewer:  ## SUMO を平常時・冬季で回し、ビューワの再生データを書き出す(要 make sumo-net)
+	uv run python scripts/53_export_sumo_viewer.py
 
-dev-viewer: viewer sim  ## ビューワを開発サーバーで起動 (http://localhost:8002)
+dev-viewer: viewer  ## ビューワを開発サーバーで起動 (http://localhost:8002)
 	cd viewer && npm install --silent && npm run dev
 
 fetch-jartic:  ## JARTIC の札幌・北海道分を取得(最新1か月分のみ配布)

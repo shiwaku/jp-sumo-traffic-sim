@@ -10,16 +10,15 @@
 - 照合時刻: 朝ピーク(8時、v_peak = 朝夕混雑時旅行速度)と
   昼オフピーク(13時、v_off = 昼間非混雑時旅行速度)
 
---engine sumo で同じ照合を SUMO(docs/sumo-design.md §4・§6)で回す。自前実装と同じ
-条件(センサス流入 + 既定値、転回率 0.70/0.15/0.15、巡回上限 30)で、移行による差を見る。
+シミュレーションは SUMO(docs/sumo-design.md §4・§6)。需要はセンサス流入 + 既定値、
+転回率 0.70/0.15/0.15、巡回上限 30。自前実装(撤去済み)での結果は sumo-design.md §11.1。
 
-入力:  data/processed/*(edges / conflated / signal_plans / census_hourly)
+入力:  data/processed/*(edges / census_hourly)
        data/interim/census.gpkg(v_peak・v_off・路線名)
-       data/sumo/{case}.net.xml(--engine sumo のとき。make sumo-net で生成)
-出力:  reports/40_demand_check.json(自前実装)/ reports/40_demand_check_sumo.json(SUMO)
+       data/sumo/{case}.net.xml(make sumo-net で生成)
+出力:  reports/40_demand_check.json
 """
 
-import argparse
 import json
 import sys
 from pathlib import Path
@@ -30,7 +29,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from jp_sumo_traffic_sim import config as C
 from jp_sumo_traffic_sim.network.io import load_network_inputs
 from jp_sumo_traffic_sim.sim.demand import hourly_rate
-from jp_sumo_traffic_sim.sim.netsim import DT, NetSim
 from jp_sumo_traffic_sim.sumo import demand as sumo_demand
 from jp_sumo_traffic_sim.sumo import sim as sumo_sim
 from jp_sumo_traffic_sim.sumo.netgen import base_eid
@@ -57,57 +55,8 @@ def load_census_sections() -> dict:
     return out
 
 
-def run_and_measure(nodes, edges, plans, stop_edges, hourly, hour):
-    sim = NetSim(
-        nodes,
-        edges,
-        scenario="normal",
-        seed=42,
-        signal_plans=plans,
-        stop_edges=stop_edges,
-        entry_hourly=hourly,
-        entry_hour=hour,
-    )
-    # 区間 → Edge 群、断面(対向ペア)グループ
-    sec_edges: dict[str, list] = {}
-    for e in sim.edges.values():
-        if e.census_id:
-            sec_edges.setdefault(e.census_id, []).append(e)
-
-    for _ in range(int(WARMUP_S / DT)):
-        sim.step()
-    flow0 = dict(sim.edge_flow)
-    sp_sum: dict[str, float] = {}
-    sp_n: dict[str, int] = {}
-    steps = int(RECORD_S / DT)
-    for k in range(steps):
-        sim.step()
-        if k % 2:  # 1秒ごとに区間速度を標本化
-            continue
-        for sid, es in sec_edges.items():
-            for e in es:
-                for v in e.vehicles:
-                    sp_sum[sid] = sp_sum.get(sid, 0.0) + v.speed
-                    sp_n[sid] = sp_n.get(sid, 0) + 1
-
-    result = {}
-    for sid, es in sec_edges.items():
-        # 断面 = 対向ペア(一方通行は単独)。ペア合計の平均が上下合計の断面交通量
-        groups: dict[int, int] = {}
-        for e in es:
-            key = e.eid if e.linked is None else min(e.eid, e.linked)
-            dflow = sim.edge_flow.get(e.eid, 0) - flow0.get(e.eid, 0)
-            groups[key] = groups.get(key, 0) + dflow
-        sim_vol = sum(groups.values()) / len(groups) * (3600.0 / RECORD_S)
-        sim_v = (sp_sum.get(sid, 0.0) / sp_n[sid] * 3.6) if sp_n.get(sid) else None
-        result[sid] = dict(
-            sim_vol=round(sim_vol, 0), sim_v_kmh=None if sim_v is None else round(sim_v, 1)
-        )
-    return sim, result
-
-
-def run_and_measure_sumo(edges, hourly, hour):
-    """SUMO で回し、run_and_measure と同じ形の計測値と実行情報を返す。"""
+def run_and_measure(edges, hourly, hour):
+    """SUMO で回し、区間ごとの計測値と実行情報を返す。"""
     import sumolib
 
     net_path = SUMO_DIR / f"{C.CASE_NAME}.net.xml"
@@ -171,26 +120,11 @@ def run_and_measure_sumo(edges, hourly, hour):
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--engine", choices=["netsim", "sumo"], default="netsim")
-    args = ap.parse_args()
-
-    nodes, edges, plans, stop_edges, hourly = load_network_inputs()
+    _, edges, _, _, hourly = load_network_inputs()
     sections = load_census_sections()
     report = {}
     for run in RUNS:
-        if args.engine == "sumo":
-            info, measured = run_and_measure_sumo(edges, hourly, run["hour"])
-        else:
-            sim, measured = run_and_measure(nodes, edges, plans, stop_edges, hourly, run["hour"])
-            info = dict(
-                n_entries=len(sim.entries),
-                n_census_entries=sim.n_census_entries,
-                spawned=sim.n_spawned,
-                exited=sim.n_exited,
-                blocked_spawn=sim.n_blocked_spawn,
-                mean_speed_kmh=sim.stats()["mean_speed_ms"] * 3.6,
-            )
+        info, measured = run_and_measure(edges, hourly, run["hour"])
         rows = []
         for sid, m in sorted(measured.items()):
             sec = sections.get(sid, {})
@@ -238,8 +172,7 @@ def main() -> None:
             f"中央値={s['vol_ratio_median']} 速度MAE={s['speed_mae_kmh']}km/h "
             f"バイアス={s['speed_bias_kmh']}km/h"
         )
-    name = "40_demand_check_sumo.json" if args.engine == "sumo" else "40_demand_check.json"
-    (C.REPORTS / name).write_text(
+    (C.REPORTS / "40_demand_check.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 

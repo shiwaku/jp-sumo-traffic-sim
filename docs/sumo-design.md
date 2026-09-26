@@ -81,23 +81,18 @@ data/processed/                        (層[2] 既存、不変)
         │ scripts/50_build_sumo_net.py
         ▼
 data/sumo/                             (生成物。コミットしない)
-  sapporo.nod.xml  sapporo.edg.xml  sapporo.con.xml  sapporo.tll.xml
-        │ netconvert
-        ▼
-  sapporo.net.xml            (平常時)
-  sapporo_winter.net.xml     (冬季。車線幅を縮小、§5.4)
+  {case}.nod.xml  {case}.edg.xml  → netconvert(1回目)→ {case}.pre.net.xml
+  {case}.tll.xml(2現示の信号計画) → netconvert(2回目)→ {case}.net.xml
+  {case}_winter.net.xml     (冬季。車線幅 × 0.75、§5.4)
         │
-        │ scripts/51_build_sumo_demand.py
-        ▼
-  flows_h{HH}.xml  turns_h{HH}.xml  → jtrrouter →  routes_h{HH}.rou.xml
-  vtypes_{scenario}.add.xml  tls_offsets.add.xml  meandata.add.xml
+        ├─ scripts/40_demand_check.py(朝8時・昼13時、2,400 秒)
+        │    sumo/demand.py: {case}_hHH.flows.xml + turns.xml → jtrrouter → rou.xml(巡回上限)
+        │    sumo/sim.py:    vtypes.add.xml + meandata.add.xml → sumo → edgedata.xml・stats.xml
+        │    → reports/40_demand_check.json
         │
-        │ scripts/52_run_sumo.py(sumo / libsumo)
-        ▼
-  out/edgedata_*.xml  out/queue_*.xml  out/fcd_*.xml
-        │
-        ├─ scripts/40_demand_check.py(改修)→ reports/40_demand_check.json
-        └─ scripts/53_export_sumo_viewer.py → viewer/public/data/sim_net_{scenario}.json
+        └─ scripts/53_export_sumo_viewer.py(朝8時、600 秒、平常時・冬季)
+             sumo/demand.py → rou.xml、TraCI の購読で 1 秒ごとの位置・速度・現示
+             → viewer/public/data/sim_net_{normal,winter}.json
 ```
 
 ### モジュール
@@ -105,12 +100,13 @@ data/sumo/                             (生成物。コミットしない)
 ```
 src/jp_sumo_traffic_sim/
   sumo/
-    netgen.py      edges/nodes → nod/edg/con.xml(§2)
-    tls.py         signal_plans → tll.xml / オフセット追加ファイル(§3)
-    demand.py      流入レート・転回率 → flows/turns.xml(§4)
-    vtypes.py      車両パラメータ(平常/冬季)→ vType(§5)
-    runner.py      sumo 起動(CLI / libsumo)と出力パス管理
-    outputs.py     edgeData / queue / fcd の読み取り(§6)
+    netgen.py      edges/nodes → nod/edg.xml(§2)
+    tls.py         2現示の信号計画 → tll.xml(§3)
+    build.py       netconvert の実行(2回。信号計画の上書き)
+    demand.py      流入レート・転回率 → flows/turns.xml → jtrrouter、巡回上限(§4)
+    vtypes.py      車両パラメータ(平常/冬季)→ vType、冬季の車線幅倍率(§5)
+    sim.py         SUMO の実行と edgeData / statistic-output の読み取り(§6)
+    runner.py      SUMO 本体の実行ファイルと共通オプション
   sim/demand.py    hourly_rate は残す(センサス読み取りは SUMO と無関係)
 ```
 
@@ -483,10 +479,10 @@ SUMO 版のベースラインが出た後に行う(自前実装側では行わ�
 
 ## 8. 可視化(層[5])
 
-- `--fcd-output` の車両位置(EPSG:6679 のまま、§2.1)を 1 秒刻みで読み、
+- 車両位置(EPSG:6679 のまま、§2.1)を 1 秒刻みで読み(実装は FCD ファイルではなく TraCI の購読)、
   既存の `sim_net_{scenario}.json` 形式(`x - cx` の 0.1 m 単位整数・速度)に変換する
   (`scripts/53_export_sumo_viewer.py`)。ビューワ側の変更は不要にする
-- 信号現示は SUMO の `tlsStates` 出力(`--tls-output` 相当の追加出力)から取る
+- 信号現示は TraCI で状態文字列を取り、生成した計画の A 青 / B 青と照らして '1'/'0'/'2' にする
 - 理想化グリッド(`sim_normal.json` / `sim_winter.json`)は撤去に伴い、
   ビューワのシナリオ選択から外す(§9)
 
@@ -497,7 +493,7 @@ SUMO 版のベースラインが出た後に行う(自前実装側では行わ�
 | 対象 | 扱い |
 |---|---|
 | `sim/netsim.py` `sim/simple.py` `sim/mobil.py` | **撤去** |
-| `scripts/20_run_simple_sim.py` `scripts/33_run_network_sim.py` | 撤去(`52`/`53` に置き換え) |
+| `scripts/20_run_simple_sim.py` `scripts/33_run_network_sim.py` | 撤去(`40` の SUMO 化と `53` に置き換え) |
 | `tests/test_netsim*.py` `test_mobil.py` `test_idm.py` `test_grid_sim.py` `test_fundamental_diagram.py` `test_saturation_flow.py` | 撤去し、SUMO 版の受け入れテスト(§10)に置き換え |
 | `sim/demand.py` の `hourly_rate` | 残す |
 | `network/` 一式・`scripts/00〜32` | 残す(層[2]) |
@@ -541,7 +537,7 @@ netconvert にかける。
 | 0 | パッケージ名の変更と札幌固有部の切り出し(§14) | 既存テストが全て通る。パイプラインの出力(reports/)が変わらない。**完了** |
 | 1 | `eclipse-sumo` 導入、ネットワーク変換(§2.1〜2.8・§3.2)、単体の挙動テスト(左側通行・飽和交通流率・右折の譲り) | §10 の上4件が通る。`reports/50_sumo_net.json`。**完了**: 飽和交通流率 1,811 台/時/車線(自前実装 1,845)、右折は対向 1,500 台/時で 89 → 3 台/10分 |
 | 2 | 需要(§4.1 のセンサス 9 本 + 既定値、§4.2〜4.3)と実行・計測(§6)。自前実装と同じ条件で `scripts/40` を回す | `reports/40_demand_check_sumo.json`。自前実装のベースライン(交通量比 0.17/0.18、速度 MAE 5.6/6.4 km/h)と並べて報告。**完了**: §11.1 |
-| 3 | 撤去(§9)と可視化(§8)。architecture.md の書き換え | テスト全通過。ビューワで SUMO の再生データが動く |
+| 3 | 撤去(§9)と可視化(§8)。architecture.md の書き換え | テスト全通過。ビューワで SUMO の再生データが動く。**完了**: `scripts/53_export_sumo_viewer.py`(平常 11.2 km/h・冬季 8.5 km/h、朝8時・記録 300 秒) |
 | 4 | 未使用資産の投入(1資産 = 1コミット、照合結果を都度記録): ①車線規制・通行止め(§2.9) ②JARTIC 現示・時刻別サイクル(§3.3) ③区域外センサスによる流入(§4.1) ④大型車混入(§4.4) ⑤横断歩道(§2.10) | 資産ごとの断面照合の変化を `reports/54_asset_ablation.json` に残す |
 | 5 | 対象範囲の札幌市全域への拡大(§13) | §13.3 の決定後に設計を書き直す |
 | 6 | Phase 3(キャリブレーション)を SUMO・市全域の構成で再開(§7) | issue #28 の続き。市全域では転回率調整(§7.2)は OD・経路の合わせ込みに置き換わる |

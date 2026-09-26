@@ -1,6 +1,6 @@
 """コードン流入 + 転回率 → SUMO の経路(docs/sumo-design.md §4)。
 
-方針は design.md §3.2 のまま(OD は使わない)。自前実装(sim/netsim.py)と同じ規則:
+方針は design.md §3.2 のまま(OD は使わない)。撤去した自前実装(Phase 2 の netsim)と同じ規則:
 
 - 流入 Edge = 無向次数1ノードから出る Edge。レートはセンサス時間帯別交通量
   (方向平均)、裏付けが無ければ分類の既定値(sim/demand.py)
