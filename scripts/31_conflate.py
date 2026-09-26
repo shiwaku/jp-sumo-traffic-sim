@@ -20,8 +20,8 @@ from pyproj import Transformer
 from shapely.geometry import Point
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
-from sapporo_sim.network import conflation as CF
+from jp_sumo_traffic_sim import config as C
+from jp_sumo_traffic_sim.network import conflation as CF
 
 
 def line_coords(geom) -> list[list]:

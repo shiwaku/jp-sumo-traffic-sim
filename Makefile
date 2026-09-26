@@ -16,14 +16,14 @@ clip:  ## 対象区域 + バッファでクリップし EPSG:6679 へ投影
 probe:  ## Phase 0 予備調査
 	uv run python scripts/01_probe_network.py
 
-grid:  ## グリッド主軸の推定と検算
-	uv run python scripts/02_grid_frame.py
+grid:  ## [札幌] グリッド主軸の推定と検算
+	uv run python cases/sapporo/scripts/02_grid_frame.py
 
-names:  ## 通し街路の命名と OSM 照合
-	uv run python scripts/03_name_streets.py
+names:  ## [札幌] 通し街路の命名と OSM 照合
+	uv run python cases/sapporo/scripts/03_name_streets.py
 
-inventory:  ## 格子への直接割り当てで街路インベントリを作る
-	uv run python scripts/04_street_inventory.py
+inventory:  ## [札幌] 格子への直接割り当てで街路インベントリを作る
+	uv run python cases/sapporo/scripts/04_street_inventory.py
 
 viewer:  ## ビューワ用データ(GeoJSON + meta.json)を書き出す
 	uv run python scripts/05_export_viewer.py

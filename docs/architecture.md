@@ -35,8 +35,9 @@ Phase 0 の実測(`docs/phase0-findings.md`)を前提にしている。
 ### モジュール対応
 
 ```
-src/sapporo_sim/
-  config.py          区域・座標系・グリッド格子・閾値の集中定義
+src/jp_sumo_traffic_sim/
+  config.py          パス・汎用閾値の定義とケース(cases/<name>/case.toml)の読み込み
+  cases/sapporo.py   札幌ケースのグリッド座標・コードン
   ksj_codes.py       KSJ N13 のコードリスト
   network/
     topology.py      端点スナップ・立体判定・短リンク統合
@@ -74,14 +75,14 @@ scripts/             番号順に実行するパイプライン(層[1][2]と診�
 札幌都心は 130.0m の等間隔格子なので、この系では
 
 ```python
-config.v_south(1)   # 南1条通の v
-config.u_west(11)    # 西11丁目通(石山通)の u
+S.v_south(1)   # 南1条通の v(S = jp_sumo_traffic_sim.cases.sapporo)
+S.u_west(11)   # 西11丁目通(石山通)の u
 ```
 
 で街路が名指しできる。**街路の同定は連鎖クラスタリングではなく格子への直接割り当てで行う**
 (Phase 0 で連鎖が隣の通りまで結合する不具合を確認済み)。
 
-変換は `config.to_grid()` / `config.from_grid()` のみを使い、
+変換は `cases.sapporo.to_grid()` / `from_grid()` のみを使い、
 回転角と原点をスクリプト側に散らさない。散らすと街路の横断座標が
 実行ごとにずれてインベントリが壊れる。
 
@@ -562,7 +563,7 @@ reports/          診断レポート(JSON/CSV)。コミットする
 - 各スクリプトは `reports/NN_*.json` を必ず出す。
   **数値をターミナルにしか出さないスクリプトは書かない**(差分が追えない)
 - ID 接頭辞: KSJ リンク `K`、ノード `N`、エッジ `E`、movement `M`
-- 閾値は必ず `config.py` かモジュール冒頭の定数にする。式の中に埋めない
+- 閾値は必ず `config.py`(地域依存なら `cases/<name>/case.toml`)かモジュール冒頭の定数にする。式の中に埋めない
 
 ---
 

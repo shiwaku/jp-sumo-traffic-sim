@@ -23,8 +23,9 @@ import geopandas as gpd
 import numpy as np
 from shapely.geometry import LineString
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from jp_sumo_traffic_sim import config as C
+from jp_sumo_traffic_sim.cases import sapporo as S
 
 OVERPASS = "https://overpass-api.de/api/interpreter"
 CACHE = C.INTERIM / "osm_named_ways.json"
@@ -58,12 +59,12 @@ def lattice(axis: str) -> list[tuple[float, str]]:
     """格子線の (横断座標, 名前) 一覧。コードンの範囲を少し越えて張る。"""
     out = []
     if axis == "EW":
-        out += [(C.v_south(n), f"南{n}条通") for n in range(1, 12)]
-        out += [(C.v_north(n), f"北{n}条通") for n in range(1, 9)]
-        out += [((C.v_south(1) + C.v_north(1)) / 2, "大通")]
+        out += [(S.v_south(n), f"南{n}条通") for n in range(1, 12)]
+        out += [(S.v_north(n), f"北{n}条通") for n in range(1, 9)]
+        out += [((S.v_south(1) + S.v_north(1)) / 2, "大通")]
     else:
-        out += [(C.u_west(n), f"西{n}丁目通") for n in range(1, 16)]
-        out += [(C.u_east(n), f"東{n}丁目通") for n in range(1, 5)]
+        out += [(S.u_west(n), f"西{n}丁目通") for n in range(1, 16)]
+        out += [(S.u_east(n), f"東{n}丁目通") for n in range(1, 5)]
     return sorted(out)
 
 
@@ -85,7 +86,7 @@ def label(axis: str, cross: float) -> tuple[str, float, str]:
 
 def main() -> None:
     grid = json.loads((C.REPORTS / "02_grid.json").read_text(encoding="utf-8"))
-    cordon = C.cordon_polygon()
+    cordon = S.cordon_polygon()
 
     pad = 0.004
     w, s_, e, n = gpd.GeoSeries([cordon], crs=C.CRS_PROJ).to_crs("EPSG:4326").total_bounds
@@ -103,7 +104,7 @@ def main() -> None:
 
     obs: dict = defaultdict(float)
     if segs:
-        gs = gpd.GeoSeries([s[1] for s in segs], crs="EPSG:4326").to_crs(C.CRS_PROJ).map(C.to_grid)
+        gs = gpd.GeoSeries([s[1] for s in segs], crs="EPSG:4326").to_crs(C.CRS_PROJ).map(S.to_grid)
         for (nm, _), g in zip(segs, gs, strict=False):
             c = np.asarray(g.coords)[:, :2]
             for a, b in zip(c[:-1], c[1:], strict=False):

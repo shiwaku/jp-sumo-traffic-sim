@@ -8,7 +8,8 @@
 
 > **移行中:** シミュレーション本体を自前実装(IDM + MOBIL + サブレーン)から SUMO へ置き換えている
 > (issue #30)。移行と汎用化の設計は [docs/sumo-design.md](docs/sumo-design.md)。
-> 現時点のコードは札幌ケース専用で、汎用部とケース固有部の分離(設計 §14)はこれから行う。
+> 地域パラメータは `cases/<name>/case.toml` に分離済み(ケースは環境変数 `JPSUMO_CASE` で選ぶ。既定 `sapporo`)。
+> データ置き場(`data/`・`reports/`)はまだケース別に分けていない。
 
 ## しくみ
 
@@ -77,12 +78,14 @@
 ## 構成
 
 ```
-src/sapporo_sim/     ライブラリ本体(パッケージ名は移行 Step 0 で汎用名に変更予定)
-  config.py          区域・座標系・閾値の集中定義
+src/jp_sumo_traffic_sim/  ライブラリ本体(汎用部)
+  config.py          パス・汎用閾値の定義とケースの読み込み
+  cases/             ケース固有のコード(札幌: グリッド座標・コードン)
   network/           位相構築・空間結合・単方向化・車線
   sim/               自前実装のシミュレータ(SUMO へ置き換え予定)
   calib/             キャリブレーション
-scripts/             番号順に実行するパイプライン
+scripts/             番号順に実行するパイプライン(汎用)
+cases/sapporo/       札幌ケース: case.toml(地域パラメータ)と札幌専用スクリプト(scripts/)
 prototype/           単体で動く簡易版(IDM + 定周期信号 + オフセット + 冬季モード)
 viewer/              確認ビューワ(Vite + TS + MapLibre。データは public/data/ に生成)
 docs/                設計資料・データ出典・調査結果

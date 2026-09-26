@@ -13,8 +13,8 @@ import geopandas as gpd
 from shapely.geometry import LineString, Point
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
-from sapporo_sim.network import topology as T
+from jp_sumo_traffic_sim import config as C
+from jp_sumo_traffic_sim.network import topology as T
 
 
 def load_records() -> list[dict]:
@@ -71,7 +71,7 @@ def main() -> None:
     comp_stats = T.drop_minor_components(g)
     gs = T.check_grade_separated(g)
 
-    cordon = C.cordon_polygon()
+    cordon = C.region_polygon()
     acc = T.acceptance(g, T.boundary_adapter(cordon))
 
     # --- 保存 ---

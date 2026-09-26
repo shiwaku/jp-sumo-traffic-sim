@@ -31,7 +31,7 @@ a_c_new は1歩ずれた位置ではなく**隣接車線相当(自車幅ぶん)�
 
 from __future__ import annotations
 
-from sapporo_sim.sim.simple import CAR_LEN, Vehicle, idm_acc
+from jp_sumo_traffic_sim.sim.simple import CAR_LEN, Vehicle, idm_acc
 
 # MOBIL パラメータ(Treiber & Kesting の市街地レンジ)。
 # a_th / a_bias は Phase 3 でキャリブレーションする(architecture.md §7)

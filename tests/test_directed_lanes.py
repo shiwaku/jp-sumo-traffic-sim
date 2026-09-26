@@ -4,8 +4,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim.network import lanes as L
-from sapporo_sim.network.directed import build_edges
+from jp_sumo_traffic_sim.network import lanes as L
+from jp_sumo_traffic_sim.network.directed import build_edges
 
 
 def link(a, b, coords, oneway="", **kw):

@@ -23,7 +23,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
+from jp_sumo_traffic_sim import config as C
 
 TAG = "data-v1"
 BASE = f"https://github.com/shiwaku/mlit-road-traffic-census-converter/releases/download/{TAG}"
@@ -77,13 +77,14 @@ def main() -> None:
     if any(v is False for v in verified.values()):
         raise SystemExit(f"SHA256 が一致しない: {verified}")
 
-    # 時間帯別交通量の北海道分(01.json)だけ展開する
+    # 時間帯別交通量はケースの都道府県分({pref_code}.json)だけ展開する
+    pref_json = f"/{C.CASE['census']['pref_code']}.json"
     tgz = dest / "traffic_census_2021_jikantai.tar.gz"
     jikantai = dest / "jikantai"
     if tgz.exists():
         jikantai.mkdir(exist_ok=True)
         with tarfile.open(tgz) as t:
-            names = [m for m in t.getnames() if m.endswith(("01.json", "index.json"))]
+            names = [m for m in t.getnames() if m.endswith((pref_json, "index.json"))]
             for m in names:
                 member = t.getmember(m)
                 member.name = Path(m).name

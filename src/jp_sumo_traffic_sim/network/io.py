@@ -10,7 +10,7 @@ import json
 
 import geopandas as gpd
 
-from sapporo_sim import config as C
+from jp_sumo_traffic_sim import config as C
 
 
 def load_network_inputs():

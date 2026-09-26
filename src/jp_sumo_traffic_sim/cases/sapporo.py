@@ -1,16 +1,9 @@
-"""札幌都心ミクロ交通シミュレーション 共通設定."""
+"""札幌ケース: 碁盤目のグリッド座標とコードン(対象区域)。
 
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[2]
-RAW = ROOT / "data" / "raw"
-INTERIM = ROOT / "data" / "interim"
-PROCESSED = ROOT / "data" / "processed"
-REPORTS = ROOT / "reports"
-
-# --- 座標系 ---
-CRS_KSJ = "EPSG:6668"  # JGD2011 地理座標(KSJ N13 の .prj 実測値)
-CRS_PROJ = "EPSG:6679"  # JGD2011 平面直角座標系 XI系(札幌)。距離・速度計算はすべてこの系で行う
+札幌都心は 130.0m の等間隔格子なので、グリッド座標で街路が名指しできる。
+この座標系・街路名・コードンは札幌でしか意味を持たないため、汎用の
+config.py から切り出している(docs/sumo-design.md §14)。
+"""
 
 # --- グリッド座標系 -----------------------------------------------------------
 # 札幌の碁盤目は EPSG:6679 の座標軸に対して約 10.9 度傾いている。
@@ -18,7 +11,7 @@ CRS_PROJ = "EPSG:6679"  # JGD2011 平面直角座標系 XI系(札幌)。距離�
 #   u = 東西方向(丁目の並び / 大きいほど東)
 #   v = 南北方向(条の並び / 大きいほど北)
 # この系では「同じ通り」が一定の横断座標を共有するため、街路の同定と
-# コードンの定義が素直に書ける。値は scripts/02_grid_frame.py の実測。
+# コードンの定義が素直に書ける。値は cases/sapporo/scripts/02_grid_frame.py の実測。
 GRID_BEARING_DEG = 10.906
 GRID_ORIGIN = (89500.0, -104000.0)
 
@@ -72,15 +65,6 @@ CORDON_STREETS = dict(
     north=("北5条通", v_north(5)),
 )
 
-# 抽出は流入路を残すため外側にバッファを取る [m]
-CLIP_BUFFER_M = 500
-
-# --- 位相構築 ---
-SNAP_TOL_M = 0.5  # 端点同一視の許容誤差。KSJ は端点が厳密一致しており 0.01〜1.0m で結果不変
-SHORT_LINK_M = 12.0  # これ未満は交差点内部リンク候補
-
-KSJ_MESHES = ["6441", "6440"]
-
 
 def cordon_polygon():
     """コードン矩形(EPSG:6679、グリッドに整列した回転矩形)を返す."""
@@ -90,6 +74,24 @@ def cordon_polygon():
     g = CORDON_GRID
     rect = box(g["west"], g["south"], g["east"], g["north"])
     return rotate(rect, GRID_BEARING_DEG, origin=GRID_ORIGIN, use_radians=False)
+
+
+def region_polygon():
+    """対象区域(ケース共通のインタフェース)。札幌はコードン矩形."""
+    return cordon_polygon()
+
+
+def clip_report_extras() -> dict:
+    """reports/00_clip.json に載せるケース固有の値."""
+    g = CORDON_GRID
+    return dict(
+        cordon_grid={k: round(v, 1) for k, v in g.items()},
+        cordon_size_m=[
+            round(g["east"] - g["west"], 1),
+            round(g["north"] - g["south"], 1),
+        ],
+        grid_bearing_deg=GRID_BEARING_DEG,
+    )
 
 
 def to_grid(geom):

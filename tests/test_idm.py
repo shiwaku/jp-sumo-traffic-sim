@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim.sim.simple import DT, Vehicle, idm_acc
+from jp_sumo_traffic_sim.sim.simple import DT, Vehicle, idm_acc
 
 
 def make(v0=13.9, speed=0.0):

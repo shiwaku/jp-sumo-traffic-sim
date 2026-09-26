@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim.sim.simple import CAR_LEN, DT, PARAMS, Vehicle, idm_acc
+from jp_sumo_traffic_sim.sim.simple import CAR_LEN, DT, PARAMS, Vehicle, idm_acc
 
 V0 = 50 / 3.6  # 幹線の規制速度
 N_QUEUE = 45

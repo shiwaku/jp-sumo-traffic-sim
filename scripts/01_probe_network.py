@@ -21,9 +21,9 @@ from scipy.spatial import cKDTree
 from shapely.geometry import LineString
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
-from sapporo_sim.ksj_codes import ROAD_CATEGORY as CODE_CATEGORY
-from sapporo_sim.ksj_codes import ROAD_STATE, ROAD_WIDTH
+from jp_sumo_traffic_sim import config as C
+from jp_sumo_traffic_sim.ksj_codes import ROAD_CATEGORY as CODE_CATEGORY
+from jp_sumo_traffic_sim.ksj_codes import ROAD_STATE, ROAD_WIDTH
 
 
 def endpoints(gdf: gpd.GeoDataFrame) -> np.ndarray:

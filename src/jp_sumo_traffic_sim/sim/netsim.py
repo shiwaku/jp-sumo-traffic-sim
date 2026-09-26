@@ -32,16 +32,16 @@ import random
 from collections import deque
 from dataclasses import dataclass, field
 
-from sapporo_sim import config as C
-from sapporo_sim.network.lanes import SUBLANE_W_M
-from sapporo_sim.sim.demand import DEFAULT_RATE, hourly_rate
-from sapporo_sim.sim.mobil import (
+from jp_sumo_traffic_sim.cases import sapporo as S
+from jp_sumo_traffic_sim.network.lanes import SUBLANE_W_M
+from jp_sumo_traffic_sim.sim.demand import DEFAULT_RATE, hourly_rate
+from jp_sumo_traffic_sim.sim.mobil import (
     SHIFT_COOLDOWN_S,
     decide_shift,
     overlaps,
     shift_safe,
 )
-from sapporo_sim.sim.simple import (
+from jp_sumo_traffic_sim.sim.simple import (
     ALL_RED_S,
     CAR_LEN,
     DT,
@@ -213,10 +213,10 @@ class NetSim:
         self.n_lane_changes = 0
         self.edge_flow: dict[int, int] = {}  # Edge 下流端の通過台数(断面交通量)
 
-        th = math.radians(C.GRID_BEARING_DEG)
+        th = math.radians(S.GRID_BEARING_DEG)
 
         def to_grid(x: float, y: float) -> tuple[float, float]:
-            ox, oy = C.GRID_ORIGIN
+            ox, oy = S.GRID_ORIGIN
             dx, dy = x - ox, y - oy
             return (
                 ox + dx * math.cos(-th) - dy * math.sin(-th),

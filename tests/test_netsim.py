@@ -5,15 +5,15 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
-from sapporo_sim.sim.netsim import DT, NetSim
+from jp_sumo_traffic_sim.cases import sapporo as S
+from jp_sumo_traffic_sim.sim.netsim import DT, NetSim
 
 # グリッド方位に合わせた十字ネットワークを作る(軸分類が E/W/N/S に揃うように)
-TH = math.radians(C.GRID_BEARING_DEG)
+TH = math.radians(S.GRID_BEARING_DEG)
 
 
 def rot(x, y):
-    ox, oy = C.GRID_ORIGIN
+    ox, oy = S.GRID_ORIGIN
     return (
         ox + x * math.cos(TH) - y * math.sin(TH),
         oy + x * math.sin(TH) + y * math.cos(TH),

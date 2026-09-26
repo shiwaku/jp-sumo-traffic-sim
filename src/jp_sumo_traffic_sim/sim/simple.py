@@ -31,7 +31,8 @@ import math
 import random
 from dataclasses import dataclass, field
 
-from sapporo_sim import config as C
+from jp_sumo_traffic_sim import config as C
+from jp_sumo_traffic_sim.cases import sapporo as S
 
 DT = 0.5  # 積分ステップ [s]
 CAR_LEN = 4.5  # 車長 [m]
@@ -172,11 +173,11 @@ class GridSim:
         self.n_blocked_spawn = 0
 
         # --- 幾何: 通し格子街路の座標 ---
-        self.us = [C.u_west(n) for n in range(11, 0, -1)] + [C.u_east(1)]
+        self.us = [S.u_west(n) for n in range(11, 0, -1)] + [S.u_east(1)]
         self.vs = (
-            [C.v_south(n) for n in range(7, 0, -1)]
-            + [(C.v_south(1) + C.v_north(1)) / 2]
-            + [C.v_north(n) for n in range(1, 6)]
+            [S.v_south(n) for n in range(7, 0, -1)]
+            + [(S.v_south(1) + S.v_north(1)) / 2]
+            + [S.v_north(n) for n in range(1, 6)]
         )
         self.ns_names = [f"西{n}丁目通" for n in range(11, 0, -1)] + ["東1丁目通"]
         self.ew_names = (
@@ -366,8 +367,8 @@ class GridSim:
 
     @staticmethod
     def _rot(u: float, v: float, sign: float) -> tuple[float, float]:
-        th = math.radians(C.GRID_BEARING_DEG) * sign
-        ox, oy = C.GRID_ORIGIN
+        th = math.radians(S.GRID_BEARING_DEG) * sign
+        ox, oy = S.GRID_ORIGIN
         du, dv = u - ox, v - oy
         return (
             ox + du * math.cos(th) - dv * math.sin(th),

@@ -11,7 +11,7 @@
 
 from __future__ import annotations
 
-from sapporo_sim.ksj_codes import WIDTH_REPRESENTATIVE_M
+from jp_sumo_traffic_sim.ksj_codes import WIDTH_REPRESENTATIVE_M
 
 SUBLANE_W_M = 1.75  # 二輪1台分
 LANE_W_M = 3.0  # 車線1本の標準幅(推定用)

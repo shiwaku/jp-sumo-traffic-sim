@@ -1,6 +1,6 @@
 """KSJ N13 を対象区域(+バッファ)でクリップし、投影して保存する。
 
-コードンはグリッド整列の回転矩形(config.cordon_polygon)。
+対象区域はケースが決める(config.region_polygon。札幌はグリッド整列の回転矩形)。
 出力:
   data/interim/ksj_clip.gpkg  layer=roads / paths / cordon  (EPSG:6679)
   (paths = 庭園路・徒歩道・石段。車道ネットワークからは除外し参照用に保持)
@@ -15,8 +15,8 @@ import geopandas as gpd
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
-from sapporo_sim import ksj_codes
+from jp_sumo_traffic_sim import config as C
+from jp_sumo_traffic_sim import ksj_codes
 
 ATTR_NAMES = {
     "N13_001": "登録日",
@@ -47,7 +47,7 @@ def main() -> None:
         pd.concat(parts, ignore_index=True), geometry="geometry", crs=parts[0].crs
     )
 
-    cordon = C.cordon_polygon()
+    cordon = C.region_polygon()
     clip_poly = cordon.buffer(C.CLIP_BUFFER_M, join_style=2)
     clip_ll = gpd.GeoSeries([clip_poly], crs=C.CRS_PROJ).to_crs(roads.crs).iloc[0]
 
@@ -93,17 +93,15 @@ def main() -> None:
         by_road_type=by_type,
         n_paths_excluded=int(len(paths)),
         n_paths_excluded_in_cordon=int(paths["in_cordon"].sum()),
-        cordon_grid={k: round(v, 1) for k, v in C.CORDON_GRID.items()},
-        cordon_size_m=[
-            round(C.CORDON_GRID["east"] - C.CORDON_GRID["west"], 1),
-            round(C.CORDON_GRID["north"] - C.CORDON_GRID["south"], 1),
-        ],
         cordon_area_km2=round(cordon.area / 1e6, 3),
         cordon_bounds_lonlat=[round(float(v), 5) for v in ll],
-        grid_bearing_deg=C.GRID_BEARING_DEG,
         clip_buffer_m=C.CLIP_BUFFER_M,
         attributes=ATTR_NAMES,
     )
+    # ケース固有の値(札幌はコードンのグリッド座標・方位)
+    extras = getattr(C.case_module(), "clip_report_extras", None)
+    if extras:
+        rep.update(extras())
     C.REPORTS.mkdir(parents=True, exist_ok=True)
     (C.REPORTS / "00_clip.json").write_text(
         json.dumps(rep, ensure_ascii=False, indent=2), encoding="utf-8"

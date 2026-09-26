@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim.sim.simple import GridSim
+from jp_sumo_traffic_sim.sim.simple import GridSim
 
 
 def run(scenario: str, seconds: float = 240.0) -> GridSim:
@@ -15,7 +15,7 @@ def run(scenario: str, seconds: float = 240.0) -> GridSim:
 
 
 def sim_dt() -> float:
-    from sapporo_sim.sim.simple import DT
+    from jp_sumo_traffic_sim.sim.simple import DT
 
     return DT
 
@@ -104,7 +104,7 @@ def test_oneway_blocks_reverse_links():
 
 def test_right_turn_yields_to_oncoming():
     """右折車は対向の直進車にギャップ受容で道を譲る(issue #5)。"""
-    from sapporo_sim.sim.simple import STOPLINE_M
+    from jp_sumo_traffic_sim.sim.simple import STOPLINE_M
 
     sim = GridSim()
     n = sim.grid[(5, 5)]

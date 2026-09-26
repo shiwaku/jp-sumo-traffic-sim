@@ -17,8 +17,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from pyproj import Transformer
 
-from sapporo_sim import config as C
-from sapporo_sim.sim.simple import DT, GridSim
+from jp_sumo_traffic_sim import config as C
+from jp_sumo_traffic_sim.cases import sapporo as S
+from jp_sumo_traffic_sim.sim.simple import DT, GridSim
 
 WARMUP_S = 300.0
 RECORD_S = 300.0
@@ -85,7 +86,7 @@ def run(scenario: str, classes: dict, plans: dict, oneways: list, ksj: list) -> 
     )
 
     # 原点(コードン中心)の投影座標と経緯度
-    g = C.CORDON_GRID
+    g = S.CORDON_GRID
     cx, cy = sim.grid_to_proj((g["west"] + g["east"]) / 2, (g["south"] + g["north"]) / 2)
     tf = Transformer.from_crs(C.CRS_PROJ, "EPSG:6668", always_xy=True)
     lon0, lat0 = tf.transform(cx, cy)

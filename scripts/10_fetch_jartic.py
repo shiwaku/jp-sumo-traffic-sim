@@ -28,18 +28,14 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
+from jp_sumo_traffic_sim import config as C
 
 CATALOG_URL = "https://www.jartic.or.jp/d/opendata/opendata.json"
 BASE_URL = "https://www.jartic.or.jp/d/opendata"
 UA = {"User-Agent": "jp-sumo-traffic-sim/0.1"}
 
-# (カタログのtype, targetList の id) → 用途
-WANTED = {
-    ("typeC", "R01_1"): "交差点制御情報(札幌)",
-    ("typeD", "R01"): "交通規制情報(北海道)",
-    ("typeB", "R01_1"): "断面交通量情報(札幌)",
-}
+# (カタログのtype, targetList の id) → 用途。取得対象はケースが決める(case.toml)
+WANTED = {(c["type"], c["id"]): c["purpose"] for c in C.CASE["jartic"]["catalog"]}
 
 
 def fetch(url: str) -> bytes:

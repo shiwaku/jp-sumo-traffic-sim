@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim.sim.simple import CAR_LEN, DT, Vehicle, idm_acc
+from jp_sumo_traffic_sim.sim.simple import CAR_LEN, DT, Vehicle, idm_acc
 
 RING_M = 1000.0
 V0 = 13.9  # 50km/h
