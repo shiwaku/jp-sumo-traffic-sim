@@ -1,8 +1,8 @@
 import type maplibregl from 'maplibre-gl'
 
 /**
- * 簡易ミクロシミュレーションの再生。
- * scripts/20_run_simple_sim.py が書き出す data/sim_{scenario}.json を読み、
+ * SUMO シミュレーションの再生。
+ * scripts/53_export_sumo_viewer.py が書き出す data/sim_{scenario}.json を読み、
  * 1秒刻みのフレームを ID なし点群として描画する(フレーム間は非補間、
  * 再生速度で見かけの滑らかさを調整する)。
  */
@@ -11,7 +11,7 @@ interface SimFrame {
   t: number
   /** [dx, dy, v] × 台数。単位 0.1m / 0.1m/s、原点は origin */
   p: number[]
-  /** ノードごとの信号状態。'1'=東西青 / '0'=南北青 / '2'=全赤 */
+  /** 信号ごとの状態。'1'=A 青(札幌は東西)/ '0'=B 青(南北)/ '2'=黄・全赤 */
   sig: string
 }
 
@@ -243,7 +243,7 @@ export function initSimUI(player: SimPlayer): void {
         sync()
       })
       .catch(() => {
-        readout.textContent = 'データが無い。make sim を実行して再生成する'
+        readout.textContent = 'データが無い。make sumo-viewer を実行して再生成する'
       })
   })
   playBtn.addEventListener('click', () => {

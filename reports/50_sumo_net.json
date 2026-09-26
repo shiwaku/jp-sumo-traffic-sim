@@ -31,6 +31,7 @@
     "Warning: Intersecting left turns at junction '103' from lane '419_0' and lane '354_0' (increase junction radius to avoid this).",
     "Warning: Speed of straight connection '1143_0->1143.-33_0' reduced by 5.24 due to turning radius of 13.60 (length=35.45, angle=179.75)."
   ],
+  "winter_net": "data/sumo/sapporo_winter.net.xml",
   "check": {
     "n_sumo_edges": 1394,
     "n_base_edges_found": 1176,

@@ -95,7 +95,7 @@ def clip_report_extras() -> dict:
 
 
 # --- 信号(SUMO 変換のフック、docs/sumo-design.md §3)---------------------------
-# 自前実装(sim/netsim.py)と同じ条件: 2現示は東西青から始め、オフセットは
+# 撤去した自前実装(Phase 2 の netsim)と同じ条件: 2現示は東西青から始め、オフセットは
 # 東行きの green wave(グリッド u 方向に GREEN_WAVE_KMH で進む)
 GREEN_WAVE_KMH = 40.0  # 自前実装の PROGRESSION_MS と同じ
 

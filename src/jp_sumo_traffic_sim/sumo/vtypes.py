@@ -1,7 +1,7 @@
 """車両パラメータ → SUMO vType(docs/sumo-design.md §5)。
 
 平常時の IDM は Phase 2-① で飽和交通流率 1,845 台/時/車線に合わせた値
-(自前実装 sim/simple.py の PARAMS と同じ)。SUMO の IDM でも飽和交通流率が
+(撤去した自前実装の PARAMS と同じ)。SUMO の IDM でも飽和交通流率が
 1,800〜2,000 台/時/車線に入ることを tests/test_sumo_behaviour.py で確認する。
 """
 
@@ -12,6 +12,8 @@ PARAMS = {
     "normal": dict(a=1.5, b=1.8, s0=2.0, T=1.1, v0_factor=1.0),
     "winter": dict(a=0.7, b=0.55, s0=5.0, T=1.6, v0_factor=0.7),
 }
+# 雪堤による幅員減少(§5.4)。車線幅の倍率 = 1 - 自前実装の sublane_loss(0.25)
+WIDTH_SCALE = {"normal": 1.0, "winter": 0.75}
 CAR_LENGTH_M = 4.5  # 自前実装の CAR_LEN と同じ
 CAR_WIDTH_M = 1.8  # サブレーン 1.75m で約2本を占める
 # 運転者の遵法傾向 coeff_v(自前実装: max(0.7, N(0.95, 0.08)))

@@ -31,7 +31,7 @@ jobs:
         working-directory: viewer
       # データ(viewer/public/data/)はリポジトリにコミットされており、
       # Vite が public/ から dist/ へそのままコピーする。
-      # 再生成する場合は make phase0 && make sim(ローカル)。
+      # 再生成する場合は make phase0 && make sumo-net sumo-viewer(ローカル)。
       - run: npm run build
         working-directory: viewer
       - uses: actions/upload-pages-artifact@v3

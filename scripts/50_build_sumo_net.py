@@ -1,7 +1,7 @@
 """層[2]の方向別 Edge から SUMO ネットワークを作る(docs/sumo-design.md §2・§3)。
 
 入力:  data/processed/*(edges / network_conflated / signal_plans)
-出力:  data/sumo/{case}.net.xml(平常時)ほか中間 XML
+出力:  data/sumo/{case}.net.xml(平常時)・{case}_winter.net.xml(冬季。車線幅 × 0.75)ほか中間 XML
        reports/50_sumo_net.json
 
 検査(受け入れ条件 §2.8):
@@ -22,6 +22,7 @@ from jp_sumo_traffic_sim import config as C
 from jp_sumo_traffic_sim.network.io import load_network_inputs
 from jp_sumo_traffic_sim.sumo.build import build_network
 from jp_sumo_traffic_sim.sumo.netgen import base_eid
+from jp_sumo_traffic_sim.sumo.vtypes import WIDTH_SCALE
 
 OUT = C.ROOT / "data" / "sumo"
 
@@ -93,6 +94,19 @@ def main() -> None:
     stats = build_network(
         nodes, edges, stop_edges, plans, OUT, C.CASE_NAME, axis_fn=axis_fn, offsets=offsets
     )
+    # 冬季: 同じ位相・信号で車線幅だけ縮める(雪堤、docs/sumo-design.md §5.4)
+    winter = build_network(
+        nodes,
+        edges,
+        stop_edges,
+        plans,
+        OUT,
+        f"{C.CASE_NAME}_winter",
+        axis_fn=axis_fn,
+        offsets=offsets,
+        width_scale=WIDTH_SCALE["winter"],
+    )
+    stats["winter_net"] = str(Path(winter["net"]).relative_to(C.ROOT)).replace("\\", "/")
     stats["check"] = check_net(Path(stats["net"]), edges)
     stats["net"] = str(Path(stats["net"]).relative_to(C.ROOT)).replace("\\", "/")
     stats["case"] = C.CASE_NAME
