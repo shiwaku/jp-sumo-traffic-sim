@@ -41,6 +41,11 @@ def test_lanes_from_census_and_width():
     assert e1.attrs["n_lanes"] == 4
     assert e1.attrs["lane_source"] == "census"
     assert e1.attrs["right_turn_lane"] == 1
+    # 右折専用車線のコードは 1 だけが「あり」(2=なし・3=右折禁止・4=調査路線が右折)
+    for code, want in ((2, 0), (3, 0), (4, 0), (1.0, 1)):
+        (e5, _) = build_edges([link(1, 2, [(0, 0), (100, 0)], census_id="X")])
+        L.assign_lanes(e5, dict(n_lanes=4, w_carriageway=13.0, right_turn_lane=code))
+        assert e5.attrs["right_turn_lane"] == want, code
     # 幅員区分5(19.5m+)の両方向 → 歩道分を引いて片側最大3にキャップ
     (e3, e4) = build_edges([link(1, 2, [(0, 0), (100, 0)], width="5")])
     L.assign_lanes(e3, None)

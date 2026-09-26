@@ -45,13 +45,13 @@
     "100": 21
   },
   "rt_lane_source": {
-    "census_section": 12400,
-    "assumed": 12752
+    "assumed": 14828,
+    "census_section": 10324
   },
   "assumed_remaining": {
     "oneway": 24026,
     "lanes": 12953,
-    "right_turn_lane": 12752,
+    "right_turn_lane": 14828,
     "speed": 3594,
     "note": "手入力データ(issue #1)が届いたら manual_ortho で置き換える"
   }

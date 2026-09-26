@@ -82,6 +82,9 @@ def test_cross_net_lefthand_rt_lane_and_program(tmp_path):
     # 右折専用車線: 分割後の流入は3車線。中央側(最大 index)は右折のみ
     appr = net.getEdge("10.-60")
     assert appr.getLaneNumber() == 3
+    # 長さは層[2]の実測長(交差点の形状で削られない)。分割の上流側 + 下流側 = 元の長さ
+    assert abs(appr.getLength() - 60.0) < 0.1
+    assert abs(net.getEdge("10").getLength() + appr.getLength() - 400.0) < 0.1
     dirs = {}
     for conns in appr.getOutgoing().values():
         for c in conns:
@@ -159,3 +162,34 @@ def test_real_net_reachability_and_ids():
     assert ck["n_uturn_connections"] == 0
     assert ck["n_entries_reaching_exit"] == ck["n_entries"]
     assert Path(C.ROOT / rep["net"]).exists()
+
+
+def test_no_rt_lane_without_right_turn_exit():
+    """右折の行き先が無い流入には右折専用車線を足さない(左折・直進しか無い T 字路)。"""
+    nodes = {0: node(0, 0, 0), 1: node(1, -400, 0), 2: node(2, 400, 0), 3: node(3, 0, 400)}
+    # 西→東の流入(10)から見て、北(左折)と東(直進)しかない。南(右折)が無い
+    edges = (
+        two_way(10, 1, 0, nodes, n_lanes=2, rt=1)
+        + two_way(20, 0, 2, nodes)
+        + two_way(30, 0, 3, nodes)
+    )
+    appr = dict(edges[0], n_sublanes=4)
+    out_by_node = {}
+    for e in edges:
+        out_by_node.setdefault(e["frm"], []).append(e)
+    assert not netgen.has_right_turn(appr, out_by_node)
+    assert netgen.rt_split_pos(appr, out_by_node) is None
+    # 南への道があれば右折あり
+    nodes[4] = node(4, 0, -400)
+    out_by_node[0].append(edge(40, 0, 4, nodes))
+    assert netgen.has_right_turn(appr, out_by_node)
+
+
+def test_merge_keeps_one_priority_green_per_target_lane():
+    """同じ流出車線へ向かう G は1本(直進)だけ残し、残りは従属青 g にする。"""
+    from jp_sumo_traffic_sim.sumo.tls import _merge_to_minor
+
+    state = list("GGG")
+    conns = [(0, None, "l", "X_0"), (1, None, "s", "X_0"), (2, None, "s", "Y_0")]
+    assert _merge_to_minor(state, conns) == 1
+    assert state == ["g", "G", "G"]

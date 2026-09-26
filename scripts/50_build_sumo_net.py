@@ -1,13 +1,17 @@
 """層[2]の方向別 Edge から SUMO ネットワークを作る(docs/sumo-design.md §2・§3)。
 
 入力:  data/processed/*(edges / network_conflated / signal_plans)
-出力:  data/sumo/{case}.net.xml(平常時)・{case}_winter.net.xml(冬季。車線幅 × 0.75)ほか中間 XML
+出力:  data/sumo/{case}.net.xml(平常時)・{case}_winter.net.xml(冬季。車線幅 × 0.75)
+       data/sumo/{case}_core.net.xml・{case}_core_winter.net.xml(都心区域の部分網。
+       同じ edge id。ケースが core_polygon を持つときだけ、docs/sumo-design.md §13.3)
+       ほか中間 XML
        reports/50_sumo_net.json
 
 検査(受け入れ条件 §2.8):
 - 層[2]の Edge がすべて SUMO に1対1で入っている(右折車線の分割で増えた分は除く)
 - U ターン接続が無い
 - 全流入 Edge から流出 Edge へ到達可能(sumolib で再検査)
+- 部分網の edge id がすべて市全域のネットワークに含まれる
 """
 
 import json
@@ -20,7 +24,7 @@ import sumolib
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from jp_sumo_traffic_sim import config as C
 from jp_sumo_traffic_sim.network.io import load_network_inputs
-from jp_sumo_traffic_sim.sumo.build import build_network
+from jp_sumo_traffic_sim.sumo.build import build_network, cut_subnet
 from jp_sumo_traffic_sim.sumo.netgen import base_eid
 from jp_sumo_traffic_sim.sumo.vtypes import WIDTH_SCALE
 
@@ -107,6 +111,30 @@ def main() -> None:
         width_scale=WIDTH_SCALE["winter"],
     )
     stats["winter_net"] = str(Path(winter["net"]).relative_to(C.ROOT)).replace("\\", "/")
+
+    # 都心区域の部分網(ミクロ用)。市全域と同じ edge id
+    core = C.core_polygon()
+    if core is not None:
+        stats["core"] = {}
+        keep_ids = None
+        for scen, src in (("normal", stats["net"]), ("winter", winter["net"])):
+            suffix = "_core" if scen == "normal" else "_core_winter"
+            cs = cut_subnet(
+                Path(src),
+                OUT / f"{C.CASE_NAME}{suffix}.net.xml",
+                core,
+                nodes,
+                plans,
+                axis_fn=axis_fn,
+                offsets=offsets,
+                keep_ids=keep_ids,
+            )
+            keep_ids = cs.pop("keep_ids")  # 冬季は平常時と同じ Edge 集合
+            city_ids = {e.getID() for e in sumolib.net.readNet(src).getEdges()}
+            sub_ids = {e.getID() for e in sumolib.net.readNet(cs["net"]).getEdges()}
+            cs["n_ids_not_in_city"] = len(sub_ids - city_ids)
+            cs["net"] = str(Path(cs["net"]).relative_to(C.ROOT)).replace("\\", "/")
+            stats["core"][scen] = cs
     stats["check"] = check_net(Path(stats["net"]), edges)
     stats["net"] = str(Path(stats["net"]).relative_to(C.ROOT)).replace("\\", "/")
     stats["case"] = C.CASE_NAME
@@ -126,6 +154,11 @@ def main() -> None:
         f"流入→流出 {ck['n_entries_reaching_exit']}/{ck['n_entries']}、"
         f"警告 {stats['netconvert_warnings']}"
     )
+    for scen, cs in stats.get("core", {}).items():
+        print(
+            f"都心区域({scen}): edges {cs['n_edges']}、信号 {cs['n_tls']}、"
+            f"市全域に無い id {cs['n_ids_not_in_city']}"
+        )
 
 
 if __name__ == "__main__":

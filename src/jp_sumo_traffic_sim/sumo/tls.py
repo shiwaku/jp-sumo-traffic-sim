@@ -58,6 +58,27 @@ def default_axis(in_edges: list) -> dict:
     }
 
 
+MERGE_PRIORITY = {"s": 0, "l": 1, "L": 1, "r": 2, "R": 2, "t": 3}  # 合流で G を残す順
+
+
+def _merge_to_minor(state: list[str], conns: list) -> int:
+    """同じ流出車線へ向かう G が複数あれば、1本(直進優先)を残して g(従属青)にする。
+
+    上下分離道路の合流部などで、別々の流入から同じ車線へ G が2本入ると譲り合いが
+    無くなる(SUMO の "Unsafe green phase" 警告。C2 の試走で 217 交差点)。
+    """
+    by_lane: dict[str, list] = {}
+    for i, _e, d, to_lane in conns:
+        if state[i] == "G":
+            by_lane.setdefault(to_lane, []).append((MERGE_PRIORITY.get(d, 9), i))
+    n = 0
+    for cands in by_lane.values():
+        for _, i in sorted(cands)[1:]:
+            state[i] = "g"
+            n += 1
+    return n
+
+
 def build_programs(
     net,
     timing: dict[str, tuple[float, float, float]],
@@ -70,19 +91,21 @@ def build_programs(
     axis_fn: 流入 Edge 終端の2点 → 'A'/'B'(ケースのフック)。
     """
     offsets = offsets or {}
-    links: dict[str, list] = {}  # tls id → [(linkIndex, from edge, direction)]
+    links: dict[str, list] = {}  # tls id → [(linkIndex, from edge, direction, to lane id)]
     for e in net.getEdges():
         for conns in e.getOutgoing().values():
             for c in conns:
                 tl = c.getTLSID()
                 if tl:
-                    links.setdefault(tl, []).append((c.getTLLinkIndex(), e, c.getDirection()))
+                    links.setdefault(tl, []).append(
+                        (c.getTLLinkIndex(), e, c.getDirection(), c.getToLane().getID())
+                    )
 
     out = ["<additional>"]
-    stats = dict(n_tls=0, n_single_axis=0)
+    stats = dict(n_tls=0, n_single_axis=0, n_merge_yield=0)
     for tl_id in sorted(links, key=str):
         conns = links[tl_id]
-        in_edges = list({e.getID(): e for _, e, _ in conns}.values())
+        in_edges = list({e.getID(): e for _, e, _, _ in conns}.values())
         if axis_fn is not None:
             axis = {e.getID(): axis_fn(*e.getShape()[-2:]) for e in in_edges}
         else:
@@ -94,14 +117,15 @@ def build_programs(
         )
         green = max(1.0, (cycle - 2 * (yellow + allred)) / 2)
 
-        n = max(i for i, _, _ in conns) + 1
+        n = max(i for i, _, _, _ in conns) + 1
         phases = []
         for ax in ("A", "B"):
             g, y = ["r"] * n, ["r"] * n
-            for i, e, d in conns:
+            for i, e, d, _ in conns:
                 if axis[e.getID()] == ax:
                     g[i] = "g" if d in YIELD_DIRS else "G"
                     y[i] = "y"
+            stats["n_merge_yield"] += _merge_to_minor(g, conns)
             phases += [(green, "".join(g)), (yellow, "".join(y)), (allred, "r" * n)]
         off = round(offsets.get(tl_id, 0.0) % cycle, 2)
         out.append(f'  <tlLogic id="{tl_id}" type="static" programID="0" offset="{off}">')

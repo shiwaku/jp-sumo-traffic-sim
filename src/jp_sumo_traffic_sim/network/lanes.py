@@ -20,6 +20,9 @@ CARRIAGEWAY_SHARE = 0.7  # KSJ 幅員区分は道路幅なので歩道分を差�
 MAX_LANES_TWOWAY = 3  # 片方向あたりの上限(推定・品質ガード)
 MAX_LANES_ONEWAY = 4
 CENSUS_LANE_GUARD = 5  # センサス由来の片方向車線数がこれ以上なら側道誤結合とみなす
+# センサス「代表信号交差点/右折専用車線の有無等」のコード(R3 箇所別基本表の説明資料
+# kasyorep.pdf (43)②): 1=右折専用車線あり 2=なし 3=右折禁止 4=調査路線が右折
+RT_LANE_PRESENT = 1
 
 
 def assign_lanes(edge, census: dict | None) -> None:
@@ -58,9 +61,11 @@ def assign_lanes(edge, census: dict | None) -> None:
     edge.attrs["n_sublanes"] = max(1, int(w // SUBLANE_W_M))
     edge.attrs["carriageway_m"] = round(w, 2)
     edge.attrs["lane_source"] = source
-    # 右折専用車線(センサスは区間代表値。交差点別は手入力待ち = assumed)
-    if census is not None and census.get("right_turn_lane") is not None:
-        edge.attrs["right_turn_lane"] = int(float(census["right_turn_lane"]) > 0)
+    # 右折専用車線(センサスは区間代表値。交差点別は手入力待ち = assumed)。
+    # コード 1 だけが「あり」(2=なし・3=右折禁止・4=調査路線が右折)
+    code = census.get("right_turn_lane") if census is not None else None
+    if code is not None and code == code:  # NaN を除く
+        edge.attrs["right_turn_lane"] = int(round(float(code)) == RT_LANE_PRESENT)
         edge.attrs["rt_lane_source"] = "census_section"
     else:
         edge.attrs["right_turn_lane"] = 0
