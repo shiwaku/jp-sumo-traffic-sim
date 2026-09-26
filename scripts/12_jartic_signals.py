@@ -45,7 +45,7 @@ SOURCE_CODE = "3001"  # 北海道(札幌方面)。函館3002 / 旭川3003 / 釧�
 POSITION_URL = "https://www.tmt.or.jp/research/index10_1_1.html"
 POSITION_CACHE = C.INTERIM / "tmt_intersections_3001.json"
 OPT_RE = re.compile(r'<option value="(\d+)" lon="([\d.]+)" lat="([\d.]+)"')
-UA = {"User-Agent": "sapporo-micro-traffic-sim/0.1"}
+UA = {"User-Agent": "jp-sumo-traffic-sim/0.1"}
 
 # 黄・全赤の内訳は含まれない。各現示は青+黄+全赤の合計なので標準値を差し引く。
 # 現地観測で1-2交差点確認して校正すること(docs/design.md 4.2)。

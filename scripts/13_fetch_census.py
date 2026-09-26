@@ -32,7 +32,7 @@ ASSETS = [
     "traffic_census_2021_jikantai.tar.gz",
     "SHA256SUMS.txt",
 ]
-UA = {"User-Agent": "sapporo-micro-traffic-sim/0.1"}
+UA = {"User-Agent": "jp-sumo-traffic-sim/0.1"}
 
 
 def sha256(p: Path) -> str:

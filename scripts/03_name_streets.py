@@ -45,7 +45,7 @@ def fetch_osm(bbox: tuple[float, float, float, float]) -> dict:
     req = urllib.request.Request(
         OVERPASS,
         data=urllib.parse.urlencode({"data": q}).encode(),
-        headers={"User-Agent": "sapporo-micro-traffic-sim/0.1"},
+        headers={"User-Agent": "jp-sumo-traffic-sim/0.1"},
     )
     with urllib.request.urlopen(req, timeout=240) as r:  # noqa: S310
         data = json.loads(r.read().decode())

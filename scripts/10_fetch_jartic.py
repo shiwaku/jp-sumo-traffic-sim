@@ -32,7 +32,7 @@ from sapporo_sim import config as C
 
 CATALOG_URL = "https://www.jartic.or.jp/d/opendata/opendata.json"
 BASE_URL = "https://www.jartic.or.jp/d/opendata"
-UA = {"User-Agent": "sapporo-micro-traffic-sim/0.1"}
+UA = {"User-Agent": "jp-sumo-traffic-sim/0.1"}
 
 # (カタログのtype, targetList の id) → 用途
 WANTED = {
