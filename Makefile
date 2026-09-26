@@ -40,6 +40,9 @@ conflate:  ## Phase 1: 規制・信号・センサスを実ネットワークへ
 edges:  ## Phase 1: 単方向エッジ化と車線・速度の割り当て
 	uv run python scripts/32_directed_lanes.py
 
+census-counts:  ## センサス時間帯別交通量を方向別 Edge の観測値にする(需要推定・照合用)
+	uv run python scripts/41_census_counts.py
+
 demand-check:  ## SUMO を実測需要で回し、センサス断面交通量・旅行速度と照合する(要 make sumo-net)
 	uv run python scripts/40_demand_check.py
 
