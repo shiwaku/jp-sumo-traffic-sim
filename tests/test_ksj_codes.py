@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import ksj_codes as K
+from jp_sumo_traffic_sim import ksj_codes as K
 
 
 def test_width_order_is_narrow_to_wide():

@@ -37,13 +37,13 @@ import numpy as np
 from shapely.geometry import Point
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
+from jp_sumo_traffic_sim import config as C
 
 csv.field_size_limit(2**31 - 1)  # sys.maxsize は Windows の C long を超える
 
-SOURCE_CODE = "3001"  # 北海道(札幌方面)。函館3002 / 旭川3003 / 釧路3004 / 北見3005
+SOURCE_CODE = C.CASE["jartic"]["control_source_code"]  # 情報源コード(case.toml)
 POSITION_URL = "https://www.tmt.or.jp/research/index10_1_1.html"
-POSITION_CACHE = C.INTERIM / "tmt_intersections_3001.json"
+POSITION_CACHE = C.INTERIM / f"tmt_intersections_{SOURCE_CODE}.json"
 OPT_RE = re.compile(r'<option value="(\d+)" lon="([\d.]+)" lat="([\d.]+)"')
 UA = {"User-Agent": "jp-sumo-traffic-sim/0.1"}
 
@@ -194,7 +194,7 @@ def main() -> None:
     ids_pos = set(pos)
     ids_def = set(defs)
 
-    cordon = C.cordon_polygon()
+    cordon = C.region_polygon()
     cordon_ll = gpd.GeoSeries([cordon], crs=C.CRS_PROJ).to_crs("EPSG:6668").iloc[0]
 
     recs, plans = [], {}

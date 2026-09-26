@@ -5,16 +5,16 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
-from sapporo_sim.sim.mobil import overlaps
-from sapporo_sim.sim.netsim import DT, RT_ZONE_M, NetSim
-from sapporo_sim.sim.simple import CAR_LEN, STOPLINE_M
+from jp_sumo_traffic_sim.cases import sapporo as S
+from jp_sumo_traffic_sim.sim.mobil import overlaps
+from jp_sumo_traffic_sim.sim.netsim import DT, RT_ZONE_M, NetSim
+from jp_sumo_traffic_sim.sim.simple import CAR_LEN, STOPLINE_M
 
-TH = math.radians(C.GRID_BEARING_DEG)
+TH = math.radians(S.GRID_BEARING_DEG)
 
 
 def rot(x, y):
-    ox, oy = C.GRID_ORIGIN
+    ox, oy = S.GRID_ORIGIN
     return (
         ox + x * math.cos(TH) - y * math.sin(TH),
         oy + x * math.sin(TH) + y * math.cos(TH),
@@ -231,7 +231,7 @@ def test_snapshot_lateral_offset():
 
     # グリッド座標系に戻して比較する
     def to_grid(x, y):
-        ox, oy = C.GRID_ORIGIN
+        ox, oy = S.GRID_ORIGIN
         dx, dy = x - ox, y - oy
         return (
             dx * math.cos(-TH) - dy * math.sin(-TH),

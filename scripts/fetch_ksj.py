@@ -13,7 +13,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
+from jp_sumo_traffic_sim import config as C
 
 BASE = "https://nlftp.mlit.go.jp/ksj/gml/data/N13/N13-24"
 VINTAGE = "N13-24"  # 2024年度版 (2024年9月時点 / 2026年4月更新)

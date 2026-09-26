@@ -30,7 +30,7 @@ import geopandas as gpd
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
+from jp_sumo_traffic_sim import config as C
 
 SRC = "data/raw/census/traffic_census_2021_converted.parquet"
 CRS_CENSUS = "EPSG:4612"  # R03 のCRS(docs/design.md 4.4)
@@ -98,7 +98,7 @@ def main() -> None:
     if not src.exists():
         raise SystemExit(f"{SRC} が無い。scripts/13_fetch_census.py を先に実行する。")
 
-    cordon = C.cordon_polygon()
+    cordon = C.region_polygon()
     clip = cordon.buffer(C.CLIP_BUFFER_M, join_style=2)
     clip_ll = gpd.GeoSeries([clip], crs=C.CRS_PROJ).to_crs(CRS_CENSUS).iloc[0]
     cordon_ll = gpd.GeoSeries([cordon], crs=C.CRS_PROJ).to_crs(CRS_CENSUS).iloc[0]
@@ -119,7 +119,7 @@ def main() -> None:
     g.to_file(out, layer="sections", driver="GPKG")
 
     # --- 時間帯別交通量の結合 ---
-    jikantai_path = C.RAW / "census" / "jikantai" / "01.json"
+    jikantai_path = C.RAW / "census" / "jikantai" / f"{C.CASE['census']['pref_code']}.json"
     hourly = {}
     if jikantai_path.exists():
         j = json.loads(jikantai_path.read_text(encoding="utf-8"))

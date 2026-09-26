@@ -22,7 +22,7 @@ from shapely.geometry import LineString
 from shapely.strtree import STRtree
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
+from jp_sumo_traffic_sim import config as C
 
 CACHE = C.INTERIM / "osm_oneway.json"
 BUFFER_M = 15.0
@@ -32,7 +32,7 @@ DOT_TH = 0.85  # |cos| がこれ以上のときだけ判定に使う(直交道�
 def fetch_osm() -> dict:
     if CACHE.exists():
         return json.loads(CACHE.read_text(encoding="utf-8"))
-    cordon = C.cordon_polygon().buffer(C.CLIP_BUFFER_M)
+    cordon = C.region_polygon().buffer(C.CLIP_BUFFER_M)
     w, s, e, n = gpd.GeoSeries([cordon], crs=C.CRS_PROJ).to_crs("EPSG:4326").total_bounds
     q = (
         "[out:json][timeout:120];"

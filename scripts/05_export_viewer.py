@@ -18,8 +18,9 @@ import geopandas as gpd
 from shapely.geometry import LineString
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
-from sapporo_sim.ksj_codes import ROAD_CATEGORY, ROAD_STATE, ROAD_WIDTH
+from jp_sumo_traffic_sim import config as C
+from jp_sumo_traffic_sim.cases import sapporo as S
+from jp_sumo_traffic_sim.ksj_codes import ROAD_CATEGORY, ROAD_STATE, ROAD_WIDTH
 
 PREC = 6  # 座標の小数桁。1e-6 度 ≒ 0.1m
 OUT = C.ROOT / "viewer" / "public" / "data"
@@ -112,33 +113,33 @@ def main() -> None:
     write("cordon", to_fc(cordon, ["kind"]))
 
     # 格子線
-    g = C.CORDON_GRID
+    g = S.CORDON_GRID
     lines, names = [], []
     for n in range(1, 12):
-        v = C.v_south(n)
+        v = S.v_south(n)
         if g["south"] <= v <= g["north"]:
             lines.append(LineString([(g["west"], v), (g["east"], v)]))
             names.append(f"南{n}条通")
-    v = (C.v_south(1) + C.v_north(1)) / 2
+    v = (S.v_south(1) + S.v_north(1)) / 2
     lines.append(LineString([(g["west"], v), (g["east"], v)]))
     names.append("大通")
     for n in range(1, 9):
-        v = C.v_north(n)
+        v = S.v_north(n)
         if g["south"] <= v <= g["north"]:
             lines.append(LineString([(g["west"], v), (g["east"], v)]))
             names.append(f"北{n}条通")
     for n in range(1, 16):
-        u = C.u_west(n)
+        u = S.u_west(n)
         if g["west"] <= u <= g["east"]:
             lines.append(LineString([(u, g["south"]), (u, g["north"])]))
             names.append(f"西{n}丁目通")
     for n in range(1, 5):
-        u = C.u_east(n)
+        u = S.u_east(n)
         if g["west"] <= u <= g["east"]:
             lines.append(LineString([(u, g["south"]), (u, g["north"])]))
             names.append(f"東{n}丁目通")
     lat = gpd.GeoDataFrame(
-        {"name": names}, geometry=[C.from_grid(x) for x in lines], crs=C.CRS_PROJ
+        {"name": names}, geometry=[S.from_grid(x) for x in lines], crs=C.CRS_PROJ
     )
     write("lattice", to_fc(lat, ["name"]))
 
@@ -202,11 +203,11 @@ def main() -> None:
         report("12_signals.json"),
         report("14_census.json"),
     )
-    gr = C.CORDON_GRID
+    gr = S.CORDON_GRID
     meta = dict(
-        center=[141.3501, 43.0591],
-        bearing=-C.GRID_BEARING_DEG,
-        grid_bearing=C.GRID_BEARING_DEG,
+        center=C.CASE["viewer"]["center"],
+        bearing=-S.GRID_BEARING_DEG,
+        grid_bearing=S.GRID_BEARING_DEG,
         cordon_size=[
             round(gr["east"] - gr["west"], 1),
             round(gr["north"] - gr["south"], 1),

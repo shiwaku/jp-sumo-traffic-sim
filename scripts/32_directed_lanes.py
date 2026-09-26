@@ -17,9 +17,9 @@ import geopandas as gpd
 from shapely.geometry import LineString
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
-from sapporo_sim.network import lanes as L
-from sapporo_sim.network.directed import build_edges
+from jp_sumo_traffic_sim import config as C
+from jp_sumo_traffic_sim.network import lanes as L
+from jp_sumo_traffic_sim.network.directed import build_edges
 
 
 def main() -> None:

@@ -1,0 +1,48 @@
+# 札幌ケースの地域パラメータ(docs/sumo-design.md §14)。
+# 汎用のパイプラインは config.py 経由でこの値を読む。
+# 地域に依存する処理(格子座標・コードン)は module に書く。
+
+name = "sapporo"
+title = "札幌都心"
+# 区域ポリゴンなどケース固有の処理を持つモジュール
+module = "jp_sumo_traffic_sim.cases.sapporo"
+
+[crs]
+# 平面直角座標系 XI系。距離・速度計算はすべてこの系で行う
+proj = "EPSG:6679"
+
+[ksj]
+meshes = ["6441", "6440"]
+
+[region]
+# 抽出は流入路を残すため区域の外側にバッファを取る [m]
+clip_buffer_m = 500
+
+[jartic]
+# 交通規制情報(typeD)の配布ファイル名
+regulation_zip = "typeD_hokkaido.zip"
+# 交差点制御情報の情報源コード。北海道: 札幌3001 / 函館3002 / 旭川3003 / 釧路3004 / 北見3005
+control_source_code = "3001"
+
+# カタログ(opendata.json)の (type, targetList の id) と用途
+[[jartic.catalog]]
+type = "typeC"
+id = "R01_1"
+purpose = "交差点制御情報(札幌)"
+
+[[jartic.catalog]]
+type = "typeD"
+id = "R01"
+purpose = "交通規制情報(北海道)"
+
+[[jartic.catalog]]
+type = "typeB"
+id = "R01_1"
+purpose = "断面交通量情報(札幌)"
+
+[census]
+# 時間帯別交通量(jikantai/{pref_code}.json)の都道府県コード
+pref_code = "01"
+
+[viewer]
+center = [141.3501, 43.0591]

@@ -20,8 +20,9 @@ from pathlib import Path
 import geopandas as gpd
 import numpy as np
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from jp_sumo_traffic_sim import config as C
+from jp_sumo_traffic_sim.cases import sapporo as S
 
 ASSIGN_TOL_M = 35.0  # 割り当て許容差(格子間隔130mの1/4未満)
 BEARING_TOL_DEG = 25.0  # グリッド軸からのずれ許容
@@ -31,12 +32,12 @@ THROUGH_FRAC = 0.6  # 区域スパンのこの割合以上を通し街路とみ�
 def lattice_lines(axis: str) -> list[tuple[float, str, str]]:
     """(横断座標, 名前, 種別) の一覧。格子線とその中点を張る。"""
     if axis == "EW":
-        base = [(C.v_south(n), f"南{n}条通") for n in range(1, 12)]
-        base += [((C.v_south(1) + C.v_north(1)) / 2, "大通")]
-        base += [(C.v_north(n), f"北{n}条通") for n in range(1, 9)]
+        base = [(S.v_south(n), f"南{n}条通") for n in range(1, 12)]
+        base += [((S.v_south(1) + S.v_north(1)) / 2, "大通")]
+        base += [(S.v_north(n), f"北{n}条通") for n in range(1, 9)]
     else:
-        base = [(C.u_west(n), f"西{n}丁目通") for n in range(1, 16)]
-        base += [(C.u_east(n), f"東{n}丁目通") for n in range(1, 5)]
+        base = [(S.u_west(n), f"西{n}丁目通") for n in range(1, 16)]
+        base += [(S.u_east(n), f"東{n}丁目通") for n in range(1, 5)]
     base.sort()
     out = [(c, nm, "格子街路") for c, nm in base]
     for (c0, n0), (c1, n1) in zip(base[:-1], base[1:], strict=False):
@@ -46,7 +47,7 @@ def lattice_lines(axis: str) -> list[tuple[float, str, str]]:
 
 def link_axis_cross(geom):
     """グリッド座標での主軸と横断座標(長さ重み付き)を返す。"""
-    g = C.to_grid(geom)
+    g = S.to_grid(geom)
     lines = g.geoms if g.geom_type == "MultiLineString" else [g]
     acc = {"EW": [0.0, 0.0], "NS": [0.0, 0.0]}
     off_sum = wsum = 0.0
@@ -109,7 +110,7 @@ def main() -> None:
     inner["street_kind"] = kinds
     inner["assign_err_m"] = errs
 
-    g = C.CORDON_GRID
+    g = S.CORDON_GRID
     span = {"EW": g["east"] - g["west"], "NS": g["north"] - g["south"]}
 
     table = []

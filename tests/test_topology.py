@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim.network import topology as T
+from jp_sumo_traffic_sim.network import topology as T
 
 
 def rec(coords, **kw):

@@ -37,7 +37,7 @@
 
 **対処:** グリッドに整列した回転矩形に変更した。
 `GRID_ORIGIN` を中心に `-GRID_BEARING_DEG` 回転した座標を `(u, v)` と呼び、
-コードンは境界となる4本の通りの座標で定義する(`src/sapporo_sim/config.py`)。
+コードンは境界となる4本の通りの座標で定義する(`src/jp_sumo_traffic_sim/cases/sapporo.py`)。
 
 | 境界 | 通り | グリッド座標 |
 |---|---|---|
@@ -170,7 +170,7 @@
 ### 街路インベントリ
 
 リンクを検証済み格子線(および街区中央線)に直接割り当てた結果
-(`scripts/04_street_inventory.py`、`reports/04_inventory.json`):
+(`cases/sapporo/scripts/04_street_inventory.py`、`reports/04_inventory.json`):
 
 | 区分 | 数 |
 |---|---|
@@ -241,7 +241,7 @@
 広がりは街路が途中で食い違っている(jog している)場合にも出る。
 Phase 1 の単方向エッジ化(双方向道路は2本 + linked_road)の段で個別に確定させる。
 
-なお `scripts/02_grid_frame.py` の連鎖クラスタリング
+なお `cases/sapporo/scripts/02_grid_frame.py` の連鎖クラスタリング
 (横断距離20m以内を同一街路とみなす)は、広い街路で隣の通りまで数珠つなぎに連結する。
 実際に石山通と西10丁目通が1つの街路として結合された。
 **格子への直接割り当て(`04_street_inventory.py`)を正とする。**
@@ -275,7 +275,7 @@ Phase 1 の単方向エッジ化(双方向道路は2本 + linked_road)の段で�
 
 > コードの並びは「狭い→広い」で、1 が最も狭い。
 > 逆順に読み替えると幹線と細街路が入れ替わるので注意
-> (`src/sapporo_sim/ksj_codes.py` に定義を集約した)。
+> (`src/jp_sumo_traffic_sim/ksj_codes.py` に定義を集約した)。
 
 19.5m以上が213本あり、これが幹線に対応する。
 13m以上(コード4+5)の419本が2車線以上を持つ候補。

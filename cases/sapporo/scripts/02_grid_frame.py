@@ -17,9 +17,10 @@ from pathlib import Path
 import geopandas as gpd
 import numpy as np
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
-from sapporo_sim.ksj_codes import ROAD_WIDTH as WIDTH_LABEL
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from jp_sumo_traffic_sim import config as C
+from jp_sumo_traffic_sim.cases import sapporo as S
+from jp_sumo_traffic_sim.ksj_codes import ROAD_WIDTH as WIDTH_LABEL
 
 # 区域スパンのこの割合以上の延長を持つものを「通し街路」とみなす
 THROUGH_FRAC = 0.6
@@ -78,9 +79,9 @@ def main() -> None:
     ang, wt = seg_bearings(inner)
     keep = wt >= 10.0  # 10m 未満の線分は方位が不安定
     theta_est = estimate_bearing(ang[keep], wt[keep])
-    theta = C.GRID_BEARING_DEG
+    theta = S.GRID_BEARING_DEG
 
-    rot = C.to_grid
+    rot = S.to_grid
     inner["geom_rot"] = inner.geometry.map(rot)
 
     # 回転後の各リンクの主方向 (u=EW軸, v=NS軸)

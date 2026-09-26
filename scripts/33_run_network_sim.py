@@ -17,9 +17,9 @@ from pathlib import Path
 from pyproj import Transformer
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
-from sapporo_sim.network.io import load_network_inputs
-from sapporo_sim.sim.netsim import DT, NetSim
+from jp_sumo_traffic_sim import config as C
+from jp_sumo_traffic_sim.network.io import load_network_inputs
+from jp_sumo_traffic_sim.sim.netsim import DT, NetSim
 
 WARMUP_S = 300.0
 RECORD_S = 300.0

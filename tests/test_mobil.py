@@ -8,13 +8,13 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim.sim.mobil import (
+from jp_sumo_traffic_sim.sim.mobil import (
     apply_mobil,
     decide_shift,
     leader_follower,
     overlaps,
 )
-from sapporo_sim.sim.simple import CAR_LEN, DT, Vehicle, idm_acc
+from jp_sumo_traffic_sim.sim.simple import CAR_LEN, DT, Vehicle, idm_acc
 
 V0 = 50 / 3.6
 

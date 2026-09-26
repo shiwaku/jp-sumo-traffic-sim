@@ -27,7 +27,7 @@ import geopandas as gpd
 from shapely.geometry import LineString, Point, Polygon
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sapporo_sim import config as C
+from jp_sumo_traffic_sim import config as C
 
 csv.field_size_limit(2**31 - 1)  # sys.maxsize は Windows の C long を超える
 
@@ -124,16 +124,16 @@ def parse_points(raw: str) -> list:
 
 
 def main() -> None:
-    zips = sorted((C.RAW / "jartic").glob("*/typeD_hokkaido.zip"))
+    zips = sorted((C.RAW / "jartic").glob(f"*/{C.CASE['jartic']['regulation_zip']}"))
     if not zips:
         raise SystemExit(
-            "data/raw/jartic/*/typeD_hokkaido.zip が無い。"
+            f"data/raw/jartic/*/{C.CASE['jartic']['regulation_zip']} が無い。"
             "scripts/10_fetch_jartic.py を先に実行する。"
         )
     zp = zips[-1]
     ym = zp.parent.name
 
-    cordon = C.cordon_polygon()
+    cordon = C.region_polygon()
     # 流入路の規制も拾うためバッファを取る
     area_proj = cordon.buffer(C.CLIP_BUFFER_M, join_style=2)
     area_ll = gpd.GeoSeries([area_proj], crs=C.CRS_PROJ).to_crs("EPSG:6668").iloc[0]
