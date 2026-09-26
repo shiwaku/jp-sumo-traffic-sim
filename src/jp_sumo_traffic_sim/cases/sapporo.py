@@ -1,9 +1,13 @@
-"""札幌ケース: 碁盤目のグリッド座標とコードン(対象区域)。
+"""札幌ケース: 対象区域(札幌市の行政界)、都心区域(コードン)、碁盤目のグリッド座標。
 
-札幌都心は 130.0m の等間隔格子なので、グリッド座標で街路が名指しできる。
-この座標系・街路名・コードンは札幌でしか意味を持たないため、汎用の
-config.py から切り出している(docs/sumo-design.md §14)。
+- 対象区域 = 札幌市 10 区の行政界(N03)。市全域はメソで回す(docs/sumo-design.md §13)
+- 都心区域 = コードン(北5条通・南7条通・創成川通・石山通)。全道路を入れ、ミクロで回す
+- 札幌都心は 130.0m の等間隔格子なので、グリッド座標で街路が名指しできる。
+  この座標系・街路名・コードンは札幌でしか意味を持たないため、汎用の
+  config.py から切り出している(docs/sumo-design.md §14)
 """
+
+from functools import lru_cache
 
 # --- グリッド座標系 -----------------------------------------------------------
 # 札幌の碁盤目は EPSG:6679 の座標軸に対して約 10.9 度傾いている。
@@ -76,8 +80,24 @@ def cordon_polygon():
     return rotate(rect, GRID_BEARING_DEG, origin=GRID_ORIGIN, use_radians=False)
 
 
+@lru_cache(maxsize=1)
 def region_polygon():
-    """対象区域(ケース共通のインタフェース)。札幌はコードン矩形."""
+    """対象区域(ケース共通のインタフェース)= 札幌市 10 区の行政界を合わせたもの(CRS_PROJ)。"""
+    import geopandas as gpd
+
+    from jp_sumo_traffic_sim import config as C
+
+    shp = sorted((C.RAW / "n03").glob("N03-*_GML/N03-*.shp"))
+    shp = [p for p in shp if "subprefecture" not in p.name]
+    if not shp:
+        raise SystemExit("N03 行政区域データが無い。scripts/fetch_n03.py を先に実行する")
+    g = gpd.read_file(shp[-1])
+    g = g[g["N03_007"].astype(str).isin(C.CASE["region"]["admin_codes"])]
+    return g.to_crs(C.CRS_PROJ).union_all()
+
+
+def core_polygon():
+    """都心区域(全道路を入れてミクロで回す範囲)= コードン矩形."""
     return cordon_polygon()
 
 
@@ -85,6 +105,9 @@ def clip_report_extras() -> dict:
     """reports/00_clip.json に載せるケース固有の値."""
     g = CORDON_GRID
     return dict(
+        region="札幌市(N03 行政界 10 区)",
+        region_area_km2=round(region_polygon().area / 1e6, 1),
+        core="都心コードン",
         cordon_grid={k: round(v, 1) for k, v in g.items()},
         cordon_size_m=[
             round(g["east"] - g["west"], 1),

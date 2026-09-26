@@ -10,6 +10,9 @@ sync:  ## 依存を同期
 fetch:  ## 国土数値情報 N13 を取得(メッシュ 6441/6440)
 	uv run python scripts/fetch_ksj.py
 
+fetch-n03:  ## 国土数値情報 N03(行政区域)を取得(対象区域 = 市の行政界)
+	uv run python scripts/fetch_n03.py
+
 clip:  ## 対象区域 + バッファでクリップし EPSG:6679 へ投影
 	uv run python scripts/00_clip_ksj.py
 

@@ -46,3 +46,9 @@ def case_module():
 def region_polygon():
     """対象区域のポリゴン(CRS_PROJ)。中身はケースが決める."""
     return case_module().region_polygon()
+
+
+def core_polygon():
+    """全道路を入れる詳細区域(ミクロの範囲)。ケースが持たなければ None(区域全体が詳細)."""
+    fn = getattr(case_module(), "core_polygon", None)
+    return fn() if fn else None

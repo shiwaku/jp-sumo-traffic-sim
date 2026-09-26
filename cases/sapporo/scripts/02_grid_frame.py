@@ -72,7 +72,7 @@ def main() -> None:
     src = C.INTERIM / "ksj_clip.gpkg"
     roads = gpd.read_file(src, layer="roads")
     cordon = gpd.read_file(src, layer="cordon").query("kind == 'cordon'").geometry.iloc[0]
-    inner = roads[roads["in_cordon"]].copy()
+    inner = roads[roads["in_core"]].copy()  # 都心区域(コードン)
 
     # 主軸は実測で推定するが、フレーム自体は config の固定値を使う
     # (毎回の推定値のゆらぎで街路の横断座標が動かないようにするため)
