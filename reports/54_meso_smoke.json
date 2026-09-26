@@ -1,0 +1,94 @@
+{
+  "case": "sapporo",
+  "net": "data/sumo/sapporo.net.xml",
+  "demand": {
+    "kind": "randomTrips(実測とは無関係)",
+    "demand_s": 3600.0,
+    "trips_per_hour": 7200,
+    "fringe_factor": 10.0,
+    "min_distance_m": 1000.0
+  },
+  "meso_options": [
+    "--mesosim",
+    "true",
+    "--meso-junction-control",
+    "true"
+  ],
+  "end_s": 14400.0,
+  "sumo": {
+    "loaded": 7200,
+    "inserted": 7200,
+    "running": 0,
+    "waiting": 0,
+    "teleports": 0,
+    "teleports_jam": 0,
+    "trip_speed_kmh": null
+  },
+  "wall_clock_s": {
+    "routing": 25.2,
+    "simulation": 8.2
+  },
+  "finished": true,
+  "top_waiting_edges": [
+    {
+      "edge": "5883",
+      "waiting_s": 85230,
+      "speed_ms": 0.22,
+      "entered": 284
+    },
+    {
+      "edge": "8160",
+      "waiting_s": 43806,
+      "speed_ms": 0.07,
+      "entered": 293
+    },
+    {
+      "edge": "6118",
+      "waiting_s": 33389,
+      "speed_ms": 0.16,
+      "entered": 186
+    },
+    {
+      "edge": "637",
+      "waiting_s": 22863,
+      "speed_ms": 0.26,
+      "entered": 300
+    },
+    {
+      "edge": "6124",
+      "waiting_s": 9975,
+      "speed_ms": 0.23,
+      "entered": 275
+    },
+    {
+      "edge": "8160.-43.72",
+      "waiting_s": 8988,
+      "speed_ms": 0.27,
+      "entered": 294
+    },
+    {
+      "edge": "24329",
+      "waiting_s": 7504,
+      "speed_ms": 1.32,
+      "entered": 646
+    },
+    {
+      "edge": "7573",
+      "waiting_s": 7453,
+      "speed_ms": 0.31,
+      "entered": 297
+    },
+    {
+      "edge": "6826",
+      "waiting_s": 6605,
+      "speed_ms": 3.57,
+      "entered": 490
+    },
+    {
+      "edge": "7431",
+      "waiting_s": 5781,
+      "speed_ms": 4.66,
+      "entered": 667
+    }
+  ]
+}
