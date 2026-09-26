@@ -76,7 +76,7 @@ def link_axis_cross(geom):
 def main() -> None:
     src = C.INTERIM / "ksj_clip.gpkg"
     roads = gpd.read_file(src, layer="roads")
-    inner = roads[roads["in_cordon"]].copy()
+    inner = roads[roads["in_core"]].copy()  # 都心区域(コードン)
 
     axes, crosses, offs = [], [], []
     for geom in inner.geometry:

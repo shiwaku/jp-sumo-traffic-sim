@@ -2,15 +2,19 @@
   "source": "data/raw/jartic/202606/typeD_hokkaido.zip",
   "target_month": "202606",
   "n_rows_hokkaido": 121897,
-  "n_in_clip": 1816,
+  "n_in_clip": 27487,
   "layers": {
     "point": {
-      "n": 1065,
-      "n_in_cordon": 488
+      "n": 20873,
+      "n_in_cordon": 20557
     },
     "line": {
-      "n": 751,
-      "n_in_cordon": 406
+      "n": 6567,
+      "n_in_cordon": 6507
+    },
+    "area": {
+      "n": 47,
+      "n_in_cordon": 47
     }
   },
   "simulation_relevant": [
@@ -18,43 +22,45 @@
       "code": "11",
       "label": "一方通行",
       "n_hokkaido": 1770,
-      "n_clip": 58,
-      "n_cordon": 39,
+      "n_clip": 343,
+      "n_cordon": 340,
       "available": true,
       "geom": {
-        "line": 58
+        "line": 343
       }
     },
     {
       "code": "63",
       "label": "一時停止",
       "n_hokkaido": 63020,
-      "n_clip": 354,
-      "n_cordon": 119,
+      "n_clip": 12993,
+      "n_cordon": 12773,
       "available": true,
       "geom": {
-        "point": 354
+        "point": 12993
       }
     },
     {
       "code": "112",
       "label": "最高速度",
       "n_hokkaido": 10491,
-      "n_clip": 102,
-      "n_cordon": 47,
+      "n_clip": 1535,
+      "n_cordon": 1499,
       "available": true,
       "geom": {
-        "line": 102
+        "line": 1535
       }
     },
     {
       "code": "114",
       "label": "最高速度(区域)",
       "n_hokkaido": 115,
-      "n_clip": 0,
-      "n_cordon": 0,
+      "n_clip": 47,
+      "n_cordon": 47,
       "available": true,
-      "geom": {}
+      "geom": {
+        "area": 47
+      }
     },
     {
       "code": "12",
@@ -69,11 +75,11 @@
       "code": "51",
       "label": "転回禁止",
       "n_hokkaido": 78,
-      "n_clip": 10,
-      "n_cordon": 7,
+      "n_clip": 18,
+      "n_cordon": 18,
       "available": true,
       "geom": {
-        "line": 10
+        "line": 18
       }
     },
     {
@@ -98,43 +104,45 @@
       "code": "20",
       "label": "車両通行帯",
       "n_hokkaido": 728,
-      "n_clip": 27,
-      "n_cordon": 18,
+      "n_clip": 257,
+      "n_cordon": 257,
       "available": true,
       "geom": {
-        "line": 27
+        "line": 257
       }
     },
     {
       "code": "98",
       "label": "信号機",
       "n_hokkaido": 12998,
-      "n_clip": 336,
-      "n_cordon": 173,
+      "n_clip": 3483,
+      "n_cordon": 3445,
       "available": true,
       "geom": {
-        "point": 336
+        "point": 3483
       }
     },
     {
       "code": "5",
       "label": "車両通行止め",
       "n_hokkaido": 436,
-      "n_clip": 14,
-      "n_cordon": 5,
+      "n_clip": 106,
+      "n_cordon": 105,
       "available": true,
       "geom": {
-        "line": 14
+        "line": 106
       }
     },
     {
       "code": "17",
       "label": "追越しのためのはみ出し通行禁止",
       "n_hokkaido": 1423,
-      "n_clip": 0,
-      "n_cordon": 0,
+      "n_clip": 37,
+      "n_cordon": 35,
       "available": true,
-      "geom": {}
+      "geom": {
+        "line": 37
+      }
     }
   ],
   "not_provided_by_hokkaido": [
@@ -144,64 +152,64 @@
   ],
   "top_kinds_in_cordon": [
     {
+      "code": "63",
+      "n": 12773
+    },
+    {
       "code": "85",
-      "n": 183
+      "n": 4134
     },
     {
       "code": "115",
-      "n": 177
+      "n": 3585
     },
     {
       "code": "98",
-      "n": 173
-    },
-    {
-      "code": "63",
-      "n": 119
+      "n": 3445
     },
     {
       "code": "112",
-      "n": 47
+      "n": 1499
     },
     {
       "code": "11",
-      "n": 39
-    },
-    {
-      "code": "71",
-      "n": 33
-    },
-    {
-      "code": "81",
-      "n": 22
+      "n": 340
     },
     {
       "code": "20",
-      "n": 18
+      "n": 257
+    },
+    {
+      "code": "81",
+      "n": 244
+    },
+    {
+      "code": "55",
+      "n": 131
     },
     {
       "code": "119",
-      "n": 16
+      "n": 126
     },
     {
-      "code": "65",
-      "n": 12
+      "code": "5",
+      "n": 105
     },
     {
-      "code": "111",
-      "n": 10
-    },
-    {
-      "code": "51",
-      "n": 7
+      "code": "1",
+      "n": 83
     },
     {
       "code": "56",
-      "n": 6
+      "n": 58
     },
     {
-      "code": "86",
-      "n": 6
+      "code": "71",
+      "n": 51
+    },
+    {
+      "code": "114",
+      "n": 47
     }
   ]
 }
