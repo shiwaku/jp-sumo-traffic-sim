@@ -15,6 +15,9 @@ dependencies = [
     "scipy>=1.14",
     "requests>=2.32",
     "networkx>=3.3",
+    "eclipse-sumo>=1.27.1",
+    "sumolib>=1.27.1",
+    "traci>=1.27.1",
 ]
 
 [project.optional-dependencies]

@@ -1,7 +1,7 @@
 """実ネットワーク入力の読み込み(architecture.md §2 の io 層)。
 
-scripts/33(再生データ生成)と scripts/40(需要照合)で共用する。
-GeoPackage から NetSim へ渡す素の dict 列を作る。
+scripts/33(再生データ生成)・scripts/40(需要照合)・scripts/50(SUMO 変換)で共用する。
+GeoPackage から NetSim / SUMO 変換へ渡す素の dict 列を作る。
 """
 
 from __future__ import annotations
@@ -47,9 +47,12 @@ def load_network_inputs():
             speed_kmh=int(r["speed_kmh"]),
             category=str(r["category"]),
             linked_edge=int(r["linked_edge"]),
+            n_lanes=int(r["n_lanes"]),
+            carriageway_m=float(r["carriageway_m"]),
             n_sublanes=int(r["n_sublanes"]),
             right_turn_lane=int(r["right_turn_lane"]),
             census_id=str(r["census_id"] or ""),
+            ksj_ids=str(r["ksj_ids"] or ""),
         )
         for _, r in edges_g.iterrows()
     ]

@@ -46,6 +46,9 @@ net-sim:  ## Phase 1: 実ネットワーク上のシミュレーションを実�
 demand-check:  ## Phase 3: 実測需要で回しセンサス断面交通量・旅行速度と照合する
 	uv run python scripts/40_demand_check.py
 
+sumo-net:  ## SUMO 移行 Step 1: 方向別 Edge から SUMO ネットワークを作る(data/sumo/)
+	uv run python scripts/50_build_sumo_net.py
+
 dev-viewer: viewer sim  ## ビューワを開発サーバーで起動 (http://localhost:8002)
 	cd viewer && npm install --silent && npm run dev
 
