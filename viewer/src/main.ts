@@ -20,7 +20,7 @@ import './style.css'
 
 const DATA_BASE = 'data'
 const SITE_ATTRIBUTION =
-  '（<a href="https://github.com/shiwaku/sapporo-micro-traffic-sim" target="_blank" rel="noopener">GitHub</a>）'
+  '（<a href="https://github.com/shiwaku/jp-sumo-traffic-sim" target="_blank" rel="noopener">GitHub</a>）'
 
 interface Meta {
   center: [number, number]

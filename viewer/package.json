@@ -1,5 +1,5 @@
 {
-  "name": "sapporo-micro-traffic-sim-viewer",
+  "name": "jp-sumo-traffic-sim-viewer",
   "private": true,
   "version": "0.1.0",
   "type": "module",

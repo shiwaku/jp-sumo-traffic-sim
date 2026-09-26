@@ -51,7 +51,7 @@ def fetch_osm() -> dict:
             req = urllib.request.Request(
                 ep,
                 data=urllib.parse.urlencode({"data": q}).encode(),
-                headers={"User-Agent": "sapporo-micro-traffic-sim/0.1"},
+                headers={"User-Agent": "jp-sumo-traffic-sim/0.1"},
             )
             with urllib.request.urlopen(req, timeout=180) as r:  # noqa: S310
                 d = json.loads(r.read().decode())
