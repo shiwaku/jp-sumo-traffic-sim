@@ -73,5 +73,5 @@ def test_lanes_from_plateau_width():
         [dict(a=1, b=2, geometry=[(0, 0), (100, 0)], length=100.0, oneway="", state="1",
               layer="0", category="3", width="2", speed_kmh=0, census_id="", ksj_ids="")]
     )  # fmt: skip
-    L.assign_lanes(e, None, road_width_m=25.0)  # 片側 25 × 0.68 / 2 = 8.5 m → 3 車線
-    assert e.attrs["lane_source"] == "plateau_width" and e.attrs["n_lanes"] == 3
+    L.assign_lanes(e, None, road_width_m=25.0)  # 片側 25 × 0.68 / 2 = 8.5 m ÷ 4.25 → 2 車線
+    assert e.attrs["lane_source"] == "plateau_width" and e.attrs["n_lanes"] == 2

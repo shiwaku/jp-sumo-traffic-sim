@@ -21,6 +21,10 @@ CARRIAGEWAY_SHARE = 0.7  # KSJ 幅員区分は道路幅なので歩道分を差�
 # PLATEAU の道路ポリゴンの幅はセンサスの道路部幅員(歩道込み)と一致する(中央値の比 1.00)。
 # 車道幅員はその 0.68 倍(センサス区間 355 本の中央値、D1b)
 PLATEAU_CARRIAGEWAY_SHARE = 0.68
+# PLATEAU の車道幅から車線数を出すときの 1 車線あたりの実効の幅(路肩・停車帯を含む)。
+# OSM の lanes と比べて決めた(3,168 組で一致率 89%。3.0m で割ると 56% で平均 0.8 車線過大、D1c)。
+# 札幌の道路は路肩・停車帯(除雪の堆雪帯)の余裕が大きい
+PLATEAU_LANE_W_M = 4.25
 MAX_LANES_TWOWAY = 3  # 片方向あたりの上限(推定・品質ガード)
 MAX_LANES_ONEWAY = 4
 CENSUS_LANE_GUARD = 5  # センサス由来の片方向車線数がこれ以上なら側道誤結合とみなす
@@ -56,7 +60,7 @@ def assign_lanes(edge, census: dict | None, road_width_m: float | None = None) -
             source = ""
     if n is None and road_width_m:
         w = road_width_m * PLATEAU_CARRIAGEWAY_SHARE * share
-        n = max(1, min(cap, round(w / LANE_W_M)))
+        n = max(1, min(cap, round(w / PLATEAU_LANE_W_M)))
         source = "plateau_width"
     if n is None:
         rep = WIDTH_REPRESENTATIVE_M.get(str(edge.attrs.get("width", "")), None)

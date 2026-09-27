@@ -1,0 +1,73 @@
+{
+  "source": "OpenStreetMap(Overpass API、© OpenStreetMap contributors / ODbL)",
+  "n_ways": 4056,
+  "road_km": 902.3,
+  "lanes_share_by_length": 0.297,
+  "turn_lanes_share_by_length": 0.004,
+  "n_ways_with_turn_lanes": 22,
+  "by_highway": {
+    "primary": {
+      "km": 73.4,
+      "lanes_share": 0.432,
+      "turn_lanes_share": 0.03
+    },
+    "primary_link": {
+      "km": 0.2,
+      "lanes_share": 0.466,
+      "turn_lanes_share": 0.0
+    },
+    "residential": {
+      "km": 384.5,
+      "lanes_share": 0.082,
+      "turn_lanes_share": 0.0
+    },
+    "secondary": {
+      "km": 12.6,
+      "lanes_share": 0.284,
+      "turn_lanes_share": 0.0
+    },
+    "secondary_link": {
+      "km": 0.0,
+      "lanes_share": 0.0,
+      "turn_lanes_share": 0.0
+    },
+    "tertiary": {
+      "km": 222.1,
+      "lanes_share": 0.459,
+      "turn_lanes_share": 0.004
+    },
+    "tertiary_link": {
+      "km": 0.3,
+      "lanes_share": 0.209,
+      "turn_lanes_share": 0.0
+    },
+    "trunk": {
+      "km": 30.4,
+      "lanes_share": 1.0,
+      "turn_lanes_share": 0.026
+    },
+    "trunk_link": {
+      "km": 0.1,
+      "lanes_share": 0.0,
+      "turn_lanes_share": 0.0
+    },
+    "unclassified": {
+      "km": 178.7,
+      "lanes_share": 0.388,
+      "turn_lanes_share": 0.0
+    }
+  },
+  "restrictions": {
+    "n": 4,
+    "by_type": {
+      "only_left_turn": 2,
+      "no_right_turn": 2
+    }
+  },
+  "signal_approaches": {
+    "n": 4255,
+    "with_turn_lanes_nearby": 58,
+    "share": 0.014,
+    "near_m": 20.0
+  }
+}

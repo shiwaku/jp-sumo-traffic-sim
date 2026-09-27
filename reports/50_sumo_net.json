@@ -9,8 +9,8 @@
     1235
   ],
   "n_tls": 1158,
-  "n_single_axis": 101,
-  "n_merge_yield": 854,
+  "n_single_axis": 102,
+  "n_merge_yield": 890,
   "n_jartic_timed": 92,
   "net": "data/sumo/sapporo.net.xml",
   "netconvert_warnings": 93,
