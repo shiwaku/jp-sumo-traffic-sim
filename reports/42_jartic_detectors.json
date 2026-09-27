@@ -1,0 +1,54 @@
+{
+  "n_detectors_sapporo": 1559,
+  "located_by": {
+    "typeC_in_out": 41,
+    "address": 309,
+    "typeC_in": 117,
+    "unlocated": 966,
+    "typeC_out": 126
+  },
+  "n_located": 593,
+  "n_edges_with_detector": 564,
+  "n_duplicates_on_same_edge": 29,
+  "address_vs_typeC_distance_m": {
+    "n": 167,
+    "median": 227.9,
+    "p90": 417.4
+  },
+  "census_same_edge_8h": {
+    "n": 209,
+    "median_ratio": 0.94,
+    "q25": 0.75,
+    "q75": 1.16
+  },
+  "census_same_edge_8h_by_method": {
+    "address": {
+      "n": 33,
+      "median_ratio": 0.89,
+      "within_30pct": 0.61
+    },
+    "typeC_in": {
+      "n": 74,
+      "median_ratio": 0.92,
+      "within_30pct": 0.62
+    },
+    "typeC_in_out": {
+      "n": 24,
+      "median_ratio": 1.03,
+      "within_30pct": 0.58
+    },
+    "typeC_out": {
+      "n": 78,
+      "median_ratio": 0.98,
+      "within_30pct": 0.67
+    }
+  },
+  "samples_per_hour_top": {
+    "12": 860295,
+    "11": 27180,
+    "10": 7729,
+    "1": 5549,
+    "9": 4607
+  },
+  "note": "進行方向 = 地点名称の末尾 2 文字の 2 文字目(格子の向き)。区域外の感知器は落ちる"
+}
