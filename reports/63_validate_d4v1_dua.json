@@ -1,0 +1,312 @@
+{
+  "case": "sapporo",
+  "label": "d4v1_dua",
+  "edgedata": "data\\sumo\\d4\\dua\\007\\dump_3600.0.xml",
+  "start_hour": 6,
+  "hours": [
+    7,
+    8,
+    9
+  ],
+  "observations": {
+    "n_edges": {
+      "census": 2790,
+      "detector": 487
+    },
+    "n_units": 558,
+    "n_holdout_units": 121,
+    "holdout_frac": 0.2
+  },
+  "metrics": {
+    "7": {
+      "all/all": {
+        "n": 602,
+        "r": 0.252,
+        "r2": 0.064,
+        "slope": 0.296,
+        "rmse_pct": 89.3,
+        "geh_ok_share": 0.106,
+        "volume_ratio": 0.354
+      },
+      "all/census": {
+        "n": 139,
+        "r": 0.364,
+        "r2": 0.133,
+        "slope": 0.296,
+        "rmse_pct": 79.9,
+        "geh_ok_share": 0.043,
+        "volume_ratio": 0.324
+      },
+      "all/detector": {
+        "n": 463,
+        "r": 0.176,
+        "r2": 0.031,
+        "slope": 0.296,
+        "rmse_pct": 92.5,
+        "geh_ok_share": 0.125,
+        "volume_ratio": 0.368
+      },
+      "calibration/all": {
+        "n": 469,
+        "r": 0.255,
+        "r2": 0.065,
+        "slope": 0.299,
+        "rmse_pct": 89.4,
+        "geh_ok_share": 0.1,
+        "volume_ratio": 0.357
+      },
+      "calibration/census": {
+        "n": 102,
+        "r": 0.427,
+        "r2": 0.182,
+        "slope": 0.299,
+        "rmse_pct": 78.1,
+        "geh_ok_share": 0.02,
+        "volume_ratio": 0.314
+      },
+      "calibration/detector": {
+        "n": 367,
+        "r": 0.166,
+        "r2": 0.028,
+        "slope": 0.299,
+        "rmse_pct": 93.2,
+        "geh_ok_share": 0.123,
+        "volume_ratio": 0.377
+      },
+      "holdout/all": {
+        "n": 133,
+        "r": 0.233,
+        "r2": 0.054,
+        "slope": 0.282,
+        "rmse_pct": 88.8,
+        "geh_ok_share": 0.128,
+        "volume_ratio": 0.342
+      },
+      "holdout/census": {
+        "n": 37,
+        "r": 0.148,
+        "r2": 0.022,
+        "slope": 0.282,
+        "rmse_pct": 85.6,
+        "geh_ok_share": 0.108,
+        "volume_ratio": 0.357
+      },
+      "holdout/detector": {
+        "n": 96,
+        "r": 0.223,
+        "r2": 0.05,
+        "slope": 0.283,
+        "rmse_pct": 89.7,
+        "geh_ok_share": 0.135,
+        "volume_ratio": 0.334
+      }
+    },
+    "8": {
+      "all/all": {
+        "n": 599,
+        "r": 0.156,
+        "r2": 0.024,
+        "slope": 0.276,
+        "rmse_pct": 86.2,
+        "geh_ok_share": 0.095,
+        "volume_ratio": 0.325
+      },
+      "all/census": {
+        "n": 139,
+        "r": 0.25,
+        "r2": 0.062,
+        "slope": 0.254,
+        "rmse_pct": 82.5,
+        "geh_ok_share": 0.029,
+        "volume_ratio": 0.281
+      },
+      "all/detector": {
+        "n": 460,
+        "r": 0.13,
+        "r2": 0.017,
+        "slope": 0.288,
+        "rmse_pct": 87.0,
+        "geh_ok_share": 0.115,
+        "volume_ratio": 0.342
+      },
+      "calibration/all": {
+        "n": 466,
+        "r": 0.157,
+        "r2": 0.025,
+        "slope": 0.278,
+        "rmse_pct": 86.2,
+        "geh_ok_share": 0.092,
+        "volume_ratio": 0.325
+      },
+      "calibration/census": {
+        "n": 102,
+        "r": 0.347,
+        "r2": 0.12,
+        "slope": 0.259,
+        "rmse_pct": 80.9,
+        "geh_ok_share": 0.01,
+        "volume_ratio": 0.274
+      },
+      "calibration/detector": {
+        "n": 364,
+        "r": 0.112,
+        "r2": 0.013,
+        "slope": 0.287,
+        "rmse_pct": 87.6,
+        "geh_ok_share": 0.115,
+        "volume_ratio": 0.345
+      },
+      "holdout/all": {
+        "n": 133,
+        "r": 0.15,
+        "r2": 0.023,
+        "slope": 0.271,
+        "rmse_pct": 86.1,
+        "geh_ok_share": 0.105,
+        "volume_ratio": 0.322
+      },
+      "holdout/census": {
+        "n": 37,
+        "r": -0.077,
+        "r2": 0.006,
+        "slope": 0.238,
+        "rmse_pct": 87.6,
+        "geh_ok_share": 0.081,
+        "volume_ratio": 0.303
+      },
+      "holdout/detector": {
+        "n": 96,
+        "r": 0.208,
+        "r2": 0.043,
+        "slope": 0.29,
+        "rmse_pct": 84.8,
+        "geh_ok_share": 0.115,
+        "volume_ratio": 0.331
+      }
+    },
+    "9": {
+      "all/all": {
+        "n": 593,
+        "r": 0.086,
+        "r2": 0.007,
+        "slope": 0.197,
+        "rmse_pct": 93.1,
+        "geh_ok_share": 0.059,
+        "volume_ratio": 0.238
+      },
+      "all/census": {
+        "n": 139,
+        "r": 0.163,
+        "r2": 0.026,
+        "slope": 0.182,
+        "rmse_pct": 89.0,
+        "geh_ok_share": 0.022,
+        "volume_ratio": 0.2
+      },
+      "all/detector": {
+        "n": 454,
+        "r": 0.06,
+        "r2": 0.004,
+        "slope": 0.205,
+        "rmse_pct": 93.8,
+        "geh_ok_share": 0.07,
+        "volume_ratio": 0.253
+      },
+      "calibration/all": {
+        "n": 461,
+        "r": 0.064,
+        "r2": 0.004,
+        "slope": 0.193,
+        "rmse_pct": 93.7,
+        "geh_ok_share": 0.061,
+        "volume_ratio": 0.236
+      },
+      "calibration/census": {
+        "n": 102,
+        "r": 0.219,
+        "r2": 0.048,
+        "slope": 0.179,
+        "rmse_pct": 88.4,
+        "geh_ok_share": 0.01,
+        "volume_ratio": 0.191
+      },
+      "calibration/detector": {
+        "n": 359,
+        "r": 0.024,
+        "r2": 0.001,
+        "slope": 0.201,
+        "rmse_pct": 94.8,
+        "geh_ok_share": 0.075,
+        "volume_ratio": 0.254
+      },
+      "holdout/all": {
+        "n": 132,
+        "r": 0.177,
+        "r2": 0.031,
+        "slope": 0.212,
+        "rmse_pct": 90.6,
+        "geh_ok_share": 0.053,
+        "volume_ratio": 0.245
+      },
+      "holdout/census": {
+        "n": 37,
+        "r": 0.033,
+        "r2": 0.001,
+        "slope": 0.192,
+        "rmse_pct": 90.6,
+        "geh_ok_share": 0.054,
+        "volume_ratio": 0.231
+      },
+      "holdout/detector": {
+        "n": 95,
+        "r": 0.215,
+        "r2": 0.046,
+        "slope": 0.224,
+        "rmse_pct": 90.0,
+        "geh_ok_share": 0.053,
+        "volume_ratio": 0.252
+      }
+    }
+  },
+  "temporal": {
+    "census": {
+      "n": 2614,
+      "median_r": 0.325
+    },
+    "detector": {
+      "n": 450,
+      "median_r": 0.369
+    }
+  },
+  "acceptance": {
+    "hour": 8,
+    "checks": {
+      "r": {
+        "value": 0.156,
+        "ok": false
+      },
+      "slope": {
+        "value": 0.276,
+        "ok": false
+      },
+      "geh_ok_share": {
+        "value": 0.095,
+        "ok": false
+      },
+      "holdout_r": {
+        "value": 0.15,
+        "ok": false
+      }
+    },
+    "passed": false
+  },
+  "criteria": {
+    "r": 0.9,
+    "slope": [
+      0.9,
+      1.1
+    ],
+    "geh_ok_share": 0.6,
+    "holdout_r": 0.85
+  }
+}
