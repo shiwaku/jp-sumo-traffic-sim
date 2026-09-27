@@ -2,8 +2,9 @@
 
 決定順:
   1. センサス箇所別基本表の車線数(幹線のみ、最優先)
-  2. 航空写真からの手入力(細街路) … データ未着(issue #1)。source=assumed で数える
+  2. PLATEAU の道路ポリゴンで実測した幅員からの推定(docs/sumo-design.md §13.4)
   3. KSJ 幅員区分からの推定(最後の手段)
+  (航空写真からの手入力 issue #1 は未着)
 
 サブレーンは道路幅員を「最小車両1台分の幅」(1.75m)で分割する。
 冬季の実質車線減少は n_sublanes の時間変化として Phase 2 で扱う。
@@ -17,6 +18,9 @@ SUBLANE_W_M = 1.75  # 二輪1台分
 LANE_W_M = 3.0  # 車線1本の標準幅(推定用)
 DEFAULT_CARRIAGEWAY_M = 4.0  # 幅員不明時の保守値(幅員区分2の代表値)
 CARRIAGEWAY_SHARE = 0.7  # KSJ 幅員区分は道路幅なので歩道分を差し引く(推定用)
+# PLATEAU の道路ポリゴンの幅はセンサスの道路部幅員(歩道込み)と一致する(中央値の比 1.00)。
+# 車道幅員はその 0.68 倍(センサス区間 355 本の中央値、D1b)
+PLATEAU_CARRIAGEWAY_SHARE = 0.68
 MAX_LANES_TWOWAY = 3  # 片方向あたりの上限(推定・品質ガード)
 MAX_LANES_ONEWAY = 4
 CENSUS_LANE_GUARD = 5  # センサス由来の片方向車線数がこれ以上なら側道誤結合とみなす
@@ -25,10 +29,11 @@ CENSUS_LANE_GUARD = 5  # センサス由来の片方向車線数がこれ以上�
 RT_LANE_PRESENT = 1
 
 
-def assign_lanes(edge, census: dict | None) -> None:
+def assign_lanes(edge, census: dict | None, road_width_m: float | None = None) -> None:
     """edge.attrs に n_lanes / n_sublanes / carriageway_m / lane_source を書き込む。
 
     census: 当該エッジの census_id に対応する行(無ければ None)。
+    road_width_m: PLATEAU の道路ポリゴンで実測した道路幅(歩道込み、両方向)。無ければ None。
       n_lanes は両方向合計(断面)、w_carriageway も断面幅。
     片側あたりに直すため、双方向道路(linked_edge あり)は 1/2 にする。
     一方通行は全幅が単方向に使える。
@@ -49,6 +54,10 @@ def assign_lanes(edge, census: dict | None) -> None:
             # 断面車線数を一方通行の側道等が引き当てた誤結合。幅員推定へ落とす
             n = None
             source = ""
+    if n is None and road_width_m:
+        w = road_width_m * PLATEAU_CARRIAGEWAY_SHARE * share
+        n = max(1, min(cap, round(w / LANE_W_M)))
+        source = "plateau_width"
     if n is None:
         rep = WIDTH_REPRESENTATIVE_M.get(str(edge.attrs.get("width", "")), None)
         w = (rep if rep is not None else DEFAULT_CARRIAGEWAY_M) * share * CARRIAGEWAY_SHARE

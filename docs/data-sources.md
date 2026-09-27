@@ -17,6 +17,19 @@
 
 **注意:** ノード・リンク構造を持たない。位相は自前で構築する(docs/design.md 5.2)。
 
+## PLATEAU 3D都市モデル(札幌市 2020 年度)
+
+- 提供: 国土交通省 Project PLATEAU https://www.geospatial.jp/ckan/dataset/plateau-01100-sapporo-shi-2020
+- 版: CityGML v4(`01100_sapporo-shi_city_2020_citygml_7_op.zip`)
+- 使用: 交通(道路)モデル LOD1 の道路ポリゴン(`udx/tran`、対象区域の 3 次メッシュ分だけを範囲指定で取得)
+- 用途: 道路の幅員(→ 車線数)、交差点の範囲(ノードの統合)、交差点の形(docs/sumo-design.md §13.4)
+- 座標系: EPSG:6697(JGD2011 地理座標 + 標高)
+- ライセンス: **CC BY 4.0**
+
+表示例:
+
+> 「3D都市モデル(Project PLATEAU)札幌市(2020年度)」(国土交通省)を加工して作成
+
 ## 国土数値情報 行政区域データ (N03)
 
 - 提供: 国土交通省 https://nlftp.mlit.go.jp/ksj/
