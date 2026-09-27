@@ -4,62 +4,48 @@
     "6440": "EPSG:6668"
   },
   "n_features_source": 345612,
-  "n_features_clipped": 14718,
-  "n_features_in_cordon": 14375,
+  "n_features_clipped": 18524,
+  "n_features_in_cordon": 13452,
   "n_features_in_core": 772,
   "selection": {
-    "rule": "core_all + categories + municipal_widths + on_census_road",
-    "categories": [
-      "1",
-      "2",
-      "4"
-    ],
-    "municipal_widths": [
-      "4",
-      "5"
-    ],
-    "n_core": 772,
-    "n_category": 6256,
-    "n_municipal_width": 6568,
-    "n_on_census_road": 1122,
-    "n_kept": 14718,
-    "n_dropped": 96980
+    "rule": "all roads in region",
+    "n_kept": 18524
   },
-  "total_length_km": 1136.46,
+  "total_length_km": 1247.8,
   "by_road_type": {
     "1": {
       "label": "通常部",
-      "n": 111698,
-      "n_in_cordon": 108281,
-      "length_km": 8459.95
+      "n": 18524,
+      "n_in_cordon": 13452,
+      "length_km": 1247.8
     },
     "2": {
       "label": "庭園路",
-      "n": 22054,
-      "n_in_cordon": 21388,
-      "length_km": 1587.76
+      "n": 3410,
+      "n_in_cordon": 2488,
+      "length_km": 176.42
     },
     "3": {
       "label": "徒歩道",
-      "n": 2232,
-      "n_in_cordon": 2171,
-      "length_km": 576.66
+      "n": 98,
+      "n_in_cordon": 58,
+      "length_km": 9.33
     },
     "4": {
       "label": "石段",
-      "n": 115,
-      "n_in_cordon": 108,
-      "length_km": 4.8
+      "n": 20,
+      "n_in_cordon": 4,
+      "length_km": 0.8
     }
   },
-  "n_paths_excluded": 24401,
-  "n_paths_excluded_in_cordon": 23667,
-  "cordon_area_km2": 1121.223,
+  "n_paths_excluded": 3528,
+  "n_paths_excluded_in_cordon": 2550,
+  "cordon_area_km2": 43.907,
   "cordon_bounds_lonlat": [
-    140.9905,
-    42.78071,
-    141.50542,
-    43.18951
+    141.29773,
+    43.03042,
+    141.40968,
+    43.09312
   ],
   "clip_buffer_m": 500,
   "attributes": {
@@ -72,8 +58,8 @@
     "N13_007": "有料区分",
     "N13_008": "二次メッシュ"
   },
-  "region": "札幌市(N03 行政界 10 区)",
-  "region_area_km2": 1121.2,
+  "region": "環状通の内側 + 環状通",
+  "region_area_km2": 43.9,
   "core": "都心コードン",
   "cordon_grid": {
     "west": 88855.0,

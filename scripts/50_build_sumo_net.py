@@ -47,11 +47,12 @@ def degree1_nodes(edges: list[dict]) -> set:
 
 
 def check_net(net_path: Path, edges: list[dict]) -> dict:
+    """SUMO ネットワークの検査。自己ループの Edge(netconvert が作らない)は期待値から除く。"""
     net = sumolib.net.readNet(str(net_path))
     sumo_edges = [e for e in net.getEdges() if e.getFunction() != "internal"]
     ids = {e.getID() for e in sumo_edges}
     base = {base_eid(i) for i in ids}
-    want = {e["eid"] for e in edges}
+    want = {e["eid"] for e in edges if e["frm"] != e["to"]}
 
     n_uturn = 0
     succ: dict[str, set] = {}

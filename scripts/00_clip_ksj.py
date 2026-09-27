@@ -59,8 +59,8 @@ def on_census_road(roads: gpd.GeoDataFrame, clip_poly, dist_m: float) -> pd.Seri
 def select_roads(sel: gpd.GeoDataFrame, clip_poly) -> tuple[pd.Series, dict]:
     """シミュレーションに入れる車道の真偽値と内訳。"""
     net = C.CASE.get("network")
-    if not net:
-        return pd.Series(True, index=sel.index), dict(rule="all")
+    if not net or net.get("all_roads"):
+        return pd.Series(True, index=sel.index), dict(rule="all roads in region", n_kept=len(sel))
     cat = sel["N13_003"].astype(str)
     wid = sel["N13_006"].astype(str)
     by_core = sel["in_core"]

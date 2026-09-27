@@ -54,7 +54,9 @@ def assign_lanes(edge, census: dict | None) -> None:
         w = (rep if rep is not None else DEFAULT_CARRIAGEWAY_M) * share * CARRIAGEWAY_SHARE
         # 手入力(manual_ortho)が届くまでは幅員推定 = assumed 扱い(issue #1)。
         # キャップは推定にのみ適用する(センサス実測の片側4車線は潰さない)
-        n = max(1, min(cap, int(w // LANE_W_M)))
+        # 四捨五入: 幅員区分4(13〜19.5m)の双方向道路は片側 5.6m → 2 車線。切り捨てだと
+        # 1 車線になり、市全域の需要推定で幅の広い市道が容量不足になった(C3b)
+        n = max(1, min(cap, round(w / LANE_W_M)))
         source = "width_assumed"
 
     edge.attrs["n_lanes"] = int(n)

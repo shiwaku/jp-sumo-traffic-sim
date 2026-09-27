@@ -1,58 +1,52 @@
 {
-  "n_links": 13139,
-  "n_edges": 25152,
-  "n_oneway_edges": 1126,
+  "n_links": 12714,
+  "n_edges": 24772,
+  "n_oneway_edges": 656,
   "oneway_source": {
-    "assumed_twoway": 24026,
-    "jartic": 1126
+    "assumed_twoway": 24116,
+    "jartic": 656
   },
   "lane_source": {
-    "census": 12199,
-    "width_assumed": 12953
+    "width_assumed": 22003,
+    "census": 2769
   },
   "n_lanes_hist": {
-    "1": 9974,
-    "2": 12541,
-    "3": 2092,
-    "4": 545
+    "1": 18930,
+    "2": 3146,
+    "3": 2428,
+    "4": 268
   },
   "n_sublanes_hist": {
-    "1": 2024,
-    "2": 1884,
-    "3": 8368,
-    "4": 8707,
-    "5": 1359,
-    "6": 1391,
-    "7": 123,
-    "8": 805,
-    "9": 51,
-    "10": 46,
-    "11": 237,
-    "12": 127,
-    "13": 30
+    "1": 18668,
+    "2": 246,
+    "3": 2217,
+    "4": 2361,
+    "5": 370,
+    "6": 331,
+    "7": 39,
+    "8": 482,
+    "9": 29,
+    "11": 29
   },
   "speed_source": {
-    "census": 2978,
-    "assumed": 3594,
-    "jartic": 18580
+    "assumed": 16615,
+    "jartic": 7606,
+    "census": 551
   },
   "speed_hist": {
-    "30": 522,
-    "40": 7223,
-    "50": 15627,
-    "60": 992,
-    "80": 767,
-    "100": 21
+    "30": 2431,
+    "40": 17414,
+    "50": 4927
   },
   "rt_lane_source": {
-    "assumed": 14828,
-    "census_section": 10324
+    "assumed": 22014,
+    "census_section": 2758
   },
   "assumed_remaining": {
-    "oneway": 24026,
-    "lanes": 12953,
-    "right_turn_lane": 14828,
-    "speed": 3594,
+    "oneway": 24116,
+    "lanes": 22003,
+    "right_turn_lane": 22014,
+    "speed": 16615,
     "note": "手入力データ(issue #1)が届いたら manual_ortho で置き換える"
   }
 }

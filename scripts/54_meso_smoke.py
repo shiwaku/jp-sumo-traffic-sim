@@ -1,16 +1,17 @@
-"""市全域のメソの試走(docs/sumo-design.md §13.3・§13.6 C2)。
+"""対象区域のメソ(--micro でミクロ)の試走(docs/sumo-design.md §13.3)。
 
-需要推定(C3)の前に、市全域のネットワークでメソが最後まで回ることと、1 試行の
-所要時間を確かめる。需要はランダム(randomTrips.py)で、実測とは無関係。
+需要推定の前に、対象区域のネットワークで最後まで回ることと、1 試行の所要時間を
+確かめる。需要はランダム(randomTrips.py)で、実測とは無関係。
 
 - 需要: 1 時間に TRIPS_PER_HOUR 本。市外との出入口(ネットワークの端)を起終点に
   選びやすくする(--fringe-factor)。経路は duarouter の最短時間経路
 - メソ: 信号・交差点の制御を有効にする(--meso-junction-control)
 
 入力:  data/sumo/{case}.net.xml(make sumo-net)
-出力:  reports/54_meso_smoke.json
+出力:  reports/54_meso_smoke.json(--micro のときは reports/54_micro_smoke.json)
 """
 
+import argparse
 import json
 import subprocess
 import sys
@@ -21,7 +22,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from jp_sumo_traffic_sim import config as C
 from jp_sumo_traffic_sim.sumo import sim as sumo_sim
-from jp_sumo_traffic_sim.sumo.runner import SUMO_HOME, env, run_tool
+from jp_sumo_traffic_sim.sumo.runner import SIM_OPTIONS, SUMO_HOME, env, run_tool
 
 SUMO_DIR = C.ROOT / "data" / "sumo"
 DEMAND_S = 3600.0
@@ -33,6 +34,11 @@ MESO_OPTIONS = ["--mesosim", "true", "--meso-junction-control", "true"]
 
 
 def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--micro", action="store_true", help="メソではなくミクロで回す")
+    args = ap.parse_args()
+    mode = "micro" if args.micro else "meso"
+    sim_options = SIM_OPTIONS if args.micro else [*MESO_OPTIONS, "--no-step-log", "true"]
     net = SUMO_DIR / f"{C.CASE_NAME}.net.xml"
     if not net.exists():
         raise SystemExit(f"{net} が無い。先に make sumo-net を実行する")
@@ -60,11 +66,11 @@ def main() -> None:
     run_tool(
         "sumo",
         [
-            "-n", str(net), "-r", str(routes), *MESO_OPTIONS,
+            "-n", str(net), "-r", str(routes), *sim_options,
             "--begin", "0", "--end", str(END_S), "--seed", "42",
             "--statistic-output", str(stats_path),
             "--edgedata-output", str(edgedata),
-            "--no-step-log", "true", "--no-warnings", "true",
+            "--no-warnings", "true",
         ],
     )  # fmt: skip
     t_sim = time.time() - t1
@@ -92,20 +98,21 @@ def main() -> None:
             fringe_factor=FRINGE_FACTOR,
             min_distance_m=MIN_DISTANCE_M,
         ),
-        meso_options=MESO_OPTIONS,
+        mode=mode,
+        sim_options=sim_options,
         end_s=END_S,
         sumo=st,
         wall_clock_s=dict(routing=round(t_route, 1), simulation=round(t_sim, 1)),
         finished=st["running"] == 0 and st["waiting"] == 0,
         top_waiting_edges=rows[:10],
     )
-    (C.REPORTS / "54_meso_smoke.json").write_text(
+    (C.REPORTS / f"54_{mode}_smoke.json").write_text(
         json.dumps(rep, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     print(
         f"loaded {st['loaded']} inserted {st['inserted']} running {st['running']} "
         f"waiting {st['waiting']} teleports {st['teleports']}  "
-        f"経路 {t_route:.0f}s / メソ {t_sim:.0f}s"
+        f"経路 {t_route:.0f}s / {mode} {t_sim:.0f}s"
     )
 
 

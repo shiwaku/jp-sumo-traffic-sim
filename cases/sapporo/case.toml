@@ -3,7 +3,7 @@
 # 地域に依存する処理(格子座標・コードン)は module に書く。
 
 name = "sapporo"
-title = "札幌市"
+title = "札幌 環状通の内側"
 # 区域ポリゴンなどケース固有の処理を持つモジュール
 module = "jp_sumo_traffic_sim.cases.sapporo"
 
@@ -15,13 +15,21 @@ proj = "EPSG:6679"
 meshes = ["6441", "6440"]
 
 [region]
-# 対象区域 = 札幌市の行政界(国土数値情報 N03、scripts/fetch_n03.py)。10 区の市区町村コード
+# 対象区域の種類(docs/sumo-design.md §13.4)
+#   ring  = 環状通(センサスの路線名 ring_route)の内側 + 環状通(両側の車道を ring_buffer_m で含む)
+#   admin = 札幌市の行政界(国土数値情報 N03、scripts/fetch_n03.py)
+kind = "ring"
+ring_route = "札幌環状線"
+ring_buffer_m = 60.0
+# kind = "admin" のときの市区町村コード(10 区)
 admin_codes = ["01101", "01102", "01103", "01104", "01105", "01106", "01107", "01108", "01109", "01110"]
 # 抽出は流入路を残すため区域の外側にバッファを取る [m]
 clip_buffer_m = 500
 
 [network]
-# 市全域に入れる道路(docs/sumo-design.md §13.4)。都心区域(core_polygon)は全道路を入れる
+# 区域内の車道をすべて入れる(環状通の内側、§13.4)。false なら以下の条件で選ぶ(市全域のときの設定)
+all_roads = true
+# all_roads = false のとき: 都心区域(core_polygon)は全道路、それ以外は以下
 # KSJ N13_003: 1=国道 2=都道府県道 4=高速自動車国道等
 categories = ["1", "2", "4"]
 # 市区町村道(N13_003=3)は幅員区分 4(13-19.5m)・5(19.5m以上)だけ入れる

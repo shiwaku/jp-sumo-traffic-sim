@@ -37,6 +37,8 @@ def edge_priority(e: dict, stop_edges: set) -> int:
     return CATEGORY_PRIORITY.get(str(e.get("category", "")), 2)
 
 
+MIN_LANE_WIDTH_M = 2.5  # 車線幅の下限。幅員 3〜5.5m の双方向道路を半分に割ると 1.4m になり、
+# 車両(幅 1.8m)より狭くなる。実際はすれ違いながら走る生活道路なので下限を置く
 RIGHT_TURN_DEG = (45.0, 135.0)  # 時計回りにこの範囲の転回を右折とみなす
 
 
@@ -78,7 +80,7 @@ def rt_split_pos(e: dict, out_by_node: dict[int, list[dict]] | None = None) -> f
 def lane_width(e: dict, width_scale: float = 1.0) -> float:
     """車線幅 = 車道幅員 / 車線数。width_scale は冬季の幅員縮小(§5.4)。"""
     n = max(1, int(e.get("n_lanes") or 1))
-    return round(float(e["carriageway_m"]) / n * width_scale, 2)
+    return round(max(MIN_LANE_WIDTH_M, float(e["carriageway_m"]) / n) * width_scale, 2)
 
 
 def write_plain_xml(
@@ -109,7 +111,10 @@ def write_plain_xml(
 
     edg = ["<edges>"]
     n_split = 0
+    self_loops = [e["eid"] for e in edges if e["frm"] == e["to"]]
     for e in edges:
+        if e["frm"] == e["to"]:
+            continue  # 自己ループ(環状の街路が1つのノードで閉じたもの)。netconvert は作らない
         n_lanes = max(1, int(e.get("n_lanes") or 1))
         common = (
             f'speed="{float(e["speed_kmh"]) / 3.6:.2f}" width="{lane_width(e, width_scale)}" '
@@ -159,6 +164,7 @@ def write_plain_xml(
         n_signal_nodes=len(signal_nodes),
         n_priority_stop_nodes=len(stop_nodes - signal_nodes),
         n_rt_lane_splits=n_split,
+        self_loop_eids=self_loops,
     )
 
 
