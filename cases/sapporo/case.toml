@@ -64,5 +64,18 @@ purpose = "断面交通量情報(札幌)"
 # 時間帯別交通量(jikantai/{pref_code}.json)の都道府県コード
 pref_code = "01"
 
+[zones]
+# ゾーンの入力(docs/sumo-design.md §13.5、D3)。パスは ROOT からの相対か絶対
+# 国勢調査 2020 の 125m メッシュ人口(e-stat-census-converter で境界と結合したもの)
+pop_mesh125 = "../e-stat/国勢調査タイル化検証用データ/境界データと統計データの結合（125mメッシュ）/2020_pop_census_mesh125.parquet"
+# 上のファイルから読む 1 次メッシュ
+mesh1 = ["6441"]
+# 国勢調査 2020 の小地域の境界(e-Stat、JGD2011 Shapefile の zip)
+small_area_boundary = "../e-stat-census-converter/data/raw/boundary/2020/A002005212020_JGD2011_01.zip"
+# 経済センサス 2021 の小地域の事業所数・従業者数(e-Stat 統計表 T001168、data/raw 配下)
+econ_census = "data/raw/estat/T001168_01/tblT001168C01.txt"
+# 対象の市区町村コードの接頭辞(小地域の境界・経済センサスの絞り込み)
+city_prefix = "0110"
+
 [viewer]
 center = [141.3501, 43.0591]

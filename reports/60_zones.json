@@ -1,0 +1,104 @@
+{
+  "case": "sapporo",
+  "employees": {
+    "n_econ_areas": 5695,
+    "n_boundary_areas": 5568,
+    "matched_exact": 5531,
+    "matched_prefix": 35,
+    "unmatched": 129,
+    "employees_total_city": 897305,
+    "employees_matched_share": 0.9969,
+    "unmatched_top": [
+      {
+        "city": "01103",
+        "name": "北七条東１７丁目",
+        "emp": 467
+      },
+      {
+        "city": "01103",
+        "name": "北五条東１３丁目",
+        "emp": 365
+      },
+      {
+        "city": "01103",
+        "name": "北四条東１５丁目",
+        "emp": 236
+      },
+      {
+        "city": "01102",
+        "name": "北十七条西８丁目",
+        "emp": 184
+      },
+      {
+        "city": "01102",
+        "name": "北十九条西１２丁目",
+        "emp": 162
+      },
+      {
+        "city": "01102",
+        "name": "北二十条西１３丁目",
+        "emp": 155
+      },
+      {
+        "city": "01102",
+        "name": "北二十一条西１２丁目",
+        "emp": 152
+      },
+      {
+        "city": "01102",
+        "name": "北十九条西１１丁目",
+        "emp": 150
+      }
+    ]
+  },
+  "region_km2": 43.9,
+  "n_net_edges": 25207,
+  "n_edges_main_component": 23292,
+  "n_meshes_in_region": 2980,
+  "n_internal_zones": 2843,
+  "population_in_region": 473475,
+  "population_in_zones": 473475,
+  "employees_in_region": 462494,
+  "employees_in_zones": 462169,
+  "zone_edge_choice": {
+    "arterial_inside": 70,
+    "local_inside": 2550,
+    "nearest": 223,
+    "none": 4
+  },
+  "edges_per_zone_median": 7.0,
+  "n_external_zones": 269,
+  "external_by_category": {
+    "1": 10,
+    "3": 250,
+    "2": 9
+  },
+  "top_employment_zones": [
+    {
+      "mesh": "64414278331",
+      "emp": 5014,
+      "pop": 0
+    },
+    {
+      "mesh": "64414287243",
+      "emp": 4860,
+      "pop": 92
+    },
+    {
+      "mesh": "64414288114",
+      "emp": 4514,
+      "pop": 1
+    },
+    {
+      "mesh": "64414288112",
+      "emp": 4413,
+      "pop": 0
+    },
+    {
+      "mesh": "64414278313",
+      "emp": 4388,
+      "pop": 0
+    }
+  ],
+  "note": "人口 = 国勢調査 2020 の 125m メッシュ。従業者 = 経済センサス 2021 の小地域を町丁名で国勢調査 2020 の小地域の境界に対応付け、面積の比でメッシュに配ったもの"
+}

@@ -22,6 +22,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from jp_sumo_traffic_sim import config as C
+from jp_sumo_traffic_sim.mesh import mesh3_code
 
 URL = (
     "https://assets.cms.plateau.reearth.io/assets/be/3b8cfb-5459-4f9d-b08c-fb4ab72fbdbd/"
@@ -77,12 +78,6 @@ class HttpRangeFile(io.RawIOBase):
             self.pos += len(chunk)
             n -= len(chunk)
         return bytes(out)
-
-
-def mesh3_code(i: int, j: int) -> str:
-    """3 次メッシュの格子番号 → 8 桁。i = floor(緯度 × 120)、j = floor(経度 × 80)。"""
-    jj = j - 100 * 80
-    return f"{i // 80:02d}{jj // 80:02d}{(i % 80) // 10}{(jj % 80) // 10}{i % 10}{jj % 10}"
 
 
 def region_meshes() -> set[str]:
