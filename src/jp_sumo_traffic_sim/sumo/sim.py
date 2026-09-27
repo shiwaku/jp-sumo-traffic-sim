@@ -79,3 +79,25 @@ def read_stats(path: Path) -> dict:
         teleports_jam=int(t.get("jam", 0)) if t is not None else 0,
         trip_speed_kmh=round(float(ts.get("speed")) * 3.6, 1) if ts is not None else None,
     )
+
+
+def read_hourly_flows(path: Path, start_hour: int) -> dict[int, dict[str, float]]:
+    """edgeData(1 時間ごとの interval)→ 時 → 層[2]の eid → 通過台数(entered)。
+
+    シミュレーション時刻 0 = start_hour 時。右折車線の分割(eid と eid.-60 など)は、
+    上流側(= 層[2]の Edge の入口、id が eid のまま)で数える。
+    """
+    from jp_sumo_traffic_sim.sumo.netgen import base_eid
+
+    out: dict[int, dict[str, float]] = {}
+    for iv in ET.parse(path).getroot().iter("interval"):
+        b, e = float(iv.get("begin")), float(iv.get("end"))
+        if abs(e - b - 3600) > 1:
+            continue
+        f = out.setdefault(start_hour + round(b / 3600), {})
+        for x in iv.iter("edge"):
+            sid = x.get("id")
+            b_id = base_eid(sid)
+            if b_id is not None and sid == str(b_id):
+                f[sid] = float(x.get("entered", 0))
+    return out
