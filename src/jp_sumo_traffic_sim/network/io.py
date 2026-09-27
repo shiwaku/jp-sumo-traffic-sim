@@ -47,6 +47,7 @@ def load_network_inputs():
             length=float(r["length_m"]),
             speed_kmh=int(r["speed_kmh"]),
             category=str(r["category"]),
+            width=str(r["width"]),
             linked_edge=int(r["linked_edge"]),
             n_lanes=int(r["n_lanes"]),
             carriageway_m=float(r["carriageway_m"]),
