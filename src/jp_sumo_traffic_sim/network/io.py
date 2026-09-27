@@ -34,6 +34,7 @@ def load_network_inputs():
             y=r.geometry.y,
             has_signal=bool(r["has_signal"]),
             signal_uid=r["signal_uid"] or "",
+            jshape=(r.get("jshape") or "") if "jshape" in nodes_g.columns else "",
         )
         for _, r in nodes_g.iterrows()
     ]

@@ -19,7 +19,29 @@ from shapely.geometry import LineString
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from jp_sumo_traffic_sim import config as C
 from jp_sumo_traffic_sim.network import lanes as L
+from jp_sumo_traffic_sim.network import plateau as P
 from jp_sumo_traffic_sim.network.directed import build_edges
+
+
+def plateau_widths(links) -> dict[tuple[int, int], float]:
+    """(a, b) → PLATEAU の道路区間の面で実測した幅(交差点の面は除く)。データが無ければ空。"""
+    from shapely import STRtree
+
+    f = C.INTERIM / "plateau_roads.parquet"
+    if not f.exists():
+        return {}
+    polys = gpd.read_parquet(f)
+    nodes = gpd.read_file(C.PROCESSED / "network_conflated.gpkg", layer="nodes")
+    jn = nodes[nodes["degree"] >= 3]
+    jidx = set(P.junction_polygons(polys, list(zip(jn.geometry.x, jn.geometry.y, strict=True))))
+    seg = [g for i, g in enumerate(polys.geometry) if i not in jidx]
+    tree = STRtree(seg)
+    out = {}
+    for _, row in links.iterrows():
+        w = P.road_width(row.geometry, tree, seg)
+        if w is not None:
+            out[(int(row["a"]), int(row["b"]))] = w
+    return out
 
 
 def main() -> None:
@@ -45,11 +67,14 @@ def main() -> None:
                 ksj_ids=row["ksj_ids"],
             )
         )
+    widths = plateau_widths(links)
     edges = build_edges(recs)
     for e in edges:
         cen = census_by_id.get(e.attrs.get("census_id", ""))
         cen_d = dict(cen) if cen is not None else None
-        L.assign_lanes(e, cen_d)
+        rw = widths.get((e.frm, e.to)) or widths.get((e.to, e.frm))
+        e.attrs["road_width_m"] = round(rw, 2) if rw else None
+        L.assign_lanes(e, cen_d, rw)
         L.assign_speed(e, cen_d)
 
     # --- 保存 ---
@@ -70,6 +95,7 @@ def main() -> None:
         "n_lanes",
         "n_sublanes",
         "carriageway_m",
+        "road_width_m",
         "lane_source",
         "right_turn_lane",
         "rt_lane_source",

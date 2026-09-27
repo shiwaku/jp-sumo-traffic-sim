@@ -8,6 +8,7 @@
   "{eid}.-{距離}")、下流側に中央側の1車線を足す。左側通行では最大 index の車線が
   中央側 = 右折車線になる
 - 一時停止: 流入 Edge の priority を最低にし、ノードを priority_stop にする
+- 交差点の形: PLATEAU の交差点の面(層[2]の nodes.jshape)をノードの shape として渡す
 - 長さ: 層[2]の実測長を length 属性で渡す。渡さないと netconvert は交差点の形状で
   削った後の形状長を使い、ノードが近接する所では長さ 0 の Edge ができる(C2 の試走で
   市全域の 35%)。長さ 0 の Edge はメソで1台も収容できず、そこで流れが止まる
@@ -19,6 +20,7 @@ import math
 from pathlib import Path
 from xml.sax.saxutils import quoteattr
 
+from shapely import wkt
 from shapely.geometry import LineString
 from shapely.ops import substring
 
@@ -106,7 +108,11 @@ def write_plain_xml(
             typ = "priority_stop"
         else:
             typ = "priority"
-        nod.append(f'  <node id="{nid}" x="{n["x"]:.2f}" y="{n["y"]:.2f}" type="{typ}"/>')
+        shape = ""
+        if n.get("jshape"):
+            coords = wkt.loads(n["jshape"]).exterior.coords
+            shape = ' shape="' + " ".join(f"{x:.2f},{y:.2f}" for x, y in coords) + '"'
+        nod.append(f'  <node id="{nid}" x="{n["x"]:.2f}" y="{n["y"]:.2f}" type="{typ}"{shape}/>')
     nod.append("</nodes>")
 
     edg = ["<edges>"]

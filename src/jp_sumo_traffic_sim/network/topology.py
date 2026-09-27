@@ -180,6 +180,69 @@ def contract_short_links(g: nx.MultiGraph, short_m: float = SHORT_LINK_M) -> dic
     return dict(n_contracted=n_contracted, n_merged=n_merged)
 
 
+def contract_in_polygons(g: nx.MultiGraph, polygons: list, tol: float = 1.0) -> dict:
+    """交差点の面(PLATEAU の道路ポリゴン)ごとに、面に入る交差点ノードを1つにまとめる。
+
+    上下分離道路の交差点のように、中心線では複数ノードに分かれる交差点を1つの交差点にする
+    (長さ 0 の Edge やおかしな車線の接続の根本対策、docs/sumo-design.md §13.4)。
+
+    - 対象は次数 3 以上で、接続するリンクがすべて地表(立体でない)かつ階層順が同じノード
+      (立体交差は面が重なるだけなので、階層の違うノードはまとめない)
+    - まとめたノードは面の中の元ノードの重心に置く。面の中のリンク(両端が同じ面)は消す
+    - 面を持つノード(1 つだけのものも含む)には面の外周を ``jshape`` として持たせる
+      (SUMO の交差点の形に使う)
+    """
+    from shapely import STRtree
+    from shapely.geometry import Point
+
+    if not polygons:
+        return dict(n_polygons=0, n_nodes_merged=0, n_internal_links=0, n_shaped=0)
+    tree = STRtree(polygons)
+    groups: dict[int, list] = {}
+    for n, d in g.nodes(data=True):
+        if g.degree(n) < 3:
+            continue
+        eds = list(g.edges(n, data=True))
+        if any(is_grade_separated(dd["state"], dd.get("layer", "0")) for _, _, dd in eds):
+            continue
+        if len({str(dd.get("layer", "0")) for _, _, dd in eds}) != 1:
+            continue
+        idx = tree.query(Point(d["x"], d["y"]).buffer(tol), predicate="intersects")
+        if len(idx):
+            best = min(idx, key=lambda i: polygons[i].area)  # 重なるなら小さい方(交差点の面)
+            groups.setdefault(int(best), []).append(n)
+
+    n_merged = n_internal = n_shaped = 0
+    for pi, members in groups.items():
+        shape = [tuple(c) for c in polygons[pi].exterior.coords]
+        rep = members[0]
+        if len(members) >= 2:
+            xs = [g.nodes[m]["x"] for m in members]
+            ys = [g.nodes[m]["y"] for m in members]
+            mset = set(members)
+            # 面の中のリンク(両端がどちらも面の中のノード)は消える
+            n_internal += sum(1 for u, v in g.subgraph(members).edges() if u in mset and v in mset)
+            for m in members[1:]:
+                for _, w, dd in list(g.edges(m, data=True)):
+                    if w in mset:
+                        continue
+                    g.add_edge(rep, w, **dd)
+                g.remove_node(m)
+                n_merged += 1
+            for u, v, k in list(g.edges(rep, keys=True)):
+                if u == v:
+                    g.remove_edge(u, v, k)
+            g.nodes[rep]["x"], g.nodes[rep]["y"] = sum(xs) / len(xs), sum(ys) / len(ys)
+        g.nodes[rep]["jshape"] = shape
+        n_shaped += 1
+    return dict(
+        n_polygons=len(polygons),
+        n_nodes_merged=n_merged,
+        n_internal_links=n_internal,
+        n_shaped=n_shaped,
+    )
+
+
 def check_grade_separated(g: nx.MultiGraph, tol: float = SNAP_TOL_M) -> dict:
     """立体リンクが端点以外で地表ノードと接していないか検証する。
 

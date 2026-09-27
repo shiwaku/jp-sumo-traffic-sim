@@ -6,10 +6,10 @@
     "start": 11,
     "none": 1
   },
-  "n_edges_with_counts": 2835,
+  "n_edges_with_counts": 2790,
   "edges_by_direction": {
-    "up": 1408,
-    "down": 1413,
+    "up": 1385,
+    "down": 1391,
     "avg": 14
   },
   "n_units": 71,
