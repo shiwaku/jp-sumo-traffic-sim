@@ -1,5 +1,5 @@
 .PHONY: help sync fetch clip probe grid names inventory viewer phase0 lint test clean open-viewer \
-        fetch-jartic regulations signals fetch-census census jartic
+        fetch-jartic regulations signals fetch-census census jartic zones
 
 help:
 	@grep -E '^[a-z0-9-]+:.*?##' $(MAKEFILE_LIST) | sed 's/:.*##/\t/'
@@ -51,6 +51,9 @@ census-counts:  ## センサス時間帯別交通量を方向別 Edge の観測�
 
 detectors:  ## JARTIC 車両感知器の位置を特定し、時間帯別の観測値にする
 	uv run python scripts/42_jartic_detectors.py
+
+zones:  ## 125m メッシュのゾーン(人口・従業者)と SUMO の TAZ を作る(要 make sumo-net)
+	uv run python scripts/60_build_zones.py
 
 demand-check:  ## SUMO を実測需要で回し、センサス断面交通量・旅行速度と照合する(要 make sumo-net)
 	uv run python scripts/40_demand_check.py

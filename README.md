@@ -137,6 +137,7 @@ make edges         # 単方向エッジ化と車線・速度の割り当て
 make sumo-net      # 方向別 Edge から SUMO ネットワーク(平常時・冬季)を作る
 make sumo-viewer   # 平常時・冬季を回し、ビューワの再生データを書き出す
 make demand-check  # 実測需要で回し、センサス断面交通量・旅行速度と照合する
+make zones         # 125m メッシュのゾーン(人口・従業者)と SUMO の TAZ を作る
 ```
 
 > **JARTIC は最新1か月分しか配布しない。** 過去月の配布URLは404になる。
