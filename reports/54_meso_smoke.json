@@ -28,70 +28,70 @@
     "trip_speed_kmh": null
   },
   "wall_clock_s": {
-    "routing": 40.1,
-    "simulation": 6.7
+    "routing": 42.7,
+    "simulation": 6.2
   },
   "finished": true,
   "top_waiting_edges": [
     {
       "edge": "27",
-      "waiting_s": 34842,
-      "speed_ms": 0.49,
-      "entered": 479
-    },
-    {
-      "edge": "29",
-      "waiting_s": 14584,
-      "speed_ms": 0.25,
-      "entered": 479
-    },
-    {
-      "edge": "6627",
-      "waiting_s": 10953,
-      "speed_ms": 0.55,
-      "entered": 656
+      "waiting_s": 54472,
+      "speed_ms": 0.42,
+      "entered": 500
     },
     {
       "edge": "6379",
-      "waiting_s": 9398,
-      "speed_ms": 2.84,
-      "entered": 323
+      "waiting_s": 8661,
+      "speed_ms": 2.76,
+      "entered": 326
     },
     {
-      "edge": "7249.-59.21",
-      "waiting_s": 9293,
-      "speed_ms": 1.11,
-      "entered": 229
-    },
-    {
-      "edge": "17224",
-      "waiting_s": 7201,
-      "speed_ms": 0.92,
-      "entered": 169
-    },
-    {
-      "edge": "6626",
-      "waiting_s": 6171,
-      "speed_ms": 1.0,
-      "entered": 228
-    },
-    {
-      "edge": "6115",
-      "waiting_s": 5987,
-      "speed_ms": 2.61,
-      "entered": 249
-    },
-    {
-      "edge": "2884",
-      "waiting_s": 5612,
-      "speed_ms": 0.38,
-      "entered": 156
+      "edge": "29",
+      "waiting_s": 6844,
+      "speed_ms": 0.51,
+      "entered": 500
     },
     {
       "edge": "7487.-47.45",
-      "waiting_s": 5312,
-      "speed_ms": 1.07,
-      "entered": 310
+      "waiting_s": 5584,
+      "speed_ms": 1.05,
+      "entered": 323
+    },
+    {
+      "edge": "1295",
+      "waiting_s": 5234,
+      "speed_ms": 0.9,
+      "entered": 340
+    },
+    {
+      "edge": "2884",
+      "waiting_s": 5050,
+      "speed_ms": 0.39,
+      "entered": 154
+    },
+    {
+      "edge": "4379",
+      "waiting_s": 4978,
+      "speed_ms": 2.67,
+      "entered": 258
+    },
+    {
+      "edge": "8540",
+      "waiting_s": 4946,
+      "speed_ms": 2.36,
+      "entered": 394
+    },
+    {
+      "edge": "6627",
+      "waiting_s": 4933,
+      "speed_ms": 0.67,
+      "entered": 411
+    },
+    {
+      "edge": "1909.-60",
+      "waiting_s": 4800,
+      "speed_ms": 1.91,
+      "entered": 533
     }
   ]
 }

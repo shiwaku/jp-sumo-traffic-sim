@@ -175,7 +175,7 @@ Vite + TypeScript + MapLibre GL JS。構成は
 - 交差点位置情報 — 日本交通管理技術協会(交差点番号→座標の結合)
 - JARTIC オープンデータ(交差点制御情報・交通規制情報・断面交通量情報)— 日本道路交通情報センター
 - 全国道路・街路交通情勢調査(道路交通センサス)— 国土交通省 / 公共データ利用規約 (PDL1.0)
-- OpenStreetMap — © OpenStreetMap contributors / ODbL 1.0(一方通行の答え合わせに使用)
+- OpenStreetMap — © OpenStreetMap contributors / ODbL 1.0(一方通行・車線数の答え合わせに使用)
 
 ## 関連リポジトリ
 
