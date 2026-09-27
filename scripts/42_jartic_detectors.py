@@ -6,7 +6,9 @@
    a. 交差点制御情報(typeC)で感知器のリンクが交差点 Y の流入 → Y に入る道路のうち
       進行方向の合うもの(X の流出かつ Y の流入 = 区間が確定、を含む)
    b. 交差点 X の流出 → X から出る道路のうち進行方向の合うもの
-   c. 地点名称の条・丁目の住所 → 街区の中心から ADDR_SNAP_M 以内で進行方向の合う最寄りの道路
+   c. 地点名称の条・丁目の住所 → 街区の中心から ADDR_SNAP_M 以内で進行方向の合う最寄りの道路。
+      候補は幅員 13m 以上(ADDR_WIDTHS)に限る。交差点制御情報で位置の決まる感知器は 9 割が
+      幅員 13m 以上の道路にあり、限らないと街区の中の細街路に寄ってしまう(D4 で発覚)
    交差点はネットワークの最寄りノード(NODE_SNAP_M 以内)に寄せる。区域外のものは落ちる
 3. センサスと同じ形式(方向別 Edge の時間帯別交通量)で書き出す。観測の単位は感知器
 4. 検査: a/b と c の両方で位置が決まる感知器で、2 つの位置の距離。センサスと同じ Edge に
@@ -42,6 +44,7 @@ CACHE = C.INTERIM / "jartic_detectors.parquet"
 SOURCE_CODE = C.CASE["jartic"]["control_source_code"]
 NODE_SNAP_M = 60.0  # 交差点の座標 → ネットワークのノード
 ADDR_SNAP_M = 120.0  # 住所(街区の中心)→ 道路
+ADDR_WIDTHS = {"4", "5"}  # 住所で決めるときの候補の幅員区分(4 = 13〜19.5m、5 = 19.5m 以上)
 HOURS = [f"h{h:02d}" for h in range(24)]
 
 
@@ -132,6 +135,7 @@ def main() -> None:
     mid = edges.geometry.interpolate(0.5, normalized=True)
     edge_tree = cKDTree(np.c_[mid.x, mid.y])
     eids = edges["eid"].astype(int).to_numpy()
+    wide = set(edges.loc[edges["width"].astype(str).isin(ADDR_WIDTHS), "eid"].astype(int))
     mid_xy = {int(e): (p.x, p.y) for e, p in zip(eids, mid, strict=True)}
     mid_bearing = {
         int(e["eid"]): D.grid_bearing(
@@ -166,6 +170,7 @@ def main() -> None:
             cand = [
                 (int(eids[i]), mid_bearing[int(eids[i])])
                 for i in edge_tree.query_ball_point((x, y), ADDR_SNAP_M)
+                if int(eids[i]) in wide
             ]
             cand.sort(key=lambda c: np.hypot(mid_xy[c[0]][0] - x, mid_xy[c[0]][1] - y))
             addr_eid = D.pick_edge(cand, travel) if travel else None

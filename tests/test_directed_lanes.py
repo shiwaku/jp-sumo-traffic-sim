@@ -77,3 +77,18 @@ def test_speed_priority():
     (e3,) = build_edges([link(1, 2, [(0, 0), (100, 0)], oneway="F", speed_kmh=0)])
     L.assign_speed(e3, None)
     assert e3.attrs["speed_source"] == "assumed"
+
+
+def test_municipal_default_speed_by_width():
+    """市区町村道の既定の速度は幅員区分で分ける(細街路 30、13m 以上 50)。"""
+    out = {}
+    for w in ("2", "4"):
+        (e,) = build_edges([link(1, 2, [(0, 0), (100, 0)], oneway="F", width=w, speed_kmh=0)])
+        L.assign_speed(e, None)
+        out[w] = e.attrs["speed_kmh"]
+    assert out == {"2": 30, "4": 50}
+    (e,) = build_edges(
+        [link(1, 2, [(0, 0), (100, 0)], oneway="F", category="2", width="2", speed_kmh=0)]
+    )
+    L.assign_speed(e, None)
+    assert e.attrs["speed_kmh"] == 50

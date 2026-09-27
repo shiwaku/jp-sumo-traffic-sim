@@ -31,12 +31,19 @@ SPLIT_MIN_REMAIN_M = 10.0  # 分割後に上流側へ残す最小長。これが
 # 優先度: 高速 > 国道 > 道道 > 市町村道(KSJ N13_003)。一時停止の流入は最低
 CATEGORY_PRIORITY = {"4": 5, "1": 4, "2": 3, "3": 2}
 STOP_PRIORITY = 1
+# 幅員 13m 以上(KSJ 幅員区分 4・5)の市区町村道は道道と同じ優先度。札幌の格子の幹線の多くは市道で、
+# 細街路と同じ優先度だと交差点の優先関係と経路選択(duarouter の priority-factor)で区別できない
+WIDE_MUNICIPAL_PRIORITY = 3
+WIDE_WIDTHS = {"4", "5"}
 
 
 def edge_priority(e: dict, stop_edges: set) -> int:
     if e["eid"] in stop_edges:
         return STOP_PRIORITY
-    return CATEGORY_PRIORITY.get(str(e.get("category", "")), 2)
+    cat = str(e.get("category", ""))
+    if cat == "3" and str(e.get("width", "")) in WIDE_WIDTHS:
+        return WIDE_MUNICIPAL_PRIORITY
+    return CATEGORY_PRIORITY.get(cat, 2)
 
 
 MIN_LANE_WIDTH_M = 2.5  # 車線幅の下限。幅員 3〜5.5m の双方向道路を半分に割ると 1.4m になり、

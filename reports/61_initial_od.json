@@ -1,0 +1,125 @@
+{
+  "case": "sapporo",
+  "hours": [
+    6,
+    7,
+    8,
+    9
+  ],
+  "start_hour": 6,
+  "ref_hour": 8,
+  "holdout": {
+    "frac": 0.2,
+    "n_units": 112,
+    "n_units_total": 558
+  },
+  "n_internal_zones": 2843,
+  "n_gate_edges_with_obs": {
+    "sources": 23,
+    "sinks": 26
+  },
+  "gate_per_lane_median": {
+    "wide": 302,
+    "narrow": 50
+  },
+  "cordon_ref_hour": {
+    "inbound": 34708,
+    "outbound": 38618
+  },
+  "fitted": {
+    "ii_trips": 13553,
+    "ee_share_of_inbound": 0.83
+  },
+  "n_external_zones": 269,
+  "params": {
+    "gamma_per_min": 0.1,
+    "min_cost_min": 2.0,
+    "ee_min_cost_min": 2.0,
+    "attr_pop_share": 0.3,
+    "gate_obs_steps": 2,
+    "narrow_gate_per_lane": 50.0,
+    "gate_cap_per_lane": {
+      "wide": 800.0,
+      "narrow": 300.0
+    },
+    "aon_trips_per_block": 40000
+  },
+  "mean_trip_time_free_flow_min": {
+    "II": 9.2,
+    "IE": 10.8,
+    "EI": 11.1,
+    "EE": 10.9
+  },
+  "block_trips_ref_hour": {
+    "II": 13553,
+    "IE": 9828,
+    "EI": 5918,
+    "EE": 28790
+  },
+  "hourly_profile": {
+    "6": 0.407,
+    "7": 0.839,
+    "8": 1.0,
+    "9": 0.877
+  },
+  "trips_by_block_hour": {
+    "II": {
+      "6": 5490,
+      "7": 11478,
+      "8": 13552,
+      "9": 11873
+    },
+    "IE": {
+      "6": 3891,
+      "7": 8180,
+      "8": 9893,
+      "9": 8615
+    },
+    "EI": {
+      "6": 2398,
+      "7": 4954,
+      "8": 5843,
+      "9": 5219
+    },
+    "EE": {
+      "6": 11560,
+      "7": 24058,
+      "8": 29050,
+      "9": 25043
+    }
+  },
+  "n_trips": 181097,
+  "n_observation_groups": 612,
+  "aon_fit_ref_hour": {
+    "calibration": {
+      "n": 494,
+      "r": 0.279,
+      "r2": 0.078,
+      "slope": 0.562,
+      "rmse_pct": 83.0,
+      "geh_ok_share": 0.142,
+      "volume_ratio": 0.605
+    },
+    "holdout": {
+      "n": 118,
+      "r": 0.123,
+      "r2": 0.015,
+      "slope": 0.514,
+      "rmse_pct": 95.4,
+      "geh_ok_share": 0.136,
+      "volume_ratio": 0.608
+    }
+  },
+  "n_coarse_zones": 330,
+  "n_coarse_od_pairs": {
+    "6": 11935,
+    "7": 18867,
+    "8": 21114,
+    "9": 19446
+  },
+  "wall_clock_s": {
+    "costs": 6.2,
+    "aon": 130.0,
+    "total": 161.3
+  }
+}

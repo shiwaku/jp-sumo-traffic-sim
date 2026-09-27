@@ -23,6 +23,18 @@ SIM_OPTIONS = [
     "true",
 ]
 
+# 経路探索の共通オプション(duarouter・duaIterate、docs/sumo-design.md §13.5 ③)。
+# 所要時間だけだと、信号の無い細街路が幹線より速く見えて経路が散る(D4 で発覚)。
+# priority-factor: 優先度の低い Edge ほど費用を割り増す(最低の優先度で 1 + 係数 倍)
+ROUTING_PRIORITY_FACTOR = 1.0
+ROUTING_TLS_PENALTY_S = 10.0  # 信号交差点の平均の待ち
+ROUTING_OPTIONS = [
+    "--weights.priority-factor",
+    str(ROUTING_PRIORITY_FACTOR),
+    "--weights.tls-penalty",
+    str(ROUTING_TLS_PENALTY_S),
+]
+
 
 def tool(name: str) -> str:
     """SUMO_HOME/bin の実行ファイルのパス。"""

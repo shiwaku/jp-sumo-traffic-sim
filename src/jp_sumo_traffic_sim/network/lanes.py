@@ -87,8 +87,17 @@ def assign_lanes(edge, census: dict | None, road_width_m: float | None = None) -
         edge.attrs["rt_lane_source"] = "assumed"
 
 
+# 市区町村道の既定の最高速度 [km/h](KSJ の幅員区分 → 速度)。JARTIC の線規制のある市区町村道の
+# 中央値: 幅員 3〜13m(区分 2・3)は 30、13m 以上(区分 4・5)は 50(D4)。区分 1(3m 未満)も 30。
+# 一律 40 だと、幅の広い市道と並行する細街路の所要時間が同じになり、最短経路が細街路に散る
+MUNICIPAL_SPEED_BY_WIDTH = {"1": 30, "2": 30, "3": 30, "4": 50, "5": 50}
+
+
 def assign_speed(edge, census: dict | None, default_kmh: dict | None = None) -> None:
-    """最高速度の決定順: JARTIC 線規制 → センサス規制速度 → 分類による既定値。"""
+    """最高速度の決定順: JARTIC 線規制 → センサス規制速度 → 分類による既定値。
+
+    市区町村道の既定値は幅員区分で分ける(MUNICIPAL_SPEED_BY_WIDTH)。
+    """
     defaults = default_kmh or {"1": 50, "2": 50, "3": 40}
     cur = int(edge.attrs.get("speed_kmh") or 0)
     if cur > 0:
@@ -98,5 +107,10 @@ def assign_speed(edge, census: dict | None, default_kmh: dict | None = None) -> 
         edge.attrs["speed_kmh"] = int(float(census["speed_limit"]))
         edge.attrs["speed_source"] = "census"
         return
-    edge.attrs["speed_kmh"] = defaults.get(str(edge.attrs.get("category", "")), 40)
+    cat = str(edge.attrs.get("category", ""))
+    width = str(edge.attrs.get("width", ""))
+    if default_kmh is None and cat == "3" and width in MUNICIPAL_SPEED_BY_WIDTH:
+        edge.attrs["speed_kmh"] = MUNICIPAL_SPEED_BY_WIDTH[width]
+    else:
+        edge.attrs["speed_kmh"] = defaults.get(cat, 40)
     edge.attrs["speed_source"] = "assumed"
