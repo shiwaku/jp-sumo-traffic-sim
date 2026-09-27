@@ -49,6 +49,9 @@ edges:  ## Phase 1: 単方向エッジ化と車線・速度の割り当て
 census-counts:  ## センサス時間帯別交通量を方向別 Edge の観測値にする(需要推定・照合用)
 	uv run python scripts/41_census_counts.py
 
+detectors:  ## JARTIC 車両感知器の位置を特定し、時間帯別の観測値にする
+	uv run python scripts/42_jartic_detectors.py
+
 demand-check:  ## SUMO を実測需要で回し、センサス断面交通量・旅行速度と照合する(要 make sumo-net)
 	uv run python scripts/40_demand_check.py
 

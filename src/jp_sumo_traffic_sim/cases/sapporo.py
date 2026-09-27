@@ -190,6 +190,27 @@ def signal_offsets(nodes: list[dict]) -> dict[int, float]:
     return {n["nid"]: (_uv(n["x"], n["y"])[0] - u_min) / v for n in nodes if n.get("has_signal")}
 
 
+def grid_address_xy(ns: str, n: int, ew: str, m: int) -> tuple[float, float]:
+    """条・丁目の住所(例: 北 23 条西 13 丁目)の街区の中心 → CRS_PROJ の座標。
+
+    住所は交差点ではなく街区(通りと通りの間)を指すので、n 条通と n+1 条通、m 丁目通と
+    m+1 丁目通の中間に置く。格子の間隔は都心で実測した BLOCK_M なので、都心から離れるほど
+    ずれる(JARTIC 感知器の位置特定では近くの道路へ寄せて使う)。
+    """
+    from shapely.geometry import Point
+
+    if ns == "北":
+        v = (v_north(n) + v_north(n + 1)) / 2
+    else:
+        v = (v_south(n) + v_south(n + 1)) / 2
+    if ew == "西":
+        u = (u_west(m) + u_west(m + 1)) / 2
+    else:
+        u = (u_east(m) + u_east(m + 1)) / 2
+    p = from_grid(Point(u, v))
+    return p.x, p.y
+
+
 def to_grid(geom):
     """EPSG:6679 の図形をグリッド座標 (u, v) へ回転."""
     from shapely.affinity import rotate
