@@ -13,7 +13,7 @@
   "n_merge_yield": 890,
   "n_jartic_timed": 92,
   "net": "data/sumo/sapporo.net.xml",
-  "netconvert_warnings": 93,
+  "netconvert_warnings": 99,
   "netconvert_warning_samples": [
     "Warning: Ambiguity in turnarounds computation at junction '134'.",
     "Warning: Ambiguity in turnarounds computation at junction '1759'.",

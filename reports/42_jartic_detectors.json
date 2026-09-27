@@ -2,34 +2,34 @@
   "n_detectors_sapporo": 1559,
   "located_by": {
     "typeC_in_out": 41,
-    "address": 309,
+    "address": 229,
     "typeC_in": 117,
-    "unlocated": 966,
+    "unlocated": 1046,
     "typeC_out": 126
   },
-  "n_located": 593,
-  "n_edges_with_detector": 564,
-  "n_duplicates_on_same_edge": 29,
+  "n_located": 513,
+  "n_edges_with_detector": 487,
+  "n_duplicates_on_same_edge": 26,
   "address_vs_typeC_distance_m": {
-    "n": 167,
-    "median": 227.9,
-    "p90": 417.4
+    "n": 121,
+    "median": 164.0,
+    "p90": 375.0
   },
   "census_same_edge_8h": {
-    "n": 209,
+    "n": 228,
     "median_ratio": 0.94,
     "q25": 0.75,
-    "q75": 1.16
+    "q75": 1.14
   },
   "census_same_edge_8h_by_method": {
     "address": {
-      "n": 33,
-      "median_ratio": 0.89,
-      "within_30pct": 0.61
+      "n": 54,
+      "median_ratio": 0.9,
+      "within_30pct": 0.59
     },
     "typeC_in": {
-      "n": 74,
-      "median_ratio": 0.92,
+      "n": 73,
+      "median_ratio": 0.93,
       "within_30pct": 0.62
     },
     "typeC_in_out": {
@@ -38,9 +38,9 @@
       "within_30pct": 0.58
     },
     "typeC_out": {
-      "n": 78,
+      "n": 77,
       "median_ratio": 0.98,
-      "within_30pct": 0.67
+      "within_30pct": 0.66
     }
   },
   "samples_per_hour_top": {
